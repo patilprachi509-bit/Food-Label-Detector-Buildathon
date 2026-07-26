@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+Devanagari:wght@100..900&family=Teko:wght@300..700&display=swap');
+
+:root {
+  --color-cream: #FAF7F0; /* Recreated visually */
+  --color-terracotta: #C4522E;
+  --color-charcoal: #2B2B26;
+  
+  --font-headline-en: 'Bebas Neue', sans-serif;
+  --font-headline-hi: 'Teko', sans-serif;
+  --font-body-en: 'Inter', sans-serif;
+  --font-body-hi: 'Noto Sans Devanagari', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-cream);
+  color: var(--color-charcoal);
+  font-family: var(--font-body-en);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh; /* For mobile browsers */
+  overflow: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+/* Helper classes */
+.headline-en {
+  font-family: var(--font-headline-en);
+}
+
+.headline-hi {
+  font-family: var(--font-headline-hi);
+  font-weight: 600; /* Teko needs a bit more weight to match Bebas Neue's boldness */
+}
+
+.body-hi {
+  font-family: var(--font-body-hi);
+}
+
+.text-terracotta {
+  color: var(--color-terracotta);
+}
+
+.bg-terracotta {
+  background-color: var(--color-terracotta);
+}
