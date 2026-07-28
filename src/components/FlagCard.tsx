@@ -243,12 +243,19 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
             <span>0{flag.unit}</span>
             <span>{flag.isMax ? 'Limit' : 'Minimum'}: {flag.thresholdValue}{flag.unit}</span>
           </div>
-          <div style={{ height: '8px', backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: '4px', position: 'relative' }}>
-            {/* Threshold Line */}
-            <div style={{ position: 'absolute', left: `${Math.min(100, (flag.thresholdValue / Math.max(flag.thresholdValue * 1.5, flag.actualValue)) * 100)}%`, top: '-4px', bottom: '-4px', width: '2px', backgroundColor: 'var(--color-divider)', zIndex: 2 }}></div>
-            {/* Actual Bar */}
-            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(100, (flag.actualValue / Math.max(flag.thresholdValue * 1.5, flag.actualValue)) * 100)}%`, backgroundColor: 'var(--color-fail)', borderRadius: '4px' }}></div>
-          </div>
+          {(() => {
+            const maxScale = Math.max(flag.thresholdValue * 2.5, flag.actualValue * 1.25);
+            const actualPct = Math.min(100, (flag.actualValue / maxScale) * 100);
+            const thresholdPct = Math.min(100, (flag.thresholdValue / maxScale) * 100);
+            return (
+              <div style={{ height: '8px', backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: '4px', position: 'relative' }}>
+                {/* Threshold Line */}
+                <div style={{ position: 'absolute', left: `${thresholdPct}%`, top: '-4px', bottom: '-4px', width: '2px', backgroundColor: 'var(--color-divider)', zIndex: 2 }}></div>
+                {/* Actual Bar */}
+                <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${actualPct}%`, backgroundColor: 'var(--color-fail)', borderRadius: '4px' }}></div>
+              </div>
+            );
+          })()}
           <div style={{ fontSize: '0.85rem', marginTop: '0.25rem', fontWeight: 'bold' }}>
             {isEn ? 'Actual' : 'वास्तविक'}: {flag.actualValue}{flag.unit}
           </div>

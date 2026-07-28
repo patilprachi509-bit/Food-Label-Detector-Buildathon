@@ -12,8 +12,8 @@ const svgProps = {
 
 export const IconSpoon = ({ size = 16, color = "currentColor" }) => (
   <svg {...svgProps} width={size} height={size} color={color}>
-    <path d="M7 17l-4 4" />
-    <path d="M12 12c-2.761 0-5 2.239-5 5s2.239 5 5 5c4 0 7-5 7-10 0-1.105-.895-2-2-2s-2 .895-2 2v0z" transform="rotate(-45 12 12)" />
+    <path d="m5 19 5-5" />
+    <path d="M10 14c-.5-2.5 1-5 3.5-6.5C15 6 18 5 21 3c-2 3-3 6-4.5 7.5-1.5 2.5-4 4-6.5 3.5z" />
   </svg>
 );
 

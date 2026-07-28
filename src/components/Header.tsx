@@ -12,9 +12,6 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
   const { viewingSavedScanId, setViewingSavedScanId, setIsHistoryOpen, userLanguage, resetApp } = useAppContext();
   const isEn = userLanguage === 'en';
   
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  
   const isSavedView = !!viewingSavedScanId;
 
   const handleBack = () => {
@@ -27,7 +24,6 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
   };
 
   const handleAudio = () => {
-    setIsMenuOpen(false);
     if (isSavedView) {
       alert(isEn ? "Audio isn't available for saved scans." : "सहेजे गए स्कैन के लिए ऑडियो उपलब्ध नहीं है।");
     } else if (onAudioClick) {
@@ -35,74 +31,97 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
     }
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '1rem 1.5rem', zIndex: 50, position: 'relative' }}>
-      {/* Back Button */}
-      <button 
-        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', letterSpacing: '1px' }} 
-        onClick={handleBack}
-      >
-        &larr; {isEn ? 'BACK' : 'वापस'}
-      </button>
-      
-      {/* Actions */}
-      <div style={{ position: 'relative' }} ref={menuRef}>
+    <div style={{ 
+      display: 'grid', 
+      gridTemplateColumns: '1fr auto 1fr', 
+      alignItems: 'center', 
+      width: '100%', 
+      padding: '1.5rem 1.5rem 1rem 1.5rem', 
+      zIndex: 50, 
+      position: 'relative' 
+    }}>
+      {/* Back Button (Left) */}
+      <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
         <button 
-          onClick={() => setIsMenuOpen(!isMenuOpen)} 
-          style={{ background: 'none', border: 'none', width: '40px', height: '40px', cursor: 'pointer', color: 'var(--color-text)', fontSize: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          style={{ 
+            background: 'none', 
+            border: '1px solid var(--color-divider)', 
+            borderRadius: '50%',
+            width: '40px',
+            height: '40px',
+            cursor: 'pointer', 
+            color: 'var(--color-text)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center'
+          }} 
+          onClick={handleBack}
+          aria-label="Back"
         >
-          •••
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      {/* Title (Center) */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <h1 className="headline-en" style={{ fontSize: '1rem', letterSpacing: '2px', fontWeight: 'bold', margin: 0, textTransform: 'uppercase' }}>
+          {isEn ? 'SCAN RESULT' : 'स्कैन परिणाम'}
+        </h1>
+        <div style={{ width: '40px', height: '2px', backgroundColor: 'var(--color-text)', marginTop: '0.4rem' }}></div>
+      </div>
+      
+      {/* Actions (Right) */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', alignItems: 'center' }}>
+        {!isSavedView && onCompareClick && (
+          <button 
+            onClick={onCompareClick} 
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+            aria-label="Compare"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="16 3 21 3 21 8"></polyline>
+              <line x1="4" y1="14" x2="21" y2="3"></line>
+              <polyline points="8 21 3 21 3 16"></polyline>
+              <line x1="20" y1="10" x2="3" y2="21"></line>
+            </svg>
+          </button>
+        )}
+        
+        <button 
+          onClick={handleAudio}
+          disabled={isAudioLoading}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: (isAudioLoading || isSavedView) ? 0.5 : 1, color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+          aria-label="Listen"
+        >
+          {isAudioLoading ? (
+            <span style={{ fontSize: '1rem', fontWeight: 'bold' }}>...</span>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+          )}
         </button>
         
-        {isMenuOpen && (
-          <div style={{
-            position: 'absolute',
-            top: '100%',
-            right: 0,
-            backgroundColor: 'var(--color-bg)',
-            border: '1px solid var(--color-divider)',
-            borderRadius: '12px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-            minWidth: '150px',
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-            zIndex: 100
-          }}>
-            {!isSavedView && onCompareClick && (
-              <button 
-                onClick={() => { setIsMenuOpen(false); onCompareClick(); }} 
-                style={{ padding: '1rem', background: 'none', border: 'none', borderBottom: '1px solid rgba(0,0,0,0.05)', textAlign: 'left', cursor: 'pointer', color: 'var(--color-text)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              >
-                ⇄ {isEn ? 'Compare' : 'तुलना करें'}
-              </button>
-            )}
-            
-            <button 
-              onClick={handleAudio}
-              disabled={isAudioLoading}
-              style={{ padding: '1rem', background: 'none', border: 'none', borderBottom: '1px solid rgba(0,0,0,0.05)', textAlign: 'left', cursor: 'pointer', opacity: (isAudioLoading || isSavedView) ? 0.5 : 1, color: 'var(--color-text)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-            >
-              <span style={{ fontSize: '1.2rem' }}>{isAudioLoading ? '...' : '\uD83D\uDD0A'}</span> {isEn ? 'Listen' : 'सुनें'}
-            </button>
-            
-            <button 
-              onClick={() => { setIsMenuOpen(false); if (onShareClick) onShareClick(); }} 
-              style={{ padding: '1rem', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', color: 'var(--color-text)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-            >
-              <span style={{ fontSize: '1.2rem' }}>&#8611;</span> {isEn ? 'Share' : 'साझा करें'}
-            </button>
-          </div>
+        {onShareClick && (
+          <button 
+            onClick={onShareClick} 
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+            aria-label="Share"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </button>
         )}
       </div>
     </div>
