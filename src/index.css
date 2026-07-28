@@ -15,6 +15,10 @@
   --font-body-hi: 'Noto Sans Devanagari', sans-serif;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
