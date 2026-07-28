@@ -203,7 +203,8 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
             fontSize: '3rem', 
             lineHeight: 1, 
             position: 'relative',
-            display: 'inline-block'
+            display: 'inline-block',
+            wordBreak: 'break-word'
           }}>
             {isEn ? flag.claim.normalized_english : flag.claim.localized_display}
             {isClaimContradiction && (
@@ -223,7 +224,7 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
 
       {/* Flag Message / Headline */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <h3 className="headline-en" style={{ fontSize: '2rem', lineHeight: 1.1, marginTop: flag.claim ? '1rem' : 0, margin: 0 }}>
+        <h3 className="headline-en" style={{ fontSize: '2rem', lineHeight: 1.1, marginTop: flag.claim ? '1rem' : 0, margin: 0, wordBreak: 'break-word' }}>
           {isEn ? (flag.headline_en || flag.message_en) : (flag.headline_hi || flag.message_hi)}
         </h3>
         <span style={{ opacity: 0.5, fontSize: '0.8rem', paddingLeft: '1rem', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▼</span>

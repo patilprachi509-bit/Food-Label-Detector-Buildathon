@@ -293,16 +293,16 @@ export const VerdictScreen: React.FC = () => {
     <div className="bg-dense" style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'var(--color-text)' }}>
       <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} onShareClick={handleShareClick} onCompareClick={handleCompareClick} />
       
-      <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', zIndex: 1, position: 'relative' }}>
+      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '1.5rem', zIndex: 1, position: 'relative' }}>
         
         {/* Overarching Verdict */}
         <div style={{ marginBottom: '3rem', textAlign: 'center', paddingTop: '1.5rem' }}>
           {flags.some(f => f.type === 'claim_contradiction' || f.type === 'general_health') ? (
-            <h2 className="headline-en" style={{ fontSize: '3rem', color: 'var(--color-fail)', lineHeight: 1, fontWeight: 900, margin: 0 }}>NOT RECOMMENDED</h2>
+            <h2 className="headline-en" style={{ fontSize: '3rem', color: 'var(--color-fail)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>NOT RECOMMENDED</h2>
           ) : flags.some(f => f.type === 'needs_verification') ? (
-            <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-verify)', lineHeight: 1, fontWeight: 900, margin: 0 }}>VERIFICATION NEEDED</h2>
+            <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-verify)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>VERIFICATION NEEDED</h2>
           ) : (
-            <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-pass)', lineHeight: 1, fontWeight: 900, margin: 0 }}>MINOR ISSUES</h2>
+            <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-pass)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>MINOR ISSUES</h2>
           )}
         </div>
 
