@@ -92,7 +92,7 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
   }, [savedScans]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'var(--color-bg)', color: 'var(--color-text)' }}>
+    <div className="bg-dense" style={{ display: 'flex', flexDirection: 'column', height: '100vh', color: 'var(--color-text)' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '1rem', borderBottom: '1px solid var(--color-divider)' }}>
         <button 
@@ -111,7 +111,7 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
       </div>
 
       {/* List */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', position: 'relative', zIndex: 1 }}>
         {!isCompareMode && weeklyStats && (
           <div style={{ backgroundColor: 'var(--color-text)', color: 'var(--color-bg)', padding: '1.5rem', borderRadius: '12px', marginBottom: '2rem' }}>
             <h4 style={{ margin: '0 0 1rem 0', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.85rem', opacity: 0.8 }}>

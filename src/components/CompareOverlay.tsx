@@ -61,7 +61,7 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
   };
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'var(--color-bg)', zIndex: 100, display: 'flex', flexDirection: 'column' }}>
+    <div className="bg-dense" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', color: 'var(--color-text)', zIndex: 100, display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderBottom: '1px solid var(--color-divider)' }}>
         <button onClick={onClose} style={{ background: 'none', border: '1px solid var(--color-divider)', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', color: 'var(--color-text)' }}>
           &times;
@@ -75,7 +75,7 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
         <div style={{ width: '40px' }} />
       </div>
 
-      <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto' }}>
+      <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', position: 'relative', zIndex: 1 }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: 'transparent', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--color-divider)' }}>
           <thead>
             <tr style={{ backgroundColor: 'var(--color-text)', color: 'var(--color-bg)' }}>

@@ -171,9 +171,21 @@ export const ProcessingScreen: React.FC = () => {
   }
 
   return (
-    <div className="screen-container">
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100vh', 
+      backgroundColor: 'var(--color-bg)',
+      backgroundImage: `url('/background.png')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      color: 'var(--color-text)',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '2rem'
+    }}>
       <div className="loader"></div>
-      <h2 className={`processing-text ${isEn ? 'headline-en' : 'headline-hi'}`} style={{ minHeight: '3rem', textAlign: 'center', transition: 'opacity 0.3s ease-in-out' }}>
+      <h2 className={`processing-text ${isEn ? 'headline-en' : 'headline-hi'}`} style={{ minHeight: '3rem', textAlign: 'center', transition: 'opacity 0.3s ease-in-out', fontWeight: 900 }}>
         {currentMessage}
       </h2>
       <p style={{ marginTop: '1rem', opacity: 0.7, fontSize: '0.9rem', textAlign: 'center' }}>

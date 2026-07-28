@@ -20,19 +20,7 @@
   position: relative;
 }
 
-/* Botanical Illustration Placeholder */
-.botanical-bg {
-  position: absolute;
-  bottom: -20px;
-  right: -20px;
-  width: 200px;
-  height: 300px;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 100 Q40 50 20 20 M50 100 Q60 50 80 20 M50 100 Q50 50 50 10" stroke="%232B2B26" stroke-width="0.5" fill="none" opacity="0.3"/></svg>');
-  background-size: cover;
-  background-repeat: no-repeat;
-  pointer-events: none;
-  z-index: 0;
-}
+/* Botanical Illustration Placeholder Removed */
 
 /* Buttons */
 .btn-outline {

@@ -225,9 +225,9 @@ export const VerdictScreen: React.FC = () => {
 
   if (flags.length === 0 && aiInsights.length === 0) {
     return (
-      <div className="screen-container">
+      <div className="bg-dense" style={{ display: 'flex', flexDirection: 'column', height: '100vh', color: 'var(--color-text)' }}>
         <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} onShareClick={handleShareClick} onCompareClick={handleCompareClick} />
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 1, position: 'relative' }}>
           <h1 className="headline-en" style={{ fontSize: '5rem', lineHeight: 1 }}>NO ISSUES FOUND</h1>
           <div style={{ backgroundColor: 'var(--color-pass)', color: 'var(--color-bg)', padding: '0.5rem 1.5rem', borderRadius: '50px', fontSize: '1.5rem', marginTop: '1rem', fontWeight: 'bold' }} className="headline-en">
             GRADE A
@@ -290,10 +290,10 @@ export const VerdictScreen: React.FC = () => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'var(--color-bg)', color: 'var(--color-text)' }}>
+    <div className="bg-dense" style={{ display: 'flex', flexDirection: 'column', height: '100vh', color: 'var(--color-text)' }}>
       <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} onShareClick={handleShareClick} onCompareClick={handleCompareClick} />
       
-      <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', zIndex: 1, position: 'relative' }}>
         
         {/* Overarching Verdict */}
         <div style={{ marginBottom: '3rem', textAlign: 'center', paddingTop: '1.5rem' }}>

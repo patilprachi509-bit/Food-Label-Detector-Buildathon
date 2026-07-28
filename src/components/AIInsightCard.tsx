@@ -18,7 +18,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ insight, isEn }) =
         backgroundColor: 'rgba(0,0,0,0.02)',
         border: '1.5px dashed var(--color-text)',
         opacity: 0.8,
-        borderRadius: '12px',
+        borderRadius: '24px',
         padding: '2rem',
         marginBottom: '1rem',
       }}

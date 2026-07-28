@@ -45,13 +45,14 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
   const containerStyle: React.CSSProperties = {
     backgroundColor: isNeedsVerification ? 'rgba(71, 85, 105, 0.05)' : 'var(--color-bg)',
     border: isNeedsVerification ? '1px solid var(--color-verify)' : '1px solid var(--color-divider)',
-    borderRadius: '12px',
+    borderRadius: '24px',
     padding: '2rem',
-    marginBottom: '1rem',
+    marginBottom: '1.5rem',
     position: 'relative',
     overflow: 'hidden',
     cursor: 'pointer',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    boxShadow: '0 8px 24px rgba(0,0,0,0.06)'
   };
 
   const badgeStyle: React.CSSProperties = {
@@ -245,7 +246,7 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
             {/* Threshold Line */}
             <div style={{ position: 'absolute', left: `${Math.min(100, (flag.thresholdValue / Math.max(flag.thresholdValue * 1.5, flag.actualValue)) * 100)}%`, top: '-4px', bottom: '-4px', width: '2px', backgroundColor: 'var(--color-divider)', zIndex: 2 }}></div>
             {/* Actual Bar */}
-            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(100, (flag.actualValue / Math.max(flag.thresholdValue * 1.5, flag.actualValue)) * 100)}%`, backgroundColor: (flag.evalDirection === 'above' && flag.isMax) || (flag.evalDirection === 'below' && !flag.isMax) ? 'var(--color-fail)' : 'var(--color-pass)', borderRadius: '4px' }}></div>
+            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(100, (flag.actualValue / Math.max(flag.thresholdValue * 1.5, flag.actualValue)) * 100)}%`, backgroundColor: 'var(--color-fail)', borderRadius: '4px' }}></div>
           </div>
           <div style={{ fontSize: '0.85rem', marginTop: '0.25rem', fontWeight: 'bold' }}>
             {isEn ? 'Actual' : 'वास्तविक'}: {flag.actualValue}{flag.unit}
@@ -306,8 +307,8 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
                         </p>
                       ) : (
                         <>
-                          <RadialProgress percentage={packPercentage} color={packPercentage >= 50 ? 'var(--color-fail)' : 'var(--color-pass)'} />
-                          <div style={{ fontSize: '0.9rem', fontWeight: 'bold', color: packPercentage >= 50 ? 'var(--color-fail)' : 'var(--color-text)' }}>
+                          <RadialProgress percentage={packPercentage} color="var(--color-fail)" />
+                          <div style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--color-fail)' }}>
                             {packPercentage}% {isEn ? 'of daily limit' : 'दैनिक सीमा का'}
                           </div>
                         </>

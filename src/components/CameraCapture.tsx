@@ -76,49 +76,101 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
   const subtextHi = step === 1 ? 'सुनिश्चित करें कि उत्पाद का नाम दिखाई दे रहा है।' : 'यदि आप कर सकते हैं तो पूरे पैनल को फ्रेम में फिट करें।';
 
   return (
-    <div className="camera-container">
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100vh', 
+      backgroundColor: 'var(--color-bg)',
+      backgroundImage: `url('/background.png')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      color: 'var(--color-text)',
+      position: 'relative'
+    }}>
       {/* Top Bar with Cancel */}
-      <div style={{ position: 'absolute', top: '1.5rem', left: '1rem', zIndex: 10 }}>
+      <div style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
         <button 
           onClick={resetApp}
-          style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1rem', fontWeight: 'bold', letterSpacing: '1px', cursor: 'pointer', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}
+          style={{ background: 'none', border: 'none', color: 'var(--color-text)', fontSize: '1rem', fontWeight: 'bold', letterSpacing: '1px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
         >
-          {isEn ? 'Cancel' : 'रद्द करें'}
+          &larr; {isEn ? 'Cancel' : 'रद्द करें'}
         </button>
       </div>
 
-      {/* Progress Bar */}
-      <div className="progress-bar">
-        <div className={`progress-segment ${step >= 1 ? 'active' : ''}`}></div>
-        <div className={`progress-segment ${step === 2 ? 'active' : ''}`}></div>
-      </div>
-
-      {/* Camera Feed */}
-      <video ref={videoRef} autoPlay playsInline muted className="camera-feed" />
-      <div className="camera-overlay">
-        {cameraError ? (
-          <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'rgba(0,0,0,0.7)', color: 'white', borderRadius: '12px' }}>
-            <h3>Camera Error</h3>
-            <p>{cameraError}</p>
-            <p style={{ fontSize: '0.8rem', marginTop: '1rem' }}>Ensure you are using HTTPS and have granted camera permissions.</p>
+      {/* Camera Feed Container */}
+      <div style={{ flex: 1, padding: '0 1.5rem', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+        <div style={{ 
+          flex: 1, 
+          position: 'relative', 
+          borderRadius: '24px', 
+          overflow: 'hidden',
+          backgroundColor: '#000',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
+        }}>
+          <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          
+          <div style={{
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            pointerEvents: 'none',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            {cameraError ? (
+              <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'rgba(0,0,0,0.7)', color: 'white', borderRadius: '12px' }}>
+                <h3>Camera Error</h3>
+                <p>{cameraError}</p>
+                <p style={{ fontSize: '0.8rem', marginTop: '1rem' }}>Ensure you are using HTTPS and have granted camera permissions.</p>
+              </div>
+            ) : (
+              <div style={{
+                width: '80%',
+                height: '80%',
+                border: '2px solid rgba(255,255,255,0.8)',
+                borderRadius: '16px',
+                boxShadow: '0 0 0 9999px rgba(0,0,0,0.4)'
+              }}></div>
+            )}
           </div>
-        ) : (
-          <div className="guide-frame"></div>
-        )}
+        </div>
       </div>
 
-      {/* Instructions */}
-      <div className="instruction-container">
-        <h2 className={`instruction-headline ${isEn ? 'headline-en' : 'headline-hi'}`}>
+      {/* Instructions Bottom Panel */}
+      <div style={{ 
+        padding: '2rem 1.5rem', 
+        textAlign: 'center', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center' 
+      }}>
+        {/* Progress Indicator */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem' }}>
+          <div style={{ width: '40px', height: '4px', borderRadius: '2px', backgroundColor: step >= 1 ? 'var(--color-text)' : 'rgba(0,0,0,0.1)' }}></div>
+          <div style={{ width: '40px', height: '4px', borderRadius: '2px', backgroundColor: step === 2 ? 'var(--color-text)' : 'rgba(0,0,0,0.1)' }}></div>
+        </div>
+
+        <h2 className={isEn ? 'headline-en' : 'headline-hi'} style={{ fontSize: '1.5rem', marginBottom: '0.5rem', fontWeight: 900 }}>
           {isEn ? titleEn : titleHi}
         </h2>
-        <p className={`instruction-subtext ${isEn ? 'body-en' : 'body-hi'}`}>
+        <p className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.9rem', opacity: 0.7, marginBottom: '2rem' }}>
           {isEn ? subtextEn : subtextHi}
         </p>
         
-        <div className="capture-btn-container">
-          <button className="capture-btn" onClick={handleCaptureClick} aria-label="Capture"></button>
-        </div>
+        <button 
+          onClick={handleCaptureClick} 
+          aria-label="Capture"
+          style={{
+            width: '72px',
+            height: '72px',
+            borderRadius: '50%',
+            backgroundColor: 'var(--color-text)',
+            border: '4px solid var(--color-bg)',
+            outline: '2px solid var(--color-text)',
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+          }}
+        ></button>
       </div>
     </div>
   );
