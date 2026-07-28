@@ -88,10 +88,10 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
       position: 'relative'
     }}>
       {/* Top Bar with Cancel */}
-      <div style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
+      <div style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
         <button 
           onClick={resetApp}
-          style={{ background: 'none', border: 'none', color: 'var(--color-text)', fontSize: '1rem', fontWeight: 'bold', letterSpacing: '1px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          style={{ background: 'none', border: 'none', color: 'var(--color-text)', fontSize: '0.9rem', fontWeight: 'bold', letterSpacing: '1px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
         >
           &larr; {isEn ? 'Cancel' : 'रद्द करें'}
         </button>
@@ -139,7 +139,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
       {/* Instructions Bottom Panel */}
       <div style={{ 
         flexShrink: 0,
-        padding: '2rem 1.5rem', 
+        padding: '1rem 1.5rem', 
         textAlign: 'center', 
         display: 'flex', 
         flexDirection: 'column', 
@@ -151,10 +151,10 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
           <div style={{ width: '40px', height: '4px', borderRadius: '2px', backgroundColor: step === 2 ? 'var(--color-text)' : 'rgba(0,0,0,0.1)' }}></div>
         </div>
 
-        <h2 className={isEn ? 'headline-en' : 'headline-hi'} style={{ fontSize: '1.5rem', marginBottom: '0.5rem', fontWeight: 900 }}>
+        <h2 className={isEn ? 'headline-en' : 'headline-hi'} style={{ fontSize: '1.3rem', marginBottom: '0.25rem', fontWeight: 900 }}>
           {isEn ? titleEn : titleHi}
         </h2>
-        <p className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.9rem', opacity: 0.7, marginBottom: '2rem' }}>
+        <p className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.85rem', opacity: 0.7, marginBottom: '1rem' }}>
           {isEn ? subtextEn : subtextHi}
         </p>
         
