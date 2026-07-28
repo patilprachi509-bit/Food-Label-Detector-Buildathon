@@ -98,7 +98,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
       </div>
 
       {/* Camera Feed Container */}
-      <div style={{ flex: 1, padding: '0 1.5rem', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <div style={{ flex: 1, minHeight: 0, padding: '0 1.5rem', display: 'flex', flexDirection: 'column', position: 'relative' }}>
         <div style={{ 
           flex: 1, 
           position: 'relative', 
@@ -138,6 +138,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
 
       {/* Instructions Bottom Panel */}
       <div style={{ 
+        flexShrink: 0,
         padding: '2rem 1.5rem', 
         textAlign: 'center', 
         display: 'flex', 
