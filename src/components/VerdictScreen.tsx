@@ -225,7 +225,7 @@ export const VerdictScreen: React.FC = () => {
 
   if (flags.length === 0 && aiInsights.length === 0) {
     return (
-      <div className="bg-dense" style={{ display: 'flex', flexDirection: 'column', height: '100vh', color: 'var(--color-text)' }}>
+      <div className="bg-dense" style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'var(--color-text)' }}>
         <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} onShareClick={handleShareClick} onCompareClick={handleCompareClick} />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 1, position: 'relative' }}>
           <h1 className="headline-en" style={{ fontSize: '5rem', lineHeight: 1 }}>NO ISSUES FOUND</h1>
@@ -290,7 +290,7 @@ export const VerdictScreen: React.FC = () => {
   }
 
   return (
-    <div className="bg-dense" style={{ display: 'flex', flexDirection: 'column', height: '100vh', color: 'var(--color-text)' }}>
+    <div className="bg-dense" style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'var(--color-text)' }}>
       <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} onShareClick={handleShareClick} onCompareClick={handleCompareClick} />
       
       <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', zIndex: 1, position: 'relative' }}>

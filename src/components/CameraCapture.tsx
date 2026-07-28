@@ -79,7 +79,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
     <div style={{ 
       display: 'flex', 
       flexDirection: 'column', 
-      height: '100vh', 
+      height: '100%', 
       backgroundColor: 'var(--color-bg)',
       backgroundImage: `url('/background.png')`,
       backgroundSize: 'cover',
