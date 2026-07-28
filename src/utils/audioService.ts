@@ -1,8 +1,34 @@
-import { Flag } from './ruleEngine';
-import { TranslatableString } from '../context/AppContext';
+import type { Flag } from './ruleEngine';
+import type { TranslatableString } from '../context/AppContext';
+
+function createWavHeader(dataLength: number, sampleRate = 24000, numChannels = 1, bitDepth = 16) {
+  const buffer = new ArrayBuffer(44);
+  const view = new DataView(buffer);
+  
+  const writeString = (offset: number, string: string) => {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  };
+
+  writeString(0, 'RIFF');
+  view.setUint32(4, 36 + dataLength, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * numChannels * (bitDepth / 8), true);
+  view.setUint16(32, numChannels * (bitDepth / 8), true);
+  view.setUint16(34, bitDepth, true);
+  writeString(36, 'data');
+  view.setUint32(40, dataLength, true);
+
+  return new Uint8Array(buffer);
+}
 
 export const playVerdictAudio = async (
-  apiKey: string,
   flags: Flag[],
   relevantIngredients: TranslatableString[],
   language: 'en' | 'hi'
@@ -10,6 +36,8 @@ export const playVerdictAudio = async (
   const isEn = language === 'en';
   
   // Construct synthesis text
+  // NOTE: We explicitly omit 'unverified_claim_notes' (AI Insights) from audio 
+  // to prevent reading provisional/low-confidence LLM notes aloud.
   let synthesisText = '';
 
   if (flags.length === 0) {
@@ -32,27 +60,11 @@ export const playVerdictAudio = async (
     });
   }
 
-  // Check cache (session storage or memory could be used, but since this might be long, memory is safer)
-  // For simplicity in this buildathon prototype, we will just call it and play it.
-  
-  const payload = {
-    contents: [
-      {
-        parts: [
-          { text: `Please read the following text aloud clearly: "${synthesisText}"` }
-        ]
-      }
-    ],
-    generationConfig: {
-      responseModalities: ["AUDIO"]
-    }
-  };
-
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch('/api/tts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ synthesisText })
     });
 
     if (!response.ok) {
@@ -60,10 +72,27 @@ export const playVerdictAudio = async (
     }
 
     const data = await response.json();
-    const audioBase64 = data.candidates[0].content.parts.find((p: any) => p.inlineData && p.inlineData.mimeType.startsWith('audio')).inlineData.data;
+    const audioBase64 = data.audioBase64;
     
     if (audioBase64) {
-      const audio = new Audio(`data:audio/wav;base64,${audioBase64}`);
+      const binaryString = atob(audioBase64);
+      const pcmData = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        pcmData[i] = binaryString.charCodeAt(i);
+      }
+      
+      const header = createWavHeader(pcmData.length);
+      const wavData = new Uint8Array(header.length + pcmData.length);
+      wavData.set(header);
+      wavData.set(pcmData, header.length);
+      
+      let wavBase64 = '';
+      for (let i = 0; i < wavData.length; i += 8192) {
+        wavBase64 += String.fromCharCode.apply(null, Array.from(wavData.subarray(i, i + 8192)));
+      }
+      wavBase64 = btoa(wavBase64);
+      
+      const audio = new Audio(`data:audio/wav;base64,${wavBase64}`);
       audio.play();
     }
   } catch (e) {

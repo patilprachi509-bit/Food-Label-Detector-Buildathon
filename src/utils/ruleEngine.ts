@@ -1,5 +1,4 @@
-import { ExtractionResult, TranslatableString } from '../context/AppContext';
-import { decodeINS } from './insDictionary';
+import type { ExtractionResult, TranslatableString } from '../context/AppContext';
 
 export type FlagType = 'claim_contradiction' | 'general_health' | 'needs_verification' | 'informational';
 
@@ -12,6 +11,13 @@ export interface Flag {
   source: string;
   nutrientFocus?: 'sugar' | 'fat' | 'salt' | 'protein';
   relevantIngredients: TranslatableString[];
+  headline_en?: string;
+  headline_hi?: string;
+  actualValue?: number;
+  thresholdValue?: number;
+  unit?: string;
+  isMax?: boolean;
+  evalDirection?: 'above' | 'below';
 }
 
 // Fuzzy match for ingredients
@@ -22,10 +28,7 @@ const checkSynonyms = (ingredients: TranslatableString[], synonyms: string[]): T
       const synNorm = syn.toLowerCase().replace(/[^a-z0-9]/g, '');
       return norm.includes(synNorm);
     });
-  }).map(ing => ({
-    ...ing,
-    localized_display: decodeINS(ing.localized_display)
-  }));
+  });
 };
 
 const SUGAR_SYNONYMS = ["sugar", "dextrose", "fructose", "glucose", "raw cane sugar", "brown sugar", "lactose", "jaggery", "gur", "honey", "molasses", "treacle", "sweetener"];
@@ -45,22 +48,22 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
       const c = claimObj.normalized_english;
 
       if (claimMatches(c, ['low fat']) && nutrition.total_fat_g > 3) {
-        flags.push({ type: 'claim_contradiction', ruleId: 'R1', claim: claimObj, message_en: 'Fails low-fat threshold', message_hi: 'लो-फैट सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS) });
+        flags.push({ type: 'claim_contradiction', ruleId: 'R1', claim: claimObj, message_en: 'Fails low-fat threshold', message_hi: 'लो-फैट सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${nutrition.total_fat_g}g fat per 100g`, headline_hi: `${nutrition.total_fat_g}g फैट प्रति 100g`, actualValue: nutrition.total_fat_g, thresholdValue: 3, unit: 'g', isMax: true, evalDirection: 'above' });
       }
       if (claimMatches(c, ['fat free', 'zero fat']) && nutrition.total_fat_g > 0.5) {
-        flags.push({ type: 'claim_contradiction', ruleId: 'R2', claim: claimObj, message_en: 'Fails fat-free threshold', message_hi: 'फैट-फ्री सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS) });
+        flags.push({ type: 'claim_contradiction', ruleId: 'R2', claim: claimObj, message_en: 'Fails fat-free threshold', message_hi: 'फैट-फ्री सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${nutrition.total_fat_g}g fat per 100g`, headline_hi: `${nutrition.total_fat_g}g फैट प्रति 100g`, actualValue: nutrition.total_fat_g, thresholdValue: 0.5, unit: 'g', isMax: true, evalDirection: 'above' });
       }
       if (claimMatches(c, ['low sugar']) && nutrition.sugar_g > 6) {
-        flags.push({ type: 'claim_contradiction', ruleId: 'R3', claim: claimObj, message_en: 'Fails low-sugar threshold', message_hi: 'लो-शुगर सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS) });
+        flags.push({ type: 'claim_contradiction', ruleId: 'R3', claim: claimObj, message_en: 'Fails low-sugar threshold', message_hi: 'लो-शुगर सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${nutrition.sugar_g}g sugar per 100g`, headline_hi: `${nutrition.sugar_g}g चीनी प्रति 100g`, actualValue: nutrition.sugar_g, thresholdValue: 6, unit: 'g', isMax: true, evalDirection: 'above' });
       }
       if (claimMatches(c, ['sugar free', 'zero sugar', 'no added sugar']) && nutrition.sugar_g > 0.5) {
-        flags.push({ type: 'claim_contradiction', ruleId: 'R4', claim: claimObj, message_en: 'Fails sugar-free threshold', message_hi: 'शुगर-फ्री सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS) });
+        flags.push({ type: 'claim_contradiction', ruleId: 'R4', claim: claimObj, message_en: 'Fails sugar-free threshold', message_hi: 'शुगर-फ्री सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${nutrition.sugar_g}g sugar per 100g`, headline_hi: `${nutrition.sugar_g}g चीनी प्रति 100g`, actualValue: nutrition.sugar_g, thresholdValue: 0.5, unit: 'g', isMax: true, evalDirection: 'above' });
       }
       if (claimMatches(c, ['source of protein']) && nutrition.protein_g < 5) {
-        flags.push({ type: 'claim_contradiction', ruleId: 'R5', claim: claimObj, message_en: 'Fails protein-source threshold', message_hi: 'प्रोटीन-स्रोत सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'protein', relevantIngredients: [] });
+        flags.push({ type: 'claim_contradiction', ruleId: 'R5', claim: claimObj, message_en: 'Fails protein-source threshold', message_hi: 'प्रोटीन-स्रोत सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'protein', relevantIngredients: [], headline_en: `${nutrition.protein_g}g protein per 100g`, headline_hi: `${nutrition.protein_g}g प्रोटीन प्रति 100g`, actualValue: nutrition.protein_g, thresholdValue: 5, unit: 'g', isMax: false, evalDirection: 'below' });
       }
       if (claimMatches(c, ['high protein', 'rich in protein']) && nutrition.protein_g < 10) {
-        flags.push({ type: 'claim_contradiction', ruleId: 'R6', claim: claimObj, message_en: 'Fails high-protein threshold', message_hi: 'हाई-प्रोटीन सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'protein', relevantIngredients: [] });
+        flags.push({ type: 'claim_contradiction', ruleId: 'R6', claim: claimObj, message_en: 'Fails high-protein threshold', message_hi: 'हाई-प्रोटीन सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'protein', relevantIngredients: [], headline_en: `${nutrition.protein_g}g protein per 100g`, headline_hi: `${nutrition.protein_g}g प्रोटीन प्रति 100g`, actualValue: nutrition.protein_g, thresholdValue: 10, unit: 'g', isMax: false, evalDirection: 'below' });
       }
       if (claimMatches(c, ['immunity', 'health', 'boosts', 'defends', 'protects'])) {
         flags.push({ type: 'needs_verification', ruleId: 'R10', claim: claimObj, message_en: 'Needs Verification', message_hi: 'सत्यापन की आवश्यकता है', source: 'FSSAI Regulation 7', relevantIngredients: [] });
@@ -73,21 +76,27 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
 
   // G1 - G4
   if (nutrition.energy_kcal > 0) {
-    if ((nutrition.sugar_g * 4) / nutrition.energy_kcal > 0.10) {
-      flags.push({ type: 'general_health', ruleId: 'G1', message_en: 'High in added sugar', message_hi: 'अतिरिक्त चीनी में उच्च', source: 'ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS) });
+    const sugarPct = Math.round(((nutrition.sugar_g * 4) / nutrition.energy_kcal) * 100);
+    if (sugarPct > 10) {
+      flags.push({ type: 'general_health', ruleId: 'G1', message_en: 'High in added sugar', message_hi: 'अतिरिक्त चीनी में उच्च', source: 'ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${sugarPct}% CALORIES FROM SUGAR`, headline_hi: `${sugarPct}% कैलोरी चीनी से`, actualValue: sugarPct, thresholdValue: 10, unit: '%', isMax: true, evalDirection: 'above' });
     }
-    if ((nutrition.total_fat_g * 9) / nutrition.energy_kcal > 0.15) {
-      flags.push({ type: 'general_health', ruleId: 'G2', message_en: 'High in fat', message_hi: 'वसा में उच्च', source: 'ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS) });
+    const fatPct = Math.round(((nutrition.total_fat_g * 9) / nutrition.energy_kcal) * 100);
+    if (fatPct > 15) {
+      flags.push({ type: 'general_health', ruleId: 'G2', message_en: 'High in fat', message_hi: 'वसा में उच्च', source: 'ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${fatPct}% CALORIES FROM FAT`, headline_hi: `${fatPct}% कैलोरी फैट से`, actualValue: fatPct, thresholdValue: 15, unit: '%', isMax: true, evalDirection: 'above' });
     }
   }
   
   if (nutrition.sodium_mg > 250) {
-    flags.push({ type: 'general_health', ruleId: 'G3', message_en: 'High in salt', message_hi: 'नमक में उच्च', source: 'ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'salt', relevantIngredients: checkSynonyms(ingredients.raw_list, SALT_SYNONYMS) });
+    // Convert to Salt in grams for UI
+    const saltGrams = Number(((nutrition.sodium_mg * 2.5) / 1000).toFixed(2));
+    const thresholdSaltGrams = 0.625;
+    flags.push({ type: 'general_health', ruleId: 'G3', message_en: 'High in salt', message_hi: 'नमक में उच्च', source: 'ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'salt', relevantIngredients: checkSynonyms(ingredients.raw_list, SALT_SYNONYMS), headline_en: `${saltGrams}g SALT PER 100g`, headline_hi: `${saltGrams}g नमक प्रति 100g`, actualValue: saltGrams, thresholdValue: thresholdSaltGrams, unit: 'g', isMax: true, evalDirection: 'above' });
   }
 
   if (nutrition.trans_fat_g !== null && nutrition.total_fat_g > 0) {
-    if (nutrition.trans_fat_g > 0.02 * nutrition.total_fat_g) {
-      flags.push({ type: 'general_health', ruleId: 'G4', message_en: 'Exceeds trans fat limit', message_hi: 'ट्रांस फैट सीमा से अधिक', source: 'FSSAI Prohibition and Restriction on Sales, 2nd Amendment Regs, 2021', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS) });
+    const transPct = Math.round((nutrition.trans_fat_g / nutrition.total_fat_g) * 100);
+    if (transPct > 2) {
+      flags.push({ type: 'general_health', ruleId: 'G4', message_en: 'Exceeds trans fat limit', message_hi: 'ट्रांस फैट सीमा से अधिक', source: 'FSSAI Prohibition and Restriction on Sales, 2nd Amendment Regs, 2021', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${transPct}% OF FAT IS TRANS FAT`, headline_hi: `कुल फैट का ${transPct}% ट्रांस फैट है`, actualValue: transPct, thresholdValue: 2, unit: '%', isMax: true, evalDirection: 'above' });
     }
   }
 

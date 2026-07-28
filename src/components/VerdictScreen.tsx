@@ -1,82 +1,410 @@
 import React, { useMemo, useState } from 'react';
-import { useAppContext, TranslatableString } from '../context/AppContext';
+import { useAppContext } from '../context/AppContext';
+import type { TranslatableString } from '../context/AppContext';
 import { evaluateRules } from '../utils/ruleEngine';
 import { playVerdictAudio } from '../utils/audioService';
 import { Header } from './Header';
 import { FlagCard } from './FlagCard';
+import { CompareOverlay } from './CompareOverlay';
+import { SavedScansScreen } from './SavedScansScreen';
+import { AIInsightCard } from './AIInsightCard';
+import { IconShield, IconCandy, IconFlask, IconPalette, IconLeaf } from './Icons';
+import type { SavedScan } from '../context/AppContext';
+
+const IngredientPill: React.FC<{ rawName: string; plainName: string; isExpandable: boolean; isFaded: boolean; isEn: boolean }> = ({ rawName, plainName, isExpandable, isFaded, isEn }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const isAdditiveCategory = /preservative|emulsifier|sweetener|colorant|antioxidant|stabilizer|acidity regulator|flavoring|thickener|humectant/i.test(plainName) || /INS|E\s?\d+/i.test(rawName);
+
+  let CategoryIcon = null;
+  if (/preservative/i.test(plainName)) CategoryIcon = IconShield;
+  else if (/sweetener/i.test(plainName)) CategoryIcon = IconCandy;
+  else if (/color|colour/i.test(plainName)) CategoryIcon = IconPalette;
+  else if (/antioxidant/i.test(plainName)) CategoryIcon = IconLeaf;
+  else if (/emulsifier|stabilizer|acidity regulator|thickener/i.test(plainName)) CategoryIcon = IconFlask;
+
+  const lowerRaw = rawName.toLowerCase();
+  let restrictionEn = "";
+  let restrictionHi = "";
+  
+  if (lowerRaw.includes("red dye 3") || lowerRaw.includes("erythrosine") || lowerRaw.includes("ins 127") || lowerRaw.includes("e127") || lowerRaw.includes("e 127")) {
+    restrictionEn = "This ingredient is banned in food in the US (since January 2025) and strictly restricted in the EU, though permitted in India.";
+    restrictionHi = "यह सामग्री अमेरिका में भोजन में प्रतिबंधित है (जनवरी 2025 से) और यूरोपीय संघ में सख्ती से प्रतिबंधित है, हालांकि भारत में इसकी अनुमति है।";
+  } else if (lowerRaw.includes("potassium iodate")) {
+    restrictionEn = "This ingredient is banned in the EU, though permitted in India.";
+    restrictionHi = "यह सामग्री यूरोपीय संघ में प्रतिबंधित है, हालांकि भारत में इसकी अनुमति है।";
+  }
+
+  return (
+    <div 
+      onClick={() => isExpandable && setIsExpanded(!isExpanded)}
+      style={{ 
+        padding: '0.5rem 1rem', 
+        border: '1px solid var(--color-divider)', 
+        borderRadius: isExpanded ? '12px' : '50px', 
+        fontSize: '0.9rem', 
+        opacity: isFaded ? 0.6 : 1,
+        cursor: isExpandable ? 'pointer' : 'default',
+        backgroundColor: isExpandable && isExpanded ? 'rgba(0,0,0,0.05)' : 'transparent',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        transition: 'all 0.2s ease',
+        userSelect: isExpandable ? 'none' : 'auto'
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
+        <span>{rawName}</span>
+        {isExpandable && (
+          <span style={{ fontSize: '0.6rem', opacity: 0.6, transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+            ▼
+          </span>
+        )}
+      </div>
+      {isExpandable && isExpanded && (
+        <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--color-divider)', fontSize: '0.85rem', color: 'var(--color-text)', fontWeight: 'bold', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            {CategoryIcon && <CategoryIcon size={14} color="var(--color-text)" />}
+            {plainName}
+          </div>
+          {isAdditiveCategory && (
+            <div style={{ fontSize: '0.75rem', fontWeight: 'normal', opacity: 0.8, marginTop: '0.25rem' }}>
+              {isEn ? 'Permitted for use in food by FSSAI.' : 'FSSAI द्वारा भोजन में उपयोग के लिए अनुमत।'}
+            </div>
+          )}
+          {restrictionEn && (
+            <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--color-fail)', marginTop: '0.5rem', padding: '0.4rem 0.6rem', backgroundColor: 'rgba(233,116,81,0.1)', borderRadius: '4px' }}>
+              <strong>{isEn ? 'Global Context:' : 'वैश्विक संदर्भ:'}</strong> {isEn ? restrictionEn : restrictionHi}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const VerdictScreen: React.FC = () => {
-  const { apiKey, extractionResult, userFocus, userLanguage } = useAppContext();
+  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId } = useAppContext();
   const isEn = userLanguage === 'en';
   const [isAudioLoading, setIsAudioLoading] = useState(false);
+  const [showAllIngredients, setShowAllIngredients] = useState(false);
+  const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
+  const [isPickingCompare, setIsPickingCompare] = useState(false);
+  const [compareAgainstScan, setCompareAgainstScan] = useState<SavedScan | null>(null);
 
   const flags = useMemo(() => {
     if (!extractionResult) return [];
     return evaluateRules(extractionResult, userFocus);
   }, [extractionResult, userFocus]);
 
-  // Aggregate relevant ingredients across all flags
+  const aiInsights = useMemo(() => {
+    if (!extractionResult?.front_of_pack?.unverified_claim_notes) return [];
+    const ruleClaimMatches = flags.map(f => f.claim?.normalized_english).filter(Boolean);
+    return extractionResult.front_of_pack.unverified_claim_notes.filter(
+      note => note.concern && !ruleClaimMatches.includes(note.claim)
+    );
+  }, [extractionResult, flags]);
+
+  // Aggregate relevant ingredients across all flags AND any ingredients that were translated (INS codes, scientific terms)
   const relevantIngredients = useMemo(() => {
+    if (!extractionResult) return [];
+    
     const allIngredients: TranslatableString[] = [];
+    
+    // 1. Add all ingredients explicitly flagged by ruleEngine
     flags.forEach(flag => {
       flag.relevantIngredients.forEach(ing => {
-        // Prevent duplicates based on normalized english
         if (!allIngredients.find(i => i.normalized_english === ing.normalized_english)) {
           allIngredients.push(ing);
         }
       });
     });
+
+    extractionResult.ingredients.raw_list.forEach(ing => {
+      if (ing.plain_name && ing.plain_name.trim().toLowerCase() !== ing.normalized_english.trim().toLowerCase()) {
+        if (!allIngredients.find(i => i.normalized_english === ing.normalized_english)) {
+          allIngredients.push(ing);
+        }
+      }
+    });
+
     return allIngredients;
-  }, [flags]);
+  }, [flags, extractionResult]);
 
   const handleAudioClick = async () => {
-    if (!apiKey || !userLanguage) return;
+    if (!userLanguage) return;
     setIsAudioLoading(true);
-    await playVerdictAudio(apiKey, flags, relevantIngredients, userLanguage);
+    await playVerdictAudio(flags, relevantIngredients, userLanguage);
     setIsAudioLoading(false);
   };
 
-  if (flags.length === 0) {
+  const handleCompareClick = () => {
+    setIsPickingCompare(true);
+  };
+
+  const handleShareClick = async () => {
+    const pName = extractionResult?.front_of_pack?.product_name || extractionResult?.front_of_pack?.brand_name || (isEn ? 'this product' : 'यह उत्पाद');
+    
+    let verdictStr = isEn ? "NO ISSUES FOUND" : "कोई समस्या नहीं मिली";
+    if (flags.length > 0) {
+      if (flags.some(f => f.type === 'claim_contradiction' || f.type === 'general_health')) {
+        verdictStr = isEn ? "NOT RECOMMENDED" : "अनुशंसित नहीं";
+      } else if (flags.some(f => f.type === 'needs_verification')) {
+        verdictStr = isEn ? "VERIFICATION NEEDED" : "सत्यापन की आवश्यकता है";
+      } else {
+        verdictStr = isEn ? "MINOR ISSUES" : "मामूली समस्याएँ";
+      }
+    }
+
+    const appUrl = "https://food-label-detector-buildathon.vercel.app";
+    const textToShare = isEn 
+      ? `I checked ${pName} with Food Label Detector — ${verdictStr}. Check your own products: ${appUrl}`
+      : `मैंने Food Label Detector के साथ ${pName} की जाँच की — ${verdictStr}। अपने उत्पादों की जाँच करें: ${appUrl}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ text: textToShare });
+      } catch (err) {
+        console.error("Error sharing", err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(textToShare);
+        alert(isEn ? "Copied to clipboard!" : "क्लिपबोर्ड पर कॉपी किया गया!");
+      } catch (err) {
+        console.error("Clipboard error", err);
+      }
+    }
+  };
+
+  if (compareAgainstScan && extractionResult) {
+    return (
+      <CompareOverlay 
+        currentScan={extractionResult} 
+        savedScan={compareAgainstScan} 
+        onClose={() => setCompareAgainstScan(null)} 
+        isEn={isEn} 
+      />
+    );
+  }
+
+  if (isPickingCompare) {
+    return (
+      <SavedScansScreen 
+        onSelectForCompare={(scan) => {
+          setCompareAgainstScan(scan);
+          setIsPickingCompare(false);
+        }} 
+        onCloseCompare={() => setIsPickingCompare(false)} 
+      />
+    );
+  }
+
+  if (compareAgainstScan && extractionResult) {
+    return (
+      <CompareOverlay 
+        currentScan={extractionResult} 
+        savedScan={compareAgainstScan} 
+        onClose={() => setCompareAgainstScan(null)} 
+        isEn={isEn} 
+      />
+    );
+  }
+
+  if (isPickingCompare) {
+    return (
+      <SavedScansScreen 
+        onSelectForCompare={(scan) => {
+          setCompareAgainstScan(scan);
+          setIsPickingCompare(false);
+        }} 
+        onCloseCompare={() => setIsPickingCompare(false)} 
+      />
+    );
+  }
+
+  if (flags.length === 0 && aiInsights.length === 0) {
     return (
       <div className="screen-container">
-        <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} />
+        <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} onShareClick={handleShareClick} onCompareClick={handleCompareClick} />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <h1 className="headline-en" style={{ fontSize: '5rem', lineHeight: 1 }}>NO ISSUES FOUND</h1>
-          <div style={{ backgroundColor: '#6b705c', color: '#fff', padding: '0.5rem 1.5rem', borderRadius: '50px', fontSize: '1.5rem', marginTop: '1rem', fontWeight: 'bold' }} className="headline-en">
+          <div style={{ backgroundColor: 'var(--color-pass)', color: 'var(--color-bg)', padding: '0.5rem 1.5rem', borderRadius: '50px', fontSize: '1.5rem', marginTop: '1rem', fontWeight: 'bold' }} className="headline-en">
             GRADE A
           </div>
-          <p style={{ marginTop: '2rem', opacity: 0.8 }}>
+          <p style={{ marginTop: '2rem', opacity: 0.8, textAlign: 'center', maxWidth: '80%' }}>
             {isEn ? "Checked against sourced rules — nothing flagged." : "स्रोत नियमों के विरुद्ध जाँच की गई — कुछ भी फ्लैग नहीं किया गया।"}
           </p>
+
+          {/* Food Pharmer YouTube Embed */}
+          {extractionResult?.front_of_pack?.video_id && (
+            <div style={{ marginTop: '2rem', borderTop: '1px solid var(--color-divider)', paddingTop: '2rem', textAlign: 'center', width: '100%' }}>
+              <h4 style={{ letterSpacing: '1px', fontSize: '0.9rem', margin: '0 0 1rem 0', textTransform: 'uppercase' }}>
+                {isEn ? 'RELATED COVERAGE' : 'संबंधित कवरेज'}
+              </h4>
+              <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '12px', border: '1px solid var(--color-divider)', backgroundColor: '#000' }}>
+                <iframe 
+                  src={`https://www.youtube.com/embed/${extractionResult.front_of_pack.video_id}`} 
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                  title="Food Pharmer Video"
+                />
+              </div>
+              <p style={{ marginTop: '0.75rem', fontSize: '0.8rem', opacity: 0.7 }}>
+                {isEn ? 'Video by Food Pharmer — not affiliated with this app.' : 'वीडियो फ़ूड फ़ार्मर द्वारा — इस ऐप से संबद्ध नहीं है।'}
+              </p>
+            </div>
+          )}
+
+          <div style={{ marginTop: '3rem' }}>
+            <button 
+              onClick={() => {
+                if (!hasSaved) {
+                  saveScan();
+                  setHasSaved(true);
+                }
+              }}
+              disabled={hasSaved}
+              style={{
+                backgroundColor: hasSaved ? 'var(--color-pass)' : 'var(--color-text)',
+                color: 'var(--color-bg)',
+                border: 'none',
+                borderRadius: '50px',
+                padding: '1rem 2.5rem',
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                cursor: hasSaved ? 'default' : 'pointer',
+                opacity: hasSaved ? 0.8 : 1,
+                transition: 'background-color 0.2s'
+              }}
+            >
+              {hasSaved ? (isEn ? 'Saved!' : 'सहेजा गया!') : (isEn ? 'Save Scan' : 'स्कैन सहेजें')}
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'var(--color-cream)', color: 'var(--color-charcoal)' }}>
-      <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} />
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'var(--color-bg)', color: 'var(--color-text)' }}>
+      <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} onShareClick={handleShareClick} onCompareClick={handleCompareClick} />
       
-      <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
+        
+        {/* Overarching Verdict */}
+        <div style={{ marginBottom: '3rem', textAlign: 'center', paddingTop: '1.5rem' }}>
+          {flags.some(f => f.type === 'claim_contradiction' || f.type === 'general_health') ? (
+            <h2 className="headline-en" style={{ fontSize: '3rem', color: 'var(--color-fail)', lineHeight: 1, fontWeight: 900, margin: 0 }}>NOT RECOMMENDED</h2>
+          ) : flags.some(f => f.type === 'needs_verification') ? (
+            <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-verify)', lineHeight: 1, fontWeight: 900, margin: 0 }}>VERIFICATION NEEDED</h2>
+          ) : (
+            <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-pass)', lineHeight: 1, fontWeight: 900, margin: 0 }}>MINOR ISSUES</h2>
+          )}
+        </div>
+
         {flags.map((flag, idx) => (
-          <FlagCard key={`${flag.ruleId}-${idx}`} flag={flag} />
+          <div key={`${flag.ruleId}-${idx}`} style={{ marginBottom: '1.5rem' }}>
+            <FlagCard flag={flag} />
+          </div>
         ))}
 
-        {relevantIngredients.length > 0 && (
-          <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(43,43,38,0.2)', paddingTop: '2rem' }}>
-            <h4 style={{ letterSpacing: '1px', fontSize: '0.9rem', marginBottom: '1rem' }}>{isEn ? 'RELEVANT INGREDIENTS' : 'प्रासंगिक सामग्री'}</h4>
+        {aiInsights.map((insight, idx) => (
+          <AIInsightCard key={`insight-${idx}`} insight={insight} isEn={isEn} />
+        ))}
+
+        {(relevantIngredients.length > 0 || (extractionResult?.ingredients.raw_list.length ?? 0) > 0) && (
+          <div style={{ marginTop: '2.5rem', borderTop: '1px solid var(--color-divider)', paddingTop: '2rem' }}>
+            <h4 style={{ letterSpacing: '1px', fontSize: '0.9rem', marginBottom: '1rem' }}>
+              {showAllIngredients 
+                ? (isEn ? 'ALL INGREDIENTS' : 'सभी सामग्री') 
+                : (isEn ? 'RELEVANT INGREDIENTS' : 'प्रासंगिक सामग्री')}
+            </h4>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-              {relevantIngredients.map((ing, idx) => (
-                <div key={idx} style={{ padding: '0.5rem 1rem', border: '1px solid var(--color-charcoal)', borderRadius: '50px', fontSize: '0.9rem' }}>
-                  {isEn ? ing.normalized_english : ing.localized_display}
-                </div>
-              ))}
+              {(showAllIngredients ? (extractionResult?.ingredients.raw_list || []) : relevantIngredients).map((ing, idx) => {
+                const rawName = isEn ? ing.normalized_english : ing.localized_display;
+                const rawClean = ing.normalized_english?.trim().toLowerCase() || '';
+                const plainClean = ing.plain_name?.trim().toLowerCase() || '';
+                const isExpandable = Boolean(plainClean && plainClean !== rawClean);
+                const isFaded = showAllIngredients && !relevantIngredients.find(r => r.normalized_english === ing.normalized_english);
+
+                return (
+                  <IngredientPill 
+                    key={idx} 
+                    rawName={rawName} 
+                    plainName={ing.plain_name || ''} 
+                    isExpandable={isExpandable} 
+                    isFaded={!!isFaded} 
+                    isEn={isEn}
+                  />
+                );
+              })}
             </div>
-            <a href="#" style={{ color: 'inherit', textDecoration: 'underline', fontSize: '0.9rem' }}>
-              {isEn ? 'Show full ingredient list' : 'पूरी सामग्री सूची दिखाएं'}
-            </a>
+            {(extractionResult?.ingredients.raw_list.length ?? 0) > relevantIngredients.length && (
+              <button 
+                onClick={(e) => { e.preventDefault(); setShowAllIngredients(!showAllIngredients); }} 
+                style={{ background: 'none', border: 'none', color: 'var(--color-text)', textDecoration: 'underline', fontSize: '0.9rem', cursor: 'pointer', padding: 0 }}
+              >
+                {showAllIngredients 
+                  ? (isEn ? 'Show only relevant ingredients' : 'केवल प्रासंगिक सामग्री दिखाएं') 
+                  : (isEn ? 'Show full ingredient list' : 'पूरी सामग्री सूची दिखाएं')}
+              </button>
+            )}
           </div>
         )}
+
+        {/* Food Pharmer YouTube Embed */}
+        {extractionResult?.front_of_pack?.video_id && (
+          <div style={{ marginTop: '2rem', borderTop: '1px solid var(--color-divider)', paddingTop: '2rem', textAlign: 'center' }}>
+            <h4 style={{ letterSpacing: '1px', fontSize: '0.9rem', marginBottom: '1rem', textTransform: 'uppercase' }}>
+              {isEn ? 'RELATED COVERAGE' : 'संबंधित कवरेज'}
+            </h4>
+            <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '12px', border: '1px solid var(--color-divider)', backgroundColor: '#000' }}>
+              <iframe 
+                src={`https://www.youtube.com/embed/${extractionResult.front_of_pack.video_id}`} 
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowFullScreen
+                title="Food Pharmer Video"
+              />
+            </div>
+            <p style={{ marginTop: '0.75rem', fontSize: '0.8rem', opacity: 0.7 }}>
+              {isEn ? 'Video by Food Pharmer — not affiliated with this app.' : 'वीडियो फ़ूड फ़ार्मर द्वारा — इस ऐप से संबद्ध नहीं है।'}
+            </p>
+          </div>
+        )}
+
+        {/* Save Scan Button */}
+        <div style={{ marginTop: '3rem', textAlign: 'center', paddingBottom: '2rem' }}>
+          <button 
+            onClick={() => {
+              if (!hasSaved) {
+                saveScan();
+                setHasSaved(true);
+              }
+            }}
+            disabled={hasSaved}
+            style={{
+              backgroundColor: hasSaved ? 'var(--color-pass)' : 'var(--color-text)',
+              color: 'var(--color-bg)',
+              border: 'none',
+              borderRadius: '50px',
+              padding: '1rem 2.5rem',
+              fontSize: '1.1rem',
+              fontWeight: 'bold',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              cursor: hasSaved ? 'default' : 'pointer',
+              opacity: hasSaved ? 0.8 : 1,
+              transition: 'background-color 0.2s'
+            }}
+          >
+            {hasSaved ? (isEn ? 'Saved!' : 'सहेजा गया!') : (isEn ? 'Save Scan' : 'स्कैन सहेजें')}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,24 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
 import { AppProvider, useAppContext } from './context/AppContext';
-import { APIKeyPrompt } from './components/APIKeyPrompt';
 import { LanguagePicker } from './components/LanguagePicker';
 import { CameraCapture } from './components/CameraCapture';
 import { ProcessingScreen } from './components/ProcessingScreen';
 import { LowConfidenceScreen } from './components/PlaceholderScreens';
 import { VerdictScreen } from './components/VerdictScreen';
 import { PersonalizationScreen } from './components/PersonalizationScreen';
+import { SavedScansScreen } from './components/SavedScansScreen';
+import { HomeScreen } from './components/HomeScreen';
 
 const AppContent: React.FC = () => {
-  const { apiKey, userLanguage, frontImage, ingredientsImage, extractionResult, userFocus } = useAppContext();
-  const [step, setStep] = useState(1);
-
-  if (!apiKey) {
-    return <APIKeyPrompt />;
-  }
+  const { userLanguage, frontImage, ingredientsImage, extractionResult, userFocus, isHistoryOpen, viewingSavedScanId, isScanning } = useAppContext();
 
   if (!userLanguage) {
     return <LanguagePicker />;
+  }
+
+  if (!isScanning && !isHistoryOpen && !viewingSavedScanId && !extractionResult && !frontImage) {
+    return <HomeScreen />;
+  }
+
+  if (isHistoryOpen) {
+    return <SavedScansScreen />;
+  }
+
+  if (viewingSavedScanId) {
+    if (extractionResult?.extraction_confidence === 'low') {
+      return <LowConfidenceScreen />;
+    }
+    return <VerdictScreen />;
   }
 
   if (extractionResult) {
@@ -40,10 +51,10 @@ const AppContent: React.FC = () => {
   }
 
   if (!frontImage) {
-    return <CameraCapture step={1} onCapture={() => setStep(2)} />;
+    return <CameraCapture step={1} onCapture={() => {}} />;
   }
 
-  return <CameraCapture step={2} onCapture={() => setStep(3)} />;
+  return <CameraCapture step={2} onCapture={() => {}} />;
 };
 
 function App() {

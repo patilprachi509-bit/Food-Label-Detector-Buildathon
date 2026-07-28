@@ -2,7 +2,7 @@ import React from 'react';
 import { useAppContext } from '../context/AppContext';
 
 export const PersonalizationScreen: React.FC = () => {
-  const { userLanguage, setUserFocus } = useAppContext();
+  const { userLanguage, setUserFocus, resetApp } = useAppContext();
   const isEn = userLanguage === 'en';
 
   const handleSelect = (focus: 'sugar' | 'salt' | 'fat' | 'none') => {
@@ -10,7 +10,13 @@ export const PersonalizationScreen: React.FC = () => {
   };
 
   return (
-    <div className="screen-container">
+    <div className="screen-container" style={{ position: 'relative' }}>
+      <button 
+        onClick={resetApp}
+        style={{ position: 'absolute', top: '1.5rem', left: '1rem', background: 'none', border: 'none', color: 'var(--color-text)', fontSize: '1rem', fontWeight: 'bold', letterSpacing: '1px', cursor: 'pointer', zIndex: 10 }}
+      >
+        {isEn ? 'Cancel' : 'रद्द करें'}
+      </button>
       <div className="botanical-bg"></div>
       
       <h2 className={`lang-title ${isEn ? 'headline-en' : 'headline-hi'}`} style={{ marginBottom: '2rem' }}>
@@ -27,7 +33,7 @@ export const PersonalizationScreen: React.FC = () => {
         <button className="btn-outline" onClick={() => handleSelect('fat')}>
           <span className={isEn ? 'headline-en' : 'headline-hi'}>{isEn ? 'Fat' : 'वसा'}</span>
         </button>
-        <button className="btn-outline" onClick={() => handleSelect('none')} style={{ backgroundColor: 'var(--color-terracotta)', color: 'var(--color-cream)', borderColor: 'var(--color-terracotta)' }}>
+        <button className="btn-outline" onClick={() => handleSelect('none')} style={{ backgroundColor: 'var(--color-text)', color: 'var(--color-bg)', borderColor: 'var(--color-text)' }}>
           <span className={isEn ? 'headline-en' : 'headline-hi'}>{isEn ? 'Nothing specific' : 'कुछ खास नहीं'}</span>
         </button>
       </div>

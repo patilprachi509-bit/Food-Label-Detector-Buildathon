@@ -1,12 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+Devanagari:wght@100..900&family=Teko:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400..900&family=Noto+Serif+Devanagari:wght@400..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+Devanagari:wght@100..900&display=swap');
 
 :root {
-  --color-cream: #FAF7F0; /* Recreated visually */
-  --color-terracotta: #C4522E;
-  --color-charcoal: #2B2B26;
+  --color-bg: #F7F2E9;
+  --color-text: #2A2622;
+  --color-fail: #7A2E2E;
+  --color-pass: #33473E;
+  --color-verify: #475569;
+  --color-lowconf: #A9832E;
+  --color-divider: #B08D57;
   
-  --font-headline-en: 'Bebas Neue', sans-serif;
-  --font-headline-hi: 'Teko', sans-serif;
+  --font-headline-en: 'Playfair Display', serif;
+  --font-headline-hi: 'Noto Serif Devanagari', serif;
   --font-body-en: 'Inter', sans-serif;
   --font-body-hi: 'Noto Sans Devanagari', sans-serif;
 }
@@ -14,8 +18,8 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--color-cream);
-  color: var(--color-charcoal);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   font-family: var(--font-body-en);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -40,17 +44,17 @@ h1, h2, h3, h4, h5, h6 {
 
 .headline-hi {
   font-family: var(--font-headline-hi);
-  font-weight: 600; /* Teko needs a bit more weight to match Bebas Neue's boldness */
+  font-weight: 600; /* Noto Serif Devanagari weight */
 }
 
 .body-hi {
   font-family: var(--font-body-hi);
 }
 
-.text-terracotta {
-  color: var(--color-terracotta);
+.text-fail {
+  color: var(--color-fail);
 }
 
-.bg-terracotta {
-  background-color: var(--color-terracotta);
+.bg-fail {
+  background-color: var(--color-fail);
 }

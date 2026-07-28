@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 
 interface CameraCaptureProps {
@@ -8,8 +8,9 @@ interface CameraCaptureProps {
 
 export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { userLanguage, setFrontImage, setIngredientsImage } = useAppContext();
+  const { userLanguage, setFrontImage, setIngredientsImage, resetApp } = useAppContext();
   const isEn = userLanguage === 'en';
+  const [cameraError, setCameraError] = useState<string | null>(null);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -22,8 +23,10 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
-      } catch (err) {
+        setCameraError(null);
+      } catch (err: any) {
         console.error("Error accessing camera:", err);
+        setCameraError(err.message || String(err));
       }
     };
 
@@ -38,13 +41,23 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
 
   const handleCaptureClick = () => {
     if (videoRef.current) {
+      const MAX_WIDTH = 800;
+      let width = videoRef.current.videoWidth;
+      let height = videoRef.current.videoHeight;
+
+      if (width > MAX_WIDTH) {
+        height = Math.round((height * MAX_WIDTH) / width);
+        width = MAX_WIDTH;
+      }
+
       const canvas = document.createElement('canvas');
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
+      canvas.width = width;
+      canvas.height = height;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        ctx.drawImage(videoRef.current, 0, 0);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        ctx.drawImage(videoRef.current, 0, 0, width, height);
+        // Compress jpeg to 0.6 quality to significantly save serverless payload size
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
         
         if (step === 1) {
           setFrontImage(dataUrl);
@@ -64,6 +77,16 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
 
   return (
     <div className="camera-container">
+      {/* Top Bar with Cancel */}
+      <div style={{ position: 'absolute', top: '1.5rem', left: '1rem', zIndex: 10 }}>
+        <button 
+          onClick={resetApp}
+          style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1rem', fontWeight: 'bold', letterSpacing: '1px', cursor: 'pointer', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}
+        >
+          {isEn ? 'Cancel' : 'रद्द करें'}
+        </button>
+      </div>
+
       {/* Progress Bar */}
       <div className="progress-bar">
         <div className={`progress-segment ${step >= 1 ? 'active' : ''}`}></div>
@@ -73,7 +96,15 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
       {/* Camera Feed */}
       <video ref={videoRef} autoPlay playsInline muted className="camera-feed" />
       <div className="camera-overlay">
-        <div className="guide-frame"></div>
+        {cameraError ? (
+          <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'rgba(0,0,0,0.7)', color: 'white', borderRadius: '12px' }}>
+            <h3>Camera Error</h3>
+            <p>{cameraError}</p>
+            <p style={{ fontSize: '0.8rem', marginTop: '1rem' }}>Ensure you are using HTTPS and have granted camera permissions.</p>
+          </div>
+        ) : (
+          <div className="guide-frame"></div>
+        )}
       </div>
 
       {/* Instructions */}
