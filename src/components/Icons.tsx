@@ -73,7 +73,9 @@ export const IconScale = ({ size = 16, color = "currentColor" }) => (
 
 export const IconSugarCube = ({ size = 16, color = "currentColor" }) => (
   <svg {...svgProps} width={size} height={size} color={color}>
-    <path d="M10.13 2.5a2 2 0 0 1 3.74 0l6.2 11.2A2 2 0 0 1 18.33 17H5.67a2 2 0 0 1-1.74-3.3z" />
+    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+    <line x1="12" y1="22.08" x2="12" y2="12" />
   </svg>
 );
 
@@ -98,5 +100,42 @@ export const IconDroplet = ({ size = 16, color = "currentColor" }) => (
 export const IconSparkle = ({ size = 16, color = "currentColor" }) => (
   <svg {...svgProps} width={size} height={size} color={color}>
     <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+  </svg>
+);
+
+export const IconFaceWorried = ({ size = 24, color = "currentColor" }) => (
+  <svg {...svgProps} width={size} height={size} color={color}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M8 9l2 1" />
+    <path d="M16 9l-2 1" />
+    <path d="M8 15a4 4 0 0 1 8 0" />
+    <circle cx="9" cy="11.5" r=".5" fill="currentColor" />
+    <circle cx="15" cy="11.5" r=".5" fill="currentColor" />
+  </svg>
+);
+
+export const IconFaceCalm = ({ size = 24, color = "currentColor" }) => (
+  <svg {...svgProps} width={size} height={size} color={color}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+    <circle cx="9" cy="10" r=".5" fill="currentColor" />
+    <circle cx="15" cy="10" r=".5" fill="currentColor" />
+  </svg>
+);
+
+export const IconFaceNeutral = ({ size = 24, color = "currentColor" }) => (
+  <svg {...svgProps} width={size} height={size} color={color}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M8 14h8" />
+    <circle cx="9" cy="10" r=".5" fill="currentColor" />
+    <circle cx="15" cy="10" r=".5" fill="currentColor" />
+  </svg>
+);
+
+export const IconTransFatDroplet = ({ size = 16, color = "currentColor" }) => (
+  <svg {...svgProps} width={size} height={size} color={color}>
+    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+    <path d="M12 8v4" />
+    <path d="M12 16h.01" />
   </svg>
 );

@@ -8,6 +8,7 @@ import { FlagCard } from './FlagCard';
 import { CompareOverlay } from './CompareOverlay';
 import { SavedScansScreen } from './SavedScansScreen';
 import { AIInsightCard } from './AIInsightCard';
+import { VerdictSummaryVisual } from './VerdictSummaryVisual';
 import { IconShield, IconCandy, IconFlask, IconPalette, IconLeaf } from './Icons';
 import type { SavedScan } from '../context/AppContext';
 
@@ -223,71 +224,7 @@ export const VerdictScreen: React.FC = () => {
     );
   }
 
-  if (flags.length === 0 && aiInsights.length === 0) {
-    return (
-      <div className="bg-dense" style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'var(--color-text)' }}>
-        <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} onShareClick={handleShareClick} onCompareClick={handleCompareClick} />
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 1, position: 'relative' }}>
-          <h1 className="headline-en" style={{ fontSize: '5rem', lineHeight: 1 }}>NO ISSUES FOUND</h1>
-          <div style={{ backgroundColor: 'var(--color-pass)', color: 'var(--color-bg)', padding: '0.5rem 1.5rem', borderRadius: '50px', fontSize: '1.5rem', marginTop: '1rem', fontWeight: 'bold' }} className="headline-en">
-            GRADE A
-          </div>
-          <p style={{ marginTop: '2rem', opacity: 0.8, textAlign: 'center', maxWidth: '80%' }}>
-            {isEn ? "Checked against sourced rules — nothing flagged." : "स्रोत नियमों के विरुद्ध जाँच की गई — कुछ भी फ्लैग नहीं किया गया।"}
-          </p>
-
-          {/* Food Pharmer YouTube Embed */}
-          {extractionResult?.front_of_pack?.video_id && (
-            <div style={{ marginTop: '2rem', borderTop: '1px solid var(--color-divider)', paddingTop: '2rem', textAlign: 'center', width: '100%' }}>
-              <h4 style={{ letterSpacing: '1px', fontSize: '0.9rem', margin: '0 0 1rem 0', textTransform: 'uppercase' }}>
-                {isEn ? 'RELATED COVERAGE' : 'संबंधित कवरेज'}
-              </h4>
-              <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '12px', border: '1px solid var(--color-divider)', backgroundColor: '#000' }}>
-                <iframe 
-                  src={`https://www.youtube.com/embed/${extractionResult.front_of_pack.video_id}`} 
-                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                  allowFullScreen
-                  title="Food Pharmer Video"
-                />
-              </div>
-              <p style={{ marginTop: '0.75rem', fontSize: '0.8rem', opacity: 0.7 }}>
-                {isEn ? 'Video by Food Pharmer — not affiliated with this app.' : 'वीडियो फ़ूड फ़ार्मर द्वारा — इस ऐप से संबद्ध नहीं है।'}
-              </p>
-            </div>
-          )}
-
-          <div style={{ marginTop: '3rem' }}>
-            <button 
-              onClick={() => {
-                if (!hasSaved) {
-                  saveScan();
-                  setHasSaved(true);
-                }
-              }}
-              disabled={hasSaved}
-              style={{
-                backgroundColor: hasSaved ? 'var(--color-pass)' : 'var(--color-text)',
-                color: 'var(--color-bg)',
-                border: 'none',
-                borderRadius: '50px',
-                padding: '1rem 2.5rem',
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-                cursor: hasSaved ? 'default' : 'pointer',
-                opacity: hasSaved ? 0.8 : 1,
-                transition: 'background-color 0.2s'
-              }}
-            >
-              {hasSaved ? (isEn ? 'Saved!' : 'सहेजा गया!') : (isEn ? 'Save Scan' : 'स्कैन सहेजें')}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // The old "NO ISSUES FOUND" screen block has been removed, as the new VerdictSummaryVisual handles it natively.
 
   return (
     <div className="bg-dense" style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'var(--color-text)' }}>
@@ -296,15 +233,39 @@ export const VerdictScreen: React.FC = () => {
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '1.5rem', zIndex: 1, position: 'relative' }}>
         
         {/* Overarching Verdict */}
-        <div style={{ marginBottom: '3rem', textAlign: 'center', paddingTop: '1.5rem' }}>
+        <div style={{ marginBottom: '1.5rem', textAlign: 'center', paddingTop: '1.5rem' }}>
           {flags.some(f => f.type === 'claim_contradiction' || f.type === 'general_health') ? (
-            <h2 className="headline-en" style={{ fontSize: '3rem', color: 'var(--color-fail)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>NOT RECOMMENDED</h2>
+            <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-fail)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>
+              {isEn ? 'NOT RECOMMENDED' : 'अनुशंसित नहीं'}
+            </h2>
           ) : flags.some(f => f.type === 'needs_verification') ? (
-            <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-verify)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>VERIFICATION NEEDED</h2>
+            <h2 className="headline-en" style={{ fontSize: '2.2rem', color: 'var(--color-verify)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>
+              {isEn ? 'VERIFICATION NEEDED' : 'सत्यापन की आवश्यकता है'}
+            </h2>
+          ) : flags.length > 0 ? (
+            <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-pass)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>
+              {isEn ? 'MINOR ISSUES' : 'मामूली समस्याएँ'}
+            </h2>
           ) : (
-            <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-pass)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>MINOR ISSUES</h2>
+             <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-pass)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>
+              {isEn ? 'GOOD CHOICE' : 'अच्छा विकल्प'}
+            </h2>
           )}
         </div>
+
+        {/* Verdict Summary Visual */}
+        {extractionResult && (
+          <VerdictSummaryVisual 
+            flags={flags}
+            extractionResult={extractionResult}
+            isEn={isEn}
+            overallState={
+              flags.some(f => f.type === 'claim_contradiction' || f.type === 'general_health') ? 'NOT RECOMMENDED' :
+              flags.some(f => f.type === 'needs_verification') ? 'VERIFICATION NEEDED' :
+              flags.length > 0 ? 'MINOR ISSUES' : 'GOOD CHOICE'
+            }
+          />
+        )}
 
         {flags.map((flag, idx) => (
           <div key={`${flag.ruleId}-${idx}`} style={{ marginBottom: '1.5rem' }}>
