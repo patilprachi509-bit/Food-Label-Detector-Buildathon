@@ -34,6 +34,9 @@ export default async function handler(req: Request) {
            - Return these insights in the 'unverified_claim_notes' array.
            - Set 'concern' to a short note ONLY IF something looks inconsistent. If the claim is plausible or you have no evidence against it, set 'concern' to null.
            - The language in 'concern' MUST be strictly provisional and non-evaluative (e.g., "This claim may not be fully supported by the visible ingredients — worth checking further"). Never use "FAILS", "VIOLATION", or absolute language.
+        7. For each entry in front_of_pack.claims, you MUST include a 'bounding_box' object { x, y, width, height } indicating where that specific claim text appears on the front-of-pack photo. 
+           - These values MUST be expressed as percentages of the full image dimensions (0 to 100).
+           - If you cannot confidently localize a claim on the image, you MUST set 'bounding_box' to null. This is an expected case, do not guess blindly.
         
         Output strictly in the provided JSON schema.
     `;
@@ -43,7 +46,17 @@ export default async function handler(req: Request) {
       properties: {
         normalized_english: { type: "STRING" },
         localized_display: { type: "STRING" },
-        plain_name: { type: "STRING" }
+        plain_name: { type: "STRING" },
+        bounding_box: {
+          type: "OBJECT",
+          nullable: true,
+          properties: {
+            x: { type: "NUMBER" },
+            y: { type: "NUMBER" },
+            width: { type: "NUMBER" },
+            height: { type: "NUMBER" }
+          }
+        }
       }
     };
 

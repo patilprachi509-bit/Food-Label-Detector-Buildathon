@@ -8,6 +8,7 @@ import { FlagCard } from './FlagCard';
 import { CompareOverlay } from './CompareOverlay';
 import { SavedScansScreen } from './SavedScansScreen';
 import { AIInsightCard } from './AIInsightCard';
+import { AnnotatedPhotoReveal, MatchedClaim } from './AnnotatedPhotoReveal';
 import { VerdictSummaryVisual } from './VerdictSummaryVisual';
 import { IconShield, IconCandy, IconFlask, IconPalette, IconLeaf } from './Icons';
 import type { SavedScan } from '../context/AppContext';
@@ -85,7 +86,7 @@ const IngredientPill: React.FC<{ rawName: string; plainName: string; isExpandabl
 };
 
 export const VerdictScreen: React.FC = () => {
-  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId } = useAppContext();
+  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, frontImage } = useAppContext();
   const isEn = userLanguage === 'en';
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [showAllIngredients, setShowAllIngredients] = useState(false);
@@ -131,6 +132,28 @@ export const VerdictScreen: React.FC = () => {
 
     return allIngredients;
   }, [flags, extractionResult]);
+
+  const matchedClaims = useMemo(() => {
+    if (viewingSavedScanId || !frontImage || !extractionResult) return [];
+    
+    const claimFlags = flags.filter(f => f.type === 'claim_contradiction' && f.claim?.normalized_english);
+    const matches: MatchedClaim[] = [];
+    
+    claimFlags.forEach(flag => {
+      const apiClaim = extractionResult.front_of_pack.claims.find(
+        c => c.normalized_english === flag.claim?.normalized_english
+      );
+      if (apiClaim && apiClaim.bounding_box) {
+        matches.push({
+          flag,
+          claimText: apiClaim.normalized_english,
+          box: apiClaim.bounding_box
+        });
+      }
+    });
+    
+    return matches;
+  }, [flags, extractionResult, frontImage, viewingSavedScanId]);
 
   const handleAudioClick = async () => {
     if (!userLanguage) return;
@@ -231,6 +254,14 @@ export const VerdictScreen: React.FC = () => {
       <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} onShareClick={handleShareClick} onCompareClick={handleCompareClick} />
       
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '1.5rem', zIndex: 1, position: 'relative' }}>
+        
+        {matchedClaims.length > 0 && frontImage && (
+          <AnnotatedPhotoReveal 
+            frontImage={frontImage} 
+            matchedClaims={matchedClaims} 
+            isEn={isEn} 
+          />
+        )}
         
         {/* Overarching Verdict */}
         <div style={{ marginBottom: '1.5rem', textAlign: 'center', paddingTop: '1.5rem' }}>

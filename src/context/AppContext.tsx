@@ -10,6 +10,7 @@ export interface TranslatableString {
   normalized_english: string;
   localized_display: string;
   plain_name?: string;
+  bounding_box?: { x: number, y: number, width: number, height: number } | null;
 }
 
 export interface ExtractionResult {
