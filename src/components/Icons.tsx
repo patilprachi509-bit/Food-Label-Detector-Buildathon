@@ -81,13 +81,11 @@ export const IconSugarCube = ({ size = 16, color = "currentColor" }) => (
 
 export const IconSaltShaker = ({ size = 16, color = "currentColor" }) => (
   <svg {...svgProps} width={size} height={size} color={color}>
-    <path d="M7 6v14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V6" />
-    <path d="M7 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" />
-    <path d="M10 8h.01" />
-    <path d="M14 8h.01" />
-    <path d="M12 12h.01" />
-    <path d="M10 16h.01" />
-    <path d="M14 16h.01" />
+    <rect x="7" y="10" width="10" height="12" rx="3" ry="3" />
+    <path d="M9 10V8a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+    <circle cx="12" cy="3" r="1" fill="currentColor" stroke="none" />
+    <circle cx="9" cy="5" r="1" fill="currentColor" stroke="none" />
+    <circle cx="15" cy="5" r="1" fill="currentColor" stroke="none" />
   </svg>
 );
 
@@ -106,29 +104,29 @@ export const IconSparkle = ({ size = 16, color = "currentColor" }) => (
 export const IconFaceWorried = ({ size = 24, color = "currentColor" }) => (
   <svg {...svgProps} width={size} height={size} color={color}>
     <circle cx="12" cy="12" r="10" />
-    <path d="M8 9l2 1" />
-    <path d="M16 9l-2 1" />
-    <path d="M8 15a4 4 0 0 1 8 0" />
-    <circle cx="9" cy="11.5" r=".5" fill="currentColor" />
-    <circle cx="15" cy="11.5" r=".5" fill="currentColor" />
+    <path d="M8 9l2.5 1.5" />
+    <path d="M16 9l-2.5 1.5" />
+    <circle cx="9" cy="12" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none" />
+    <path d="M9 17c1.5-1.5 4.5-1.5 6 0" />
   </svg>
 );
 
 export const IconFaceCalm = ({ size = 24, color = "currentColor" }) => (
   <svg {...svgProps} width={size} height={size} color={color}>
     <circle cx="12" cy="12" r="10" />
-    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-    <circle cx="9" cy="10" r=".5" fill="currentColor" />
-    <circle cx="15" cy="10" r=".5" fill="currentColor" />
+    <circle cx="9" cy="10" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="15" cy="10" r="1.5" fill="currentColor" stroke="none" />
+    <path d="M8 14c2 2 6 2 8 0" />
   </svg>
 );
 
 export const IconFaceNeutral = ({ size = 24, color = "currentColor" }) => (
   <svg {...svgProps} width={size} height={size} color={color}>
     <circle cx="12" cy="12" r="10" />
-    <path d="M8 14h8" />
-    <circle cx="9" cy="10" r=".5" fill="currentColor" />
-    <circle cx="15" cy="10" r=".5" fill="currentColor" />
+    <circle cx="9" cy="10" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="15" cy="10" r="1.5" fill="currentColor" stroke="none" />
+    <path d="M8 15h8" />
   </svg>
 );
 
