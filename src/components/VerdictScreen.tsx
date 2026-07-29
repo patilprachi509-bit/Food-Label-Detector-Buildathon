@@ -325,7 +325,7 @@ export const VerdictScreen: React.FC = () => {
             </h4>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
               {(showAllIngredients ? (extractionResult?.ingredients.raw_list || []) : relevantIngredients).map((ing, idx) => {
-                const rawName = isEn ? ing.normalized_english : ing.localized_display;
+                const rawName = isEn ? ing.normalized_english : (ing.localized_display || ing.normalized_english);
                 const rawClean = ing.normalized_english?.trim().toLowerCase() || '';
                 const plainClean = ing.plain_name?.trim().toLowerCase() || '';
                 const isExpandable = Boolean(plainClean && plainClean !== rawClean);

@@ -9,7 +9,7 @@ async function generateHash(str: string) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-const CACHE_KEY = 'extraction_cache';
+const CACHE_KEY = 'extraction_cache_v2';
 const MAX_CACHE_SIZE = 100;
 
 interface CacheEntry {
@@ -59,8 +59,7 @@ export const ProcessingScreen: React.FC = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               frontBase64,
-              ingredientsBase64,
-              userLanguage
+              ingredientsBase64
             })
           });
 
@@ -137,7 +136,7 @@ export const ProcessingScreen: React.FC = () => {
       isMounted = false; 
       clearInterval(interval);
     };
-  }, [frontImage, ingredientsImage, setExtractionResult, userLanguage]);
+  }, [frontImage, ingredientsImage, setExtractionResult]);
 
   const isEn = userLanguage === 'en';
 

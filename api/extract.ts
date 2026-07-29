@@ -8,7 +8,7 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const { frontBase64, ingredientsBase64, userLanguage } = await req.json();
+    const { frontBase64, ingredientsBase64 } = await req.json();
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -24,7 +24,7 @@ export default async function handler(req: Request) {
            - You MUST round all gram (g) values to exactly 1 decimal place (e.g., 3.46 -> 3.5).
            - Do not attempt to reverse-engineer sub-decimal precision from percentages. Stick strictly to the printed values with these rounding rules applied.
         3. The field 'trans_fat_g' is nullable. If trans fat is not printed on the panel, you MUST return null, do NOT default to 0.
-        4. For 'claims' and 'raw_list' items, output an object with 'normalized_english' (always English) and 'localized_display' (translate to Hindi if ${userLanguage === 'hi'} is true).
+        4. For 'claims' and 'raw_list' items, output an object with 'normalized_english' (always English) and 'localized_display' (always translate to Hindi).
         5. For every ingredient in 'raw_list', you MUST populate 'plain_name' alongside the raw name using this logic:
            - First, check this static dictionary of common terms: sodium -> salt, ascorbic acid -> Vitamin C, tocopherol -> Vitamin E. Also decode INS/E-numbers (e.g. INS 211).
            - If it is not in the dictionary but is a highly scientific or chemical term, generate a strictly definitional, categorical name for what it is (e.g., "Preservative", "Emulsifier", "Sweetener", "Colorant", "Antioxidant").

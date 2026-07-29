@@ -224,10 +224,17 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
 
       {/* Flag Message / Headline */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <h3 className="headline-en" style={{ fontSize: '2rem', lineHeight: 1.1, marginTop: flag.claim ? '1rem' : 0, margin: 0, wordBreak: 'break-word' }}>
-          {isEn ? (flag.headline_en || flag.message_en) : (flag.headline_hi || flag.message_hi)}
-        </h3>
-        <span style={{ opacity: 0.5, fontSize: '0.8rem', paddingLeft: '1rem', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▼</span>
+        <div style={{ flex: 1 }}>
+          <h3 className="headline-en" style={{ fontSize: '2rem', lineHeight: 1.1, marginTop: flag.claim ? '1rem' : 0, margin: 0, wordBreak: 'break-word' }}>
+            {isEn ? (flag.headline_en || flag.message_en) : (flag.headline_hi || flag.message_hi)}
+          </h3>
+          {isGeneralHealth && flag.relevantIngredients && flag.relevantIngredients.length > 0 && (
+            <div style={{ fontSize: '0.85rem', opacity: 0.7, marginTop: '0.4rem', fontStyle: 'italic' }}>
+              — {isEn ? 'from:' : 'से:'} {flag.relevantIngredients.map(ing => isEn ? ing.normalized_english : (ing.localized_display || ing.normalized_english)).join(', ')}
+            </div>
+          )}
+        </div>
+        <span style={{ opacity: 0.5, fontSize: '0.8rem', paddingLeft: '1rem', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', marginTop: flag.claim ? '1rem' : 0 }}>▼</span>
       </div>
 
       {/* Badge with SVG Icon */}
