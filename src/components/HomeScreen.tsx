@@ -68,7 +68,7 @@ export const HomeScreen: React.FC = () => {
       </div>
 
       {/* CTA Footer */}
-      <div style={{ padding: '2rem' }}>
+      <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
         <button 
           onClick={() => setIsScanning(true)}
           style={{ 
@@ -100,6 +100,22 @@ export const HomeScreen: React.FC = () => {
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </button>
+        
+        <a 
+          href="https://forms.gle/QzGgJSZbhV4Sc62A6" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{
+            color: 'var(--color-text)',
+            opacity: 0.7,
+            fontSize: '0.9rem',
+            textDecoration: 'underline',
+            letterSpacing: '0.5px',
+            textTransform: 'uppercase'
+          }}
+        >
+          {isEn ? 'Give Feedback' : 'प्रतिक्रिया दें'}
+        </a>
       </div>
     </div>
   );
