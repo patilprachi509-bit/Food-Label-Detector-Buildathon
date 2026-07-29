@@ -159,12 +159,25 @@ export const ProcessingScreen: React.FC = () => {
   const messages = isEn ? enMessages : hiMessages;
   const currentMessage = messages[loadingStep % messages.length];
 
+  let displayError = error;
+  if (error && (error.includes('429') || error.includes('Quota') || error.includes('RESOURCE_EXHAUSTED'))) {
+    displayError = isEn 
+      ? "Our servers are a bit overwhelmed right now (API rate limit exceeded). Please wait about 30 seconds and tap Restart!"
+      : "हमारे सर्वर अभी थोड़े व्यस्त हैं (API दर सीमा पार हो गई)। कृपया लगभग 30 सेकंड प्रतीक्षा करें और रीस्टार्ट पर टैप करें!";
+  }
+
   if (error) {
     return (
-      <div className="screen-container">
-        <h2 className="text-fail" style={{ marginBottom: '1rem' }}>Error</h2>
-        <p>{error}</p>
-        <button className="btn-primary" onClick={() => window.location.reload()} style={{ marginTop: '2rem' }}>Restart</button>
+      <div className="screen-container" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', textAlign: 'center' }}>
+        <h2 className="text-fail" style={{ marginBottom: '1rem', fontSize: '2rem' }}>
+          {isEn ? 'Error' : 'त्रुटि'}
+        </h2>
+        <p style={{ wordBreak: 'break-word', opacity: 0.8, lineHeight: 1.5, maxWidth: '400px' }}>
+          {displayError}
+        </p>
+        <button className="btn-primary" onClick={() => window.location.reload()} style={{ marginTop: '2rem', width: '100%' }}>
+          {isEn ? 'Restart' : 'रीस्टार्ट'}
+        </button>
       </div>
     );
   }
