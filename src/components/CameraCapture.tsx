@@ -117,15 +117,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
             <p>{cameraError}</p>
             <p style={{ fontSize: '0.8rem', marginTop: '1rem' }}>Ensure you are using HTTPS and have granted camera permissions.</p>
           </div>
-        ) : (
-          <div style={{
-            width: '85%',
-            height: '60%',
-            border: '2px solid rgba(255,255,255,0.8)',
-            borderRadius: '16px',
-            boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)'
-          }}></div>
-        )}
+        ) : null}
       </div>
 
       {/* UI Overlay */}
@@ -139,12 +131,19 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
       }}>
         
         {/* Top Bar with Cancel */}
-        <div style={{ padding: '2rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', pointerEvents: 'auto' }}>
+        <div style={{ 
+          padding: '2rem 1.5rem', 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          pointerEvents: 'auto',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%)'
+        }}>
           <button 
             onClick={resetApp}
             style={{ 
-              background: 'rgba(0,0,0,0.5)', 
-              border: 'none', 
+              background: 'rgba(0,0,0,0.6)', 
+              border: '1px solid rgba(255,255,255,0.2)', 
               color: 'white', 
               fontSize: '0.9rem', 
               fontWeight: 'bold', 
@@ -154,7 +153,8 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
               alignItems: 'center', 
               gap: '0.5rem',
               padding: '0.6rem 1rem',
-              borderRadius: '24px'
+              borderRadius: '24px',
+              backdropFilter: 'blur(4px)'
             }}
           >
             &larr; {isEn ? 'Cancel' : 'रद्द करें'}
@@ -163,13 +163,14 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
 
         {/* Instructions & Capture Bottom Panel */}
         <div style={{ 
-          padding: '2rem 1.5rem 3rem 1.5rem', 
+          padding: '4rem 1.5rem 3rem 1.5rem', 
           textAlign: 'center', 
           display: 'flex', 
           flexDirection: 'column', 
           alignItems: 'center',
           color: 'white',
-          pointerEvents: 'auto'
+          pointerEvents: 'auto',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0) 100%)'
         }}>
           {/* Progress Indicator */}
           <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem' }}>
