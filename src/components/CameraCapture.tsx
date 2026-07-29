@@ -79,99 +79,127 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
     <div style={{ 
       display: 'flex', 
       flexDirection: 'column', 
-      height: '100%', 
-      backgroundColor: 'var(--color-bg)',
-      backgroundImage: `url('/background.png')`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      color: 'var(--color-text)',
-      position: 'relative'
+      height: '100vh', 
+      width: '100vw',
+      backgroundColor: '#000',
+      position: 'relative',
+      overflow: 'hidden'
     }}>
-      {/* Top Bar with Cancel */}
-      <div style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
-        <button 
-          onClick={resetApp}
-          style={{ background: 'none', border: 'none', color: 'var(--color-text)', fontSize: '0.9rem', fontWeight: 'bold', letterSpacing: '1px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-        >
-          &larr; {isEn ? 'Cancel' : 'रद्द करें'}
-        </button>
-      </div>
-
-      {/* Camera Feed Container */}
-      <div style={{ flex: 1, minHeight: 0, padding: '0 1.5rem', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-        <div style={{ 
-          flex: 1, 
-          position: 'relative', 
-          borderRadius: '24px', 
-          overflow: 'hidden',
-          backgroundColor: '#000',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
-        }}>
-          <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          
-          <div style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            pointerEvents: 'none',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-            {cameraError ? (
-              <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'rgba(0,0,0,0.7)', color: 'white', borderRadius: '12px' }}>
-                <h3>Camera Error</h3>
-                <p>{cameraError}</p>
-                <p style={{ fontSize: '0.8rem', marginTop: '1rem' }}>Ensure you are using HTTPS and have granted camera permissions.</p>
-              </div>
-            ) : (
-              <div style={{
-                width: '80%',
-                height: '80%',
-                border: '2px solid rgba(255,255,255,0.8)',
-                borderRadius: '16px',
-                boxShadow: '0 0 0 9999px rgba(0,0,0,0.4)'
-              }}></div>
-            )}
+      
+      {/* Full Screen Camera Feed */}
+      <video 
+        ref={videoRef} 
+        autoPlay 
+        playsInline 
+        muted 
+        style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'cover' 
+        }} 
+      />
+      
+      {/* Viewfinder Overlay */}
+      <div style={{
+        position: 'absolute',
+        top: 0, left: 0, right: 0, bottom: 0,
+        pointerEvents: 'none',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        {cameraError ? (
+          <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'rgba(0,0,0,0.8)', color: 'white', borderRadius: '12px', pointerEvents: 'auto' }}>
+            <h3>Camera Error</h3>
+            <p>{cameraError}</p>
+            <p style={{ fontSize: '0.8rem', marginTop: '1rem' }}>Ensure you are using HTTPS and have granted camera permissions.</p>
           </div>
-        </div>
+        ) : (
+          <div style={{
+            width: '85%',
+            height: '60%',
+            border: '2px solid rgba(255,255,255,0.8)',
+            borderRadius: '16px',
+            boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)'
+          }}></div>
+        )}
       </div>
 
-      {/* Instructions Bottom Panel */}
+      {/* UI Overlay */}
       <div style={{ 
-        flexShrink: 0,
-        padding: '1rem 1.5rem', 
-        textAlign: 'center', 
+        position: 'absolute', 
+        top: 0, left: 0, right: 0, bottom: 0, 
         display: 'flex', 
         flexDirection: 'column', 
-        alignItems: 'center' 
+        justifyContent: 'space-between',
+        pointerEvents: 'none' 
       }}>
-        {/* Progress Indicator */}
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem' }}>
-          <div style={{ width: '40px', height: '4px', borderRadius: '2px', backgroundColor: step >= 1 ? 'var(--color-text)' : 'rgba(0,0,0,0.1)' }}></div>
-          <div style={{ width: '40px', height: '4px', borderRadius: '2px', backgroundColor: step === 2 ? 'var(--color-text)' : 'rgba(0,0,0,0.1)' }}></div>
+        
+        {/* Top Bar with Cancel */}
+        <div style={{ padding: '2rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', pointerEvents: 'auto' }}>
+          <button 
+            onClick={resetApp}
+            style={{ 
+              background: 'rgba(0,0,0,0.5)', 
+              border: 'none', 
+              color: 'white', 
+              fontSize: '0.9rem', 
+              fontWeight: 'bold', 
+              letterSpacing: '1px', 
+              cursor: 'pointer', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem',
+              padding: '0.6rem 1rem',
+              borderRadius: '24px'
+            }}
+          >
+            &larr; {isEn ? 'Cancel' : 'रद्द करें'}
+          </button>
         </div>
 
-        <h2 className={isEn ? 'headline-en' : 'headline-hi'} style={{ fontSize: '1.3rem', marginBottom: '0.25rem', fontWeight: 900 }}>
-          {isEn ? titleEn : titleHi}
-        </h2>
-        <p className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.85rem', opacity: 0.7, marginBottom: '1rem' }}>
-          {isEn ? subtextEn : subtextHi}
-        </p>
-        
-        <button 
-          onClick={handleCaptureClick} 
-          aria-label="Capture"
-          style={{
-            width: '72px',
-            height: '72px',
-            borderRadius: '50%',
-            backgroundColor: 'var(--color-text)',
-            border: '4px solid var(--color-bg)',
-            outline: '2px solid var(--color-text)',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-          }}
-        ></button>
+        {/* Instructions & Capture Bottom Panel */}
+        <div style={{ 
+          padding: '2rem 1.5rem 3rem 1.5rem', 
+          textAlign: 'center', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center',
+          color: 'white',
+          pointerEvents: 'auto'
+        }}>
+          {/* Progress Indicator */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem' }}>
+            <div style={{ width: '40px', height: '4px', borderRadius: '2px', backgroundColor: step >= 1 ? 'white' : 'rgba(255,255,255,0.3)' }}></div>
+            <div style={{ width: '40px', height: '4px', borderRadius: '2px', backgroundColor: step === 2 ? 'white' : 'rgba(255,255,255,0.3)' }}></div>
+          </div>
+
+          <h2 className={isEn ? 'headline-en' : 'headline-hi'} style={{ fontSize: '1.3rem', marginBottom: '0.5rem', fontWeight: 900, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+            {isEn ? titleEn : titleHi}
+          </h2>
+          <p className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.9rem', opacity: 0.9, marginBottom: '2rem', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
+            {isEn ? subtextEn : subtextHi}
+          </p>
+          
+          <button 
+            onClick={handleCaptureClick} 
+            aria-label="Capture"
+            style={{
+              width: '80px',
+              height: '80px',
+              borderRadius: '50%',
+              backgroundColor: 'white',
+              border: '4px solid transparent',
+              outline: '4px solid white',
+              cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.3)'
+            }}
+          ></button>
+        </div>
+
       </div>
     </div>
   );
