@@ -18,7 +18,8 @@ export const HomeScreen: React.FC = () => {
       backgroundImage: `url('/screen0.png')`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      color: 'var(--color-text)' 
+      color: 'var(--color-text)',
+      overflowY: 'auto'
     }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 1.5rem', marginTop: '2rem' }}>
@@ -86,17 +87,17 @@ export const HomeScreen: React.FC = () => {
             boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
               <circle cx="12" cy="13" r="4"/>
             </svg>
-            <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255,255,255,0.3)' }}></div>
-            <span className="headline-en" style={{ fontSize: '1.2rem', letterSpacing: '1px', fontWeight: 'bold' }}>
+            <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255,255,255,0.3)', flexShrink: 0 }}></div>
+            <span className="headline-en" style={{ fontSize: '1.1rem', letterSpacing: '0.5px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
               {isEn ? 'SCAN A PRODUCT' : 'उत्पाद स्कैन करें'}
             </span>
           </div>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </button>
