@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 
 type Language = 'en' | 'hi' | null;
 type ExtractionConfidence = 'high' | 'medium' | 'low' | null;
+type UserGender = 'standard' | 'male' | 'female';
 
 type UserFocus = 'sugar' | 'salt' | 'fat' | 'none' | null;
 
@@ -20,7 +21,8 @@ export interface ExtractionResult {
     brand_name: string, 
     product_name: string, 
     net_weight_g?: number, 
-    video_id?: string | null 
+    video_id?: string | null,
+    consumption_format?: 'solid_snack' | 'spoonable' | 'beverage' | 'other'
   };
   ingredients: { raw_list: TranslatableString[], order_index: boolean, detected_language: string };
   nutrition: { 
@@ -51,6 +53,8 @@ interface AppContextType {
   setExtractionResult: React.Dispatch<React.SetStateAction<ExtractionResult | null>>;
   userFocus: UserFocus;
   setUserFocus: (focus: UserFocus) => void;
+  userGender: UserGender;
+  setUserGender: (gender: UserGender) => void;
   
   // Saved Scans
   savedScans: SavedScan[];
@@ -70,6 +74,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [userLanguage, setUserLanguageState] = useState<Language>(localStorage.getItem('user_language') as Language);
+  const [userGender, setUserGenderState] = useState<UserGender>((localStorage.getItem('user_gender') as UserGender) || 'standard');
   const [frontImage, setFrontImage] = useState<string | null>(null);
   const [ingredientsImage, setIngredientsImage] = useState<string | null>(null);
   const [extractionResult, setExtractionResult] = useState<ExtractionResult | null>(null);
@@ -92,6 +97,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       localStorage.setItem('user_language', lang);
     }
     setUserLanguageState(lang);
+  };
+
+  const setUserGender = (gender: UserGender) => {
+    localStorage.setItem('user_gender', gender);
+    setUserGenderState(gender);
   };
 
   const resetApp = () => {
@@ -133,6 +143,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   return (
     <AppContext.Provider value={{
       userLanguage, setUserLanguage,
+      userGender, setUserGender,
       frontImage, setFrontImage,
       ingredientsImage, setIngredientsImage,
       extractionResult, setExtractionResult,

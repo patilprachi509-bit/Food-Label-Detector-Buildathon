@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { Flag } from '../utils/ruleEngine';
 import { useAppContext } from '../context/AppContext';
 import { IconHeart, IconScale, IconSpoon, IconSugarCube, IconSaltShaker, IconDroplet } from './Icons';
+import { getDailyLimitInfo } from '../utils/dailyLimits';
 
 interface FlagCardProps {
   flag: Flag;
@@ -27,7 +28,7 @@ const RadialProgress: React.FC<{ percentage: number; color?: string }> = ({ perc
 };
 
 export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
-  const { userLanguage, userFocus, extractionResult } = useAppContext();
+  const { userLanguage, userFocus, extractionResult, userGender } = useAppContext();
   const isEn = userLanguage === 'en';
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -101,56 +102,24 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
   let packPercentage = 0;
 
   if (isGeneralHealth && nutrition) {
-    if (flag.ruleId === 'G1') {
-      dailyLimit = 25;
-      nutrientPer100g = nutrition.sugar_g;
-      limitStrEn = "25-30g/day limit (Adult reference, ICMR-NIN Dietary Guidelines 2024)";
-      limitStrHi = "25-30 ग्राम/दिन सीमा (वयस्क संदर्भ, ICMR-NIN आहार संबंधी दिशानिर्देश 2024)";
-      householdMeasureEn = "(About 6-7 teaspoons)";
-      householdMeasureHi = "(लगभग 6-7 चम्मच)";
-      healthEn = "Association with weight gain and type 2 diabetes risk with regular excess intake.";
-      healthHi = "नियमित अतिरिक्त सेवन के साथ वजन बढ़ने और टाइप 2 मधुमेह के जोखिम से संबंध।";
-      spoonCount = 6;
-      healthShortEn = "Weight & Diabetes Risk";
-      healthShortHi = "वजन और मधुमेह का खतरा";
-      HealthIcon = IconScale;
-    } else if (flag.ruleId === 'G2') {
-      dailyLimit = 25;
-      nutrientPer100g = nutrition.total_fat_g;
-      limitStrEn = "25-30g/day limit (Adult reference, ICMR-NIN Dietary Guidelines 2024)";
-      limitStrHi = "25-30 ग्राम/दिन सीमा (वयस्क संदर्भ, ICMR-NIN आहार संबंधी दिशानिर्देश 2024)";
-      householdMeasureEn = "(About 2 tablespoons)";
-      householdMeasureHi = "(लगभग 2 बड़े चम्मच)";
-      healthEn = "Association with increased LDL cholesterol and cardiovascular disease risk.";
-      healthHi = "बढ़े हुए एलडीएल कोलेस्ट्रॉल और हृदय रोग के जोखिम से संबंध।";
-      spoonCount = 2;
-      healthShortEn = "Heart & Cholesterol Risk";
-      healthShortHi = "हृदय और कोलेस्ट्रॉल का खतरा";
-      HealthIcon = IconHeart;
-    } else if (flag.ruleId === 'G3') {
-      dailyLimit = 5;
-      nutrientPer100g = Number(((nutrition.sodium_mg * 2.5) / 1000).toFixed(2));
-      limitStrEn = "Under 5g/day limit (Adult reference, ICMR-NIN Dietary Guidelines 2024)";
-      limitStrHi = "5 ग्राम/दिन सीमा से कम (वयस्क संदर्भ, ICMR-NIN आहार संबंधी दिशानिर्देश 2024)";
-      householdMeasureEn = "(About 1 teaspoon)";
-      householdMeasureHi = "(लगभग 1 चम्मच)";
-      healthEn = "Association with high blood pressure risk.";
-      healthHi = "उच्च रक्तचाप के जोखिम से संबंध।";
-      spoonCount = 1;
-      healthShortEn = "Blood Pressure Risk";
-      healthShortHi = "रक्तचाप का खतरा";
-      HealthIcon = IconHeart;
-    } else if (flag.ruleId === 'G4') {
-      dailyLimit = 2.2;
-      nutrientPer100g = nutrition.trans_fat_g || 0;
-      limitStrEn = "Under 1% of daily energy intake (~2.2g) (WHO)";
-      limitStrHi = "दैनिक ऊर्जा सेवन के 1% से कम (~2.2 ग्राम) (WHO)";
-      healthEn = "Association with increased LDL cholesterol and cardiovascular disease risk.";
-      healthHi = "बढ़े हुए एलडीएल कोलेस्ट्रॉल और हृदय रोग के जोखिम से संबंध।";
-      spoonCount = 0;
-      healthShortEn = "Heart & Cholesterol Risk";
-      healthShortHi = "हृदय और कोलेस्ट्रॉल का खतरा";
-      HealthIcon = IconHeart;
+    if (flag.ruleId === 'G1') HealthIcon = IconScale;
+    else if (flag.ruleId === 'G2') HealthIcon = IconHeart;
+    else if (flag.ruleId === 'G3') HealthIcon = IconHeart;
+    else if (flag.ruleId === 'G4') HealthIcon = IconHeart;
+
+    const limitInfo = getDailyLimitInfo(flag, extractionResult, userGender);
+    if (limitInfo) {
+      dailyLimit = limitInfo.dailyLimitGrams;
+      nutrientPer100g = limitInfo.nutrientPer100g;
+      limitStrEn = limitInfo.limitStrEn;
+      limitStrHi = limitInfo.limitStrHi;
+      householdMeasureEn = limitInfo.householdMeasureEn;
+      householdMeasureHi = limitInfo.householdMeasureHi;
+      healthEn = limitInfo.healthEn;
+      healthHi = limitInfo.healthHi;
+      healthShortEn = limitInfo.healthShortEn;
+      healthShortHi = limitInfo.healthShortHi;
+      spoonCount = limitInfo.spoonCount;
     }
 
     if (dailyLimit > 0 && nutrientPer100g > 0) {
@@ -387,8 +356,13 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
                   
                   <div style={{ marginTop: '1rem', fontSize: '0.75rem', opacity: 0.7, fontStyle: 'italic', borderTop: '1px dashed var(--color-divider)', paddingTop: '0.75rem' }}>
                     {isEn 
-                      ? 'Limits shown are for a reference adult. Requirements are lower for children and vary for older adults.'
-                      : 'दिखाई गई सीमाएँ एक संदर्भ वयस्क के लिए हैं। बच्चों के लिए आवश्यकताएँ कम हैं और वृद्ध वयस्कों के लिए भिन्न हैं।'}
+                      ? 'Limits shown are for a sedentary adult reference (ICMR-NIN: ~65kg/2110 kcal men, ~55kg/1900 kcal women). Select Male/Female above for a closer estimate. Requirements are lower for children and vary further by weight and activity level.'
+                      : 'दिखाई गई सीमाएं एक गतिहीन वयस्क संदर्भ (ICMR-NIN: ~65 किग्रा/2110 किलो कैलोरी पुरुष, ~55 किग्रा/1900 किलो कैलोरी महिला) के लिए हैं। निकटतम अनुमान के लिए ऊपर पुरुष/महिला चुनें। बच्चों के लिए आवश्यकताएं कम हैं और वजन और गतिविधि स्तर के अनुसार आगे भिन्न होती हैं।'}
+                    {userGender !== 'standard' && (flag.ruleId === 'G3' || flag.ruleId === 'G4') && (
+                      <div style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>
+                        {isEn ? 'Salt and trans fat limits are the same for all adults.' : 'नमक और ट्रांस फैट की सीमाएं सभी वयस्कों के लिए समान हैं।'}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

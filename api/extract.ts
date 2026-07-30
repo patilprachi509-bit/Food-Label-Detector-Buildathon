@@ -92,7 +92,12 @@ export default async function handler(req: Request) {
                 },
                 brand_name: { type: "STRING" },
                 product_name: { type: "STRING" },
-                net_weight_g: { type: "NUMBER", nullable: true }
+                net_weight_g: { type: "NUMBER", nullable: true },
+                consumption_format: { 
+                  type: "STRING", 
+                  enum: ["solid_snack", "spoonable", "beverage", "other"],
+                  description: "Categorize the product format for consumption sizing. Use 'solid_snack' for items like chips/biscuits where pack fraction makes sense. Use 'spoonable' for sauces, spreads, ghee, oils, pickles. Use 'beverage' for drinks. Use 'other' for loose items or staples."
+                }
               }
             },
             ingredients: {

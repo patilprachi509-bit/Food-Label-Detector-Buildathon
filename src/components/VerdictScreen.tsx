@@ -10,6 +10,7 @@ import { SavedScansScreen } from './SavedScansScreen';
 import { AIInsightCard } from './AIInsightCard';
 import { AnnotatedPhotoReveal, MatchedClaim } from './AnnotatedPhotoReveal';
 import { VerdictSummaryVisual } from './VerdictSummaryVisual';
+import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
 import { IconShield, IconCandy, IconFlask, IconPalette, IconLeaf } from './Icons';
 import type { SavedScan } from '../context/AppContext';
 
@@ -30,11 +31,11 @@ const IngredientPill: React.FC<{ rawName: string; plainName: string; isExpandabl
   let restrictionHi = "";
   
   if (lowerRaw.includes("red dye 3") || lowerRaw.includes("erythrosine") || lowerRaw.includes("ins 127") || lowerRaw.includes("e127") || lowerRaw.includes("e 127")) {
-    restrictionEn = "This ingredient is banned in food in the US (since January 2025) and strictly restricted in the EU, though permitted in India.";
-    restrictionHi = "यह सामग्री अमेरिका में भोजन में प्रतिबंधित है (जनवरी 2025 से) और यूरोपीय संघ में सख्ती से प्रतिबंधित है, हालांकि भारत में इसकी अनुमति है।";
+    restrictionEn = "This ingredient is banned in food in the US (since January 2025) and strictly restricted in the EU, though permitted in India. (verified 30 July 2026)";
+    restrictionHi = "यह सामग्री अमेरिका में भोजन में प्रतिबंधित है (जनवरी 2025 से) और यूरोपीय संघ में सख्ती से प्रतिबंधित है, हालांकि भारत में इसकी अनुमति है। (सत्यापित 30 जुलाई 2026)";
   } else if (lowerRaw.includes("potassium iodate")) {
-    restrictionEn = "This ingredient is banned in the EU, though permitted in India.";
-    restrictionHi = "यह सामग्री यूरोपीय संघ में प्रतिबंधित है, हालांकि भारत में इसकी अनुमति है।";
+    restrictionEn = "This ingredient is banned in the EU, though permitted in India. (verified 30 July 2026)";
+    restrictionHi = "यह सामग्री यूरोपीय संघ में प्रतिबंधित है, हालांकि भारत में इसकी अनुमति है। (सत्यापित 30 जुलाई 2026)";
   }
 
   return (
@@ -71,7 +72,7 @@ const IngredientPill: React.FC<{ rawName: string; plainName: string; isExpandabl
           </div>
           {isAdditiveCategory && (
             <div style={{ fontSize: '0.75rem', fontWeight: 'normal', opacity: 0.8, marginTop: '0.25rem' }}>
-              {isEn ? 'Permitted for use in food by FSSAI.' : 'FSSAI द्वारा भोजन में उपयोग के लिए अनुमत।'}
+              {isEn ? "Permitted for use in food by FSSAI (FSSAI regulates how much can be used, not just whether it's allowed)." : "FSSAI द्वारा भोजन में उपयोग के लिए अनुमत (FSSAI यह नियंत्रित करता है कि कितना उपयोग किया जा सकता है, न कि केवल इसकी अनुमति है)।"}
             </div>
           )}
           {restrictionEn && (
@@ -86,7 +87,7 @@ const IngredientPill: React.FC<{ rawName: string; plainName: string; isExpandabl
 };
 
 export const VerdictScreen: React.FC = () => {
-  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, frontImage } = useAppContext();
+  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, frontImage, userGender, setUserGender } = useAppContext();
   const isEn = userLanguage === 'en';
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [showAllIngredients, setShowAllIngredients] = useState(false);
@@ -295,6 +296,47 @@ export const VerdictScreen: React.FC = () => {
               flags.some(f => f.type === 'needs_verification') ? 'VERIFICATION NEEDED' :
               flags.length > 0 ? 'MINOR ISSUES' : 'GOOD CHOICE'
             }
+          />
+        )}
+
+        {/* GENDER TOGGLE */}
+        {flags.some(f => f.type === 'general_health') && (
+          <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'inline-flex', backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: '50px', padding: '4px' }}>
+              {(['standard', 'male', 'female'] as const).map(g => (
+                <button
+                  key={g}
+                  onClick={() => setUserGender(g)}
+                  style={{
+                    backgroundColor: userGender === g ? 'var(--color-text)' : 'transparent',
+                    color: userGender === g ? 'var(--color-bg)' : 'var(--color-text)',
+                    border: 'none',
+                    borderRadius: '50px',
+                    padding: '0.5rem 1.5rem',
+                    fontSize: '0.85rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    textTransform: 'uppercase',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {isEn 
+                    ? g === 'standard' ? 'Standard' : g === 'male' ? 'Male' : 'Female'
+                    : g === 'standard' ? 'मानक' : g === 'male' ? 'पुरुष' : 'महिला'
+                  }
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* CONSOLIDATED RECOMMENDATION */}
+        {extractionResult && (
+          <ConsolidatedRecommendation 
+            flags={flags} 
+            extractionResult={extractionResult} 
+            isEn={isEn} 
+            userGender={userGender} 
           />
         )}
 

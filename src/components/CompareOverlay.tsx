@@ -110,6 +110,9 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
             {renderRow("Trans Fat (%)", "ट्रांस फैट (%)", currV.transFat, savedV.transFat, "%")}
           </tbody>
         </table>
+        <p style={{ marginTop: '1.5rem', fontSize: '0.85rem', opacity: 0.8, textAlign: 'center', fontStyle: 'italic', padding: '0 1rem' }}>
+          {isEn ? "This comparison covers nutrient thresholds only — check each product's full verdict for claim accuracy." : "यह तुलना केवल पोषक तत्वों की सीमा को कवर करती है — दावों की सटीकता के लिए प्रत्येक उत्पाद के पूर्ण निर्णय की जांच करें।"}
+        </p>
       </div>
     </div>
   );
