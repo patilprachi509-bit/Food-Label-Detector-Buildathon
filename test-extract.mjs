@@ -18,8 +18,9 @@ const promptText = `
            - Return these insights in the 'unverified_claim_notes' array.
            - Set 'concern' to a short note ONLY IF something looks inconsistent. If the claim is plausible or you have no evidence against it, set 'concern' to null.
            - The language in 'concern' MUST be strictly provisional and non-evaluative (e.g., "This claim may not be fully supported by the visible ingredients — worth checking further"). Never use "FAILS", "VIOLATION", or absolute language.
-        
-        Output strictly in the provided JSON schema.
+         8. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredient text that is literally and clearly legible in the photo. If any part of the ingredient list is blurry, cut off, glared-out, or otherwise not confidently readable, DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. Instead, lower 'extraction_confidence' to 'low' or 'medium' and ONLY return the ingredients that ARE clearly legible. Never fabricate additional items to complete the list.
+         
+         Output strictly in the provided JSON schema.
 `;
 
 const translatableStringSchema = {
@@ -37,7 +38,7 @@ const payload = {
       parts: [
         { text: promptText },
         { text: "Simulated front image text: 'No Preservatives'" },
-        { text: "Simulated ingredients image text: 'Water, Sugar, INS 211'" }
+        { text: "Simulated ingredients image text: 'Water, Sugar... [REST OF IMAGE IS EXTREMELY BLURRY AND UNREADABLE]'" }
       ]
     }
   ],
