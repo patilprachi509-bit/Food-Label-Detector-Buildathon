@@ -64,14 +64,26 @@ export default async function handler(req: Request) {
     let ocrText = "";
     try {
       const buffer = Buffer.from(ingredientsBase64, 'base64');
-      const { data: { text } } = await Tesseract.recognize(
-        buffer,
-        'eng'
-      );
-      ocrText = text.trim();
+      
+      const tesseractPromise = (async () => {
+        const worker = await Tesseract.createWorker('eng', 1, {
+          cachePath: '/tmp',
+        });
+        const { data: { text } } = await worker.recognize(buffer);
+        await worker.terminate();
+        return text;
+      })();
+
+      // Wait max 5 seconds for OCR to prevent Vercel 504 timeout on cold starts
+      ocrText = await Promise.race([
+        tesseractPromise,
+        new Promise<string>((_, reject) => setTimeout(() => reject(new Error("OCR Timeout")), 5000))
+      ]);
+      
+      ocrText = ocrText.trim();
     } catch (ocrErr) {
-      console.error("Tesseract OCR Error:", ocrErr);
-      // Graceful failure: if OCR completely fails, we feed empty string, which will cause Gemini to drop confidence
+      console.error("Tesseract OCR Error/Timeout:", ocrErr);
+      // Graceful failure: if OCR completely fails or times out, we feed empty string, which will cause Gemini to drop confidence
       ocrText = "";
     }
 
