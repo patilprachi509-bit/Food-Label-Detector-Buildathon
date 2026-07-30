@@ -104,8 +104,8 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
     if (flag.ruleId === 'G1') {
       dailyLimit = 25;
       nutrientPer100g = nutrition.sugar_g;
-      limitStrEn = "25-30g/day limit (ICMR-NIN Dietary Guidelines for Indians, 2024)";
-      limitStrHi = "25-30 ग्राम/दिन सीमा (ICMR-NIN आहार संबंधी दिशानिर्देश, 2024)";
+      limitStrEn = "25-30g/day limit (Adult reference, ICMR-NIN Dietary Guidelines 2024)";
+      limitStrHi = "25-30 ग्राम/दिन सीमा (वयस्क संदर्भ, ICMR-NIN आहार संबंधी दिशानिर्देश 2024)";
       householdMeasureEn = "(About 6-7 teaspoons)";
       householdMeasureHi = "(लगभग 6-7 चम्मच)";
       healthEn = "Association with weight gain and type 2 diabetes risk with regular excess intake.";
@@ -117,8 +117,8 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
     } else if (flag.ruleId === 'G2') {
       dailyLimit = 25;
       nutrientPer100g = nutrition.total_fat_g;
-      limitStrEn = "25-30g/day limit (ICMR-NIN Dietary Guidelines for Indians, 2024)";
-      limitStrHi = "25-30 ग्राम/दिन सीमा (ICMR-NIN आहार संबंधी दिशानिर्देश, 2024)";
+      limitStrEn = "25-30g/day limit (Adult reference, ICMR-NIN Dietary Guidelines 2024)";
+      limitStrHi = "25-30 ग्राम/दिन सीमा (वयस्क संदर्भ, ICMR-NIN आहार संबंधी दिशानिर्देश 2024)";
       householdMeasureEn = "(About 2 tablespoons)";
       householdMeasureHi = "(लगभग 2 बड़े चम्मच)";
       healthEn = "Association with increased LDL cholesterol and cardiovascular disease risk.";
@@ -130,8 +130,8 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
     } else if (flag.ruleId === 'G3') {
       dailyLimit = 5;
       nutrientPer100g = Number(((nutrition.sodium_mg * 2.5) / 1000).toFixed(2));
-      limitStrEn = "Under 5g/day limit (ICMR-NIN Dietary Guidelines for Indians, 2024)";
-      limitStrHi = "5 ग्राम/दिन सीमा से कम (ICMR-NIN आहार संबंधी दिशानिर्देश, 2024)";
+      limitStrEn = "Under 5g/day limit (Adult reference, ICMR-NIN Dietary Guidelines 2024)";
+      limitStrHi = "5 ग्राम/दिन सीमा से कम (वयस्क संदर्भ, ICMR-NIN आहार संबंधी दिशानिर्देश 2024)";
       householdMeasureEn = "(About 1 teaspoon)";
       householdMeasureHi = "(लगभग 1 चम्मच)";
       healthEn = "Association with high blood pressure risk.";
@@ -383,6 +383,12 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
                         <span>{isEn ? healthShortEn : healthShortHi}</span>
                       </div>
                     )}
+                  </div>
+                  
+                  <div style={{ marginTop: '1rem', fontSize: '0.75rem', opacity: 0.7, fontStyle: 'italic', borderTop: '1px dashed var(--color-divider)', paddingTop: '0.75rem' }}>
+                    {isEn 
+                      ? 'Limits shown are for a reference adult. Requirements are lower for children and vary for older adults.'
+                      : 'दिखाई गई सीमाएँ एक संदर्भ वयस्क के लिए हैं। बच्चों के लिए आवश्यकताएँ कम हैं और वृद्ध वयस्कों के लिए भिन्न हैं।'}
                   </div>
                 </div>
               )}

@@ -78,11 +78,11 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
   if (nutrition.energy_kcal > 0) {
     const sugarPct = Math.round(((nutrition.sugar_g * 4) / nutrition.energy_kcal) * 100);
     if (sugarPct > 10) {
-      flags.push({ type: 'general_health', ruleId: 'G1', message_en: 'High in added sugar', message_hi: 'अतिरिक्त चीनी में उच्च', source: 'ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${sugarPct}% CALORIES FROM SUGAR`, headline_hi: `${sugarPct}% कैलोरी चीनी से`, actualValue: sugarPct, thresholdValue: 10, unit: '%', isMax: true, evalDirection: 'above' });
+      flags.push({ type: 'general_health', ruleId: 'G1', message_en: 'High in added sugar', message_hi: 'अतिरिक्त चीनी में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${sugarPct}% CALORIES FROM SUGAR`, headline_hi: `${sugarPct}% कैलोरी चीनी से`, actualValue: sugarPct, thresholdValue: 10, unit: '%', isMax: true, evalDirection: 'above' });
     }
     const fatPct = Math.round(((nutrition.total_fat_g * 9) / nutrition.energy_kcal) * 100);
     if (fatPct > 15) {
-      flags.push({ type: 'general_health', ruleId: 'G2', message_en: 'High in fat', message_hi: 'वसा में उच्च', source: 'ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${fatPct}% CALORIES FROM FAT`, headline_hi: `${fatPct}% कैलोरी फैट से`, actualValue: fatPct, thresholdValue: 15, unit: '%', isMax: true, evalDirection: 'above' });
+      flags.push({ type: 'general_health', ruleId: 'G2', message_en: 'High in fat', message_hi: 'वसा में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${fatPct}% CALORIES FROM FAT`, headline_hi: `${fatPct}% कैलोरी फैट से`, actualValue: fatPct, thresholdValue: 15, unit: '%', isMax: true, evalDirection: 'above' });
     }
   }
   
@@ -90,7 +90,7 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
     // Convert to Salt in grams for UI
     const saltGrams = Number(((nutrition.sodium_mg * 2.5) / 1000).toFixed(2));
     const thresholdSaltGrams = 0.625;
-    flags.push({ type: 'general_health', ruleId: 'G3', message_en: 'High in salt', message_hi: 'नमक में उच्च', source: 'ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'salt', relevantIngredients: checkSynonyms(ingredients.raw_list, SALT_SYNONYMS), headline_en: `${saltGrams}g SALT PER 100g`, headline_hi: `${saltGrams}g नमक प्रति 100g`, actualValue: saltGrams, thresholdValue: thresholdSaltGrams, unit: 'g', isMax: true, evalDirection: 'above' });
+    flags.push({ type: 'general_health', ruleId: 'G3', message_en: 'High in salt', message_hi: 'नमक में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'salt', relevantIngredients: checkSynonyms(ingredients.raw_list, SALT_SYNONYMS), headline_en: `${saltGrams}g SALT PER 100g`, headline_hi: `${saltGrams}g नमक प्रति 100g`, actualValue: saltGrams, thresholdValue: thresholdSaltGrams, unit: 'g', isMax: true, evalDirection: 'above' });
   }
 
   if (nutrition.trans_fat_g !== null && nutrition.total_fat_g > 0) {
