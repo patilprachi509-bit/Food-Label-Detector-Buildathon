@@ -1,6 +1,4 @@
-export const config = {
-  runtime: 'edge',
-};
+import Tesseract from 'tesseract.js';
 
 export default async function handler(req: Request) {
   if (req.method !== 'POST') {
@@ -37,7 +35,7 @@ export default async function handler(req: Request) {
         7. BOUNDING BOXES FOR LOCALIZATION: For each entry in front_of_pack.claims AND each entry in ingredients.raw_list, you MUST include a 'bounding_box' object { x, y, width, height } indicating exactly where that text appears on the photo.
            - These values MUST be expressed as percentages of the full image dimensions (0 to 100).
            - If you cannot confidently localize an item on the image (e.g. it is inferred, illegible, or fabricated), you MUST set 'bounding_box' to null. Do not guess or hallucinate a bounding box.
-         8. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredient text that is literally and clearly legible in the photo. If any part of the ingredient list is blurry, cut off, glared-out, or otherwise not confidently readable, DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. Instead, lower 'extraction_confidence' to 'low' or 'medium' and ONLY return the ingredients that ARE clearly legible. Never fabricate additional items to complete the list.
+         8. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredient text that is literally present in the OCR text provided. DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. If the provided OCR text is garbled, empty, or unreadable, lower 'extraction_confidence' to 'low' and return what you can. Never fabricate additional items to complete the list.
          
          Output strictly in the provided JSON schema.
     `;
@@ -61,13 +59,29 @@ export default async function handler(req: Request) {
       }
     };
 
+    // --- NEW: OCR PASS ---
+    // Run Tesseract OCR on the ingredients photo first
+    let ocrText = "";
+    try {
+      const buffer = Buffer.from(ingredientsBase64, 'base64');
+      const { data: { text } } = await Tesseract.recognize(
+        buffer,
+        'eng'
+      );
+      ocrText = text.trim();
+    } catch (ocrErr) {
+      console.error("Tesseract OCR Error:", ocrErr);
+      // Graceful failure: if OCR completely fails, we feed empty string, which will cause Gemini to drop confidence
+      ocrText = "";
+    }
+
     const payload = {
       contents: [
         {
           parts: [
             { text: promptText },
             { inlineData: { mimeType: 'image/jpeg', data: frontBase64 } },
-            { inlineData: { mimeType: 'image/jpeg', data: ingredientsBase64 } }
+            { text: `[START RAW OCR TEXT OF INGREDIENTS PANEL]\n${ocrText || "(No legible text detected)"}\n[END RAW OCR TEXT]` }
           ]
         }
       ],
