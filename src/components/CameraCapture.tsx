@@ -69,6 +69,43 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
     }
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string;
+        const img = new Image();
+        img.onload = () => {
+          const MAX_WIDTH = 800;
+          let width = img.width;
+          let height = img.height;
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
+            if (step === 1) {
+              setFrontImage(compressedDataUrl);
+            } else {
+              setIngredientsImage(compressedDataUrl);
+            }
+            onCapture();
+          }
+        };
+        img.src = dataUrl;
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+
   const titleEn = step === 1 ? 'SCAN THE FRONT OF THE PACK' : 'NOW SCAN THE INGREDIENTS & NUTRITION PANEL.';
   const titleHi = step === 1 ? 'पैक के सामने का हिस्सा स्कैन करें' : 'अब सामग्री और पोषण पैनल को स्कैन करें।';
   
@@ -185,20 +222,53 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
             {isEn ? subtextEn : subtextHi}
           </p>
           
-          <button 
-            onClick={handleCaptureClick} 
-            aria-label="Capture"
-            style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '50%',
-              backgroundColor: 'white',
-              border: '4px solid transparent',
-              outline: '4px solid white',
-              cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.3)'
-            }}
-          ></button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2rem', width: '100%' }}>
+            {/* Gallery Upload Button (Left) */}
+            <div style={{ width: '60px', display: 'flex', justifyContent: 'center' }}>
+              <label 
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  opacity: 0.8,
+                  transition: 'opacity 0.2s'
+                }}
+              >
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleFileUpload} 
+                  style={{ display: 'none' }} 
+                />
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '0.25rem' }}>
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <polyline points="21 15 16 10 5 21" />
+                </svg>
+                <span style={{ fontSize: '0.7rem', fontWeight: 'bold' }}>{isEn ? 'Gallery' : 'गैलरी'}</span>
+              </label>
+            </div>
+
+            {/* Live Capture Button (Center) */}
+            <button 
+              onClick={handleCaptureClick} 
+              aria-label="Capture"
+              style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                backgroundColor: 'white',
+                border: '4px solid transparent',
+                outline: '4px solid white',
+                cursor: 'pointer',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.3)'
+              }}
+            ></button>
+
+            {/* Empty space to balance the layout (Right) */}
+            <div style={{ width: '60px' }}></div>
+          </div>
         </div>
 
       </div>
