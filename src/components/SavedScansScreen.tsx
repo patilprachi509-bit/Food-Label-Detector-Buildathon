@@ -92,7 +92,7 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
   }, [savedScans]);
 
   return (
-    <div className="bg-dense" style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'var(--color-text)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'var(--color-text)', backgroundImage: `url('/background.png')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '1rem', borderBottom: '1px solid var(--color-divider)' }}>
         <button 

@@ -6,7 +6,7 @@ export const HowItWorksScreen: React.FC = () => {
   const isEn = userLanguage === 'en';
 
   return (
-    <div className="bg-dense" style={{ display: 'flex', flexDirection: 'column', height: '100vh', color: 'var(--color-text)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', color: 'var(--color-text)', backgroundImage: `url('/screen3.png')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', padding: '1.5rem', borderBottom: '1px solid var(--color-divider)' }}>
         <button 

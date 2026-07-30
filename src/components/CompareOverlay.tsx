@@ -61,7 +61,7 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
   };
 
   return (
-    <div className="bg-dense" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', color: 'var(--color-text)', zIndex: 100, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', color: 'var(--color-text)', zIndex: 100, display: 'flex', flexDirection: 'column', backgroundImage: `url('/background.png')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderBottom: '1px solid var(--color-divider)' }}>
         <button onClick={onClose} style={{ background: 'none', border: '1px solid var(--color-divider)', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', color: 'var(--color-text)' }}>
           &times;
