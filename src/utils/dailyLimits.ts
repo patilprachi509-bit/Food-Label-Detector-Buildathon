@@ -1,4 +1,4 @@
-import { ExtractionResult } from '../context/AppContext';
+import type { ExtractionResult } from '../context/AppContext';
 import type { Flag } from './ruleEngine';
 
 export interface DailyLimitInfo {

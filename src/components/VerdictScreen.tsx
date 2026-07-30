@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
-import type { TranslatableString } from '../context/AppContext';
+import type { TranslatableString, SavedScan } from '../context/AppContext';
 import { evaluateRules } from '../utils/ruleEngine';
 import { playVerdictAudio } from '../utils/audioService';
 import { Header } from './Header';
@@ -8,10 +8,10 @@ import { FlagCard } from './FlagCard';
 import { CompareOverlay } from './CompareOverlay';
 import { SavedScansScreen } from './SavedScansScreen';
 import { AIInsightCard } from './AIInsightCard';
-import { AnnotatedPhotoReveal, MatchedClaim } from './AnnotatedPhotoReveal';
+import { AnnotatedPhotoReveal } from './AnnotatedPhotoReveal';
+import type { MatchedClaim } from './AnnotatedPhotoReveal';
 import { VerdictSummaryVisual } from './VerdictSummaryVisual';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
-import { IconShield, IconCandy, IconFlask, IconPalette, IconLeaf } from './Icons';
 import { IngredientPill } from './IngredientPill';
 
 export const VerdictScreen: React.FC = () => {
