@@ -18,6 +18,9 @@ const promptText = `
            - Return these insights in the 'unverified_claim_notes' array.
            - Set 'concern' to a short note ONLY IF something looks inconsistent. If the claim is plausible or you have no evidence against it, set 'concern' to null.
            - The language in 'concern' MUST be strictly provisional and non-evaluative (e.g., "This claim may not be fully supported by the visible ingredients — worth checking further"). Never use "FAILS", "VIOLATION", or absolute language.
+        7. BOUNDING BOXES FOR LOCALIZATION: For each entry in front_of_pack.claims AND each entry in ingredients.raw_list, you MUST include a 'bounding_box' object { x, y, width, height } indicating exactly where that text appears on the photo.
+           - These values MUST be expressed as percentages of the full image dimensions (0 to 100).
+           - If you cannot confidently localize an item on the image (e.g. it is inferred, illegible, or fabricated), you MUST set 'bounding_box' to null. Do not guess or hallucinate a bounding box.
          8. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredient text that is literally and clearly legible in the photo. If any part of the ingredient list is blurry, cut off, glared-out, or otherwise not confidently readable, DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. Instead, lower 'extraction_confidence' to 'low' or 'medium' and ONLY return the ingredients that ARE clearly legible. Never fabricate additional items to complete the list.
          
          Output strictly in the provided JSON schema.
@@ -28,7 +31,17 @@ const translatableStringSchema = {
   properties: {
     normalized_english: { type: "STRING" },
     localized_display: { type: "STRING" },
-    plain_name: { type: "STRING" }
+    plain_name: { type: "STRING" },
+    bounding_box: {
+      type: "OBJECT",
+      nullable: true,
+      properties: {
+        x: { type: "NUMBER" },
+        y: { type: "NUMBER" },
+        width: { type: "NUMBER" },
+        height: { type: "NUMBER" }
+      }
+    }
   }
 };
 
