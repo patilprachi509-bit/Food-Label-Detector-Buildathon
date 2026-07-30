@@ -11,9 +11,10 @@ import { SavedScansScreen } from './components/SavedScansScreen';
 import { HomeScreen } from './components/HomeScreen';
 import { HowItWorksScreen } from './components/HowItWorksScreen';
 import { IngredientsScreen } from './components/IngredientsScreen';
+import { ResultChoiceScreen } from './components/ResultChoiceScreen';
 
 const AppContent: React.FC = () => {
-  const { userLanguage, frontImage, ingredientsImage, extractionResult, userFocus, isHistoryOpen, isHowItWorksOpen, isIngredientsOpen, viewingSavedScanId, isScanning } = useAppContext();
+  const { userLanguage, frontImage, ingredientsImage, extractionResult, userFocus, isHistoryOpen, isHowItWorksOpen, viewingSavedScanId, isScanning, hasChosenResultType } = useAppContext();
 
   if (!userLanguage) {
     return <LanguagePicker />;
@@ -31,35 +32,26 @@ const AppContent: React.FC = () => {
     return <SavedScansScreen />;
   }
 
-  if (viewingSavedScanId) {
+  if (viewingSavedScanId || extractionResult) {
     if (extractionResult?.extraction_confidence === 'low') {
       return <LowConfidenceScreen />;
     }
-    return (
-      <>
-        <VerdictScreen />
-        {isIngredientsOpen && <IngredientsScreen />}
-      </>
-    );
-  }
 
-  if (extractionResult) {
-    if (extractionResult.extraction_confidence === 'low') {
-      return <LowConfidenceScreen />;
+    const currentView = hasChosenResultType || (viewingSavedScanId ? 'full' : null);
+
+    if (currentView === null) {
+      return <ResultChoiceScreen />;
+    }
+
+    if (currentView === 'ingredients') {
+      return <IngredientsScreen />;
     }
     
-    // If extraction succeeded but user hasn't selected a focus, show Screen 3
-    if (!userFocus) {
+    if (!userFocus && !viewingSavedScanId) {
       return <PersonalizationScreen />;
     }
 
-    // Branch 3: Verdict Screen
-    return (
-      <>
-        <VerdictScreen />
-        {isIngredientsOpen && <IngredientsScreen />}
-      </>
-    );
+    return <VerdictScreen />;
   }
 
   if (frontImage && ingredientsImage) {

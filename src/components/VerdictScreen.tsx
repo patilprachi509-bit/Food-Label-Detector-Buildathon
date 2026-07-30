@@ -12,10 +12,9 @@ import { AnnotatedPhotoReveal } from './AnnotatedPhotoReveal';
 import type { MatchedClaim } from './AnnotatedPhotoReveal';
 import { VerdictSummaryVisual } from './VerdictSummaryVisual';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
-import { IngredientPill } from './IngredientPill';
 
 export const VerdictScreen: React.FC = () => {
-  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, frontImage, userGender, setUserGender, setIsIngredientsOpen } = useAppContext();
+  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, frontImage, userGender, setUserGender, setHasChosenResultType } = useAppContext();
   const isEn = userLanguage === 'en';
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
@@ -183,6 +182,15 @@ export const VerdictScreen: React.FC = () => {
       
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '1.5rem', zIndex: 1, position: 'relative' }}>
         
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+          <button 
+            onClick={() => setHasChosenResultType('ingredients')}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)', fontSize: '0.85rem', fontWeight: 'bold', textDecoration: 'underline' }}
+          >
+            {isEn ? 'View full ingredient list' : 'पूरी सामग्री सूची देखें'}
+          </button>
+        </div>
+        
         {matchedClaims.length > 0 && frontImage && (
           <AnnotatedPhotoReveal 
             frontImage={frontImage} 
@@ -285,59 +293,6 @@ export const VerdictScreen: React.FC = () => {
           <AIInsightCard key={`insight-${idx}`} insight={insight} isEn={isEn} />
         ))}
 
-        {(relevantIngredients.length > 0 || (extractionResult?.ingredients.raw_list.length ?? 0) > 0) && (
-          <div style={{ marginTop: '2.5rem', borderTop: '1px solid var(--color-divider)', paddingTop: '2rem' }}>
-            <h4 style={{ letterSpacing: '1px', fontSize: '0.9rem', marginBottom: '1rem' }}>
-              {isEn ? 'RELEVANT INGREDIENTS' : 'प्रासंगिक सामग्री'}
-            </h4>
-            
-            {relevantIngredients.length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                {relevantIngredients.map((ing, idx) => {
-                  const rawName = isEn ? ing.normalized_english : (ing.localized_display || ing.normalized_english);
-                  const rawClean = ing.normalized_english?.trim().toLowerCase() || '';
-                  const plainClean = ing.plain_name?.trim().toLowerCase() || '';
-                  const isExpandable = Boolean(plainClean && plainClean !== rawClean);
-
-                  return (
-                    <IngredientPill 
-                      key={idx} 
-                      rawName={rawName} 
-                      plainName={ing.plain_name || ''} 
-                      isExpandable={isExpandable} 
-                      isFaded={false} 
-                      isEn={isEn}
-                    />
-                  );
-                })}
-              </div>
-            )}
-            
-            {(extractionResult?.ingredients.raw_list.length ?? 0) > 0 && (
-              <button 
-                onClick={(e) => { e.preventDefault(); setIsIngredientsOpen(true); }} 
-                style={{ 
-                  width: '100%',
-                  background: 'none', 
-                  border: '1px solid var(--color-text)', 
-                  color: 'var(--color-text)', 
-                  borderRadius: '12px',
-                  padding: '1rem',
-                  fontSize: '1rem',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem'
-                }}
-              >
-                {isEn ? 'View Full Ingredient List' : 'पूरी सामग्री सूची देखें'}
-                <span style={{ opacity: 0.5 }}>&rarr;</span>
-              </button>
-            )}
-          </div>
-        )}
 
         {/* Food Pharmer YouTube Embed */}
         {extractionResult?.front_of_pack?.video_id && (

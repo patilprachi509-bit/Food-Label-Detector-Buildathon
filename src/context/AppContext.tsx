@@ -6,6 +6,7 @@ type ExtractionConfidence = 'high' | 'medium' | 'low' | null;
 type UserGender = 'standard' | 'male' | 'female';
 
 type UserFocus = 'sugar' | 'salt' | 'fat' | 'none' | null;
+type ResultType = 'ingredients' | 'full' | null;
 
 export interface TranslatableString {
   normalized_english: string;
@@ -55,6 +56,8 @@ interface AppContextType {
   setUserFocus: (focus: UserFocus) => void;
   userGender: UserGender;
   setUserGender: (gender: UserGender) => void;
+  hasChosenResultType: ResultType;
+  setHasChosenResultType: (type: ResultType) => void;
   
   // Saved Scans
   savedScans: SavedScan[];
@@ -83,6 +86,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [ingredientsImage, setIngredientsImage] = useState<string | null>(null);
   const [extractionResult, setExtractionResult] = useState<ExtractionResult | null>(null);
   const [userFocus, setUserFocus] = useState<UserFocus>(null);
+  const [hasChosenResultType, setHasChosenResultType] = useState<ResultType>(null);
 
   const [savedScans, setSavedScans] = useState<SavedScan[]>(() => {
     try {
@@ -120,6 +124,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setIsIngredientsOpen(false);
     setViewingSavedScanId(null);
     setIsScanning(false);
+    setHasChosenResultType(null);
   };
 
   const saveScan = () => {
@@ -161,7 +166,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       isHowItWorksOpen, setIsHowItWorksOpen,
       isIngredientsOpen, setIsIngredientsOpen,
       viewingSavedScanId, setViewingSavedScanId,
-      isScanning, setIsScanning, resetApp
+      isScanning, setIsScanning, resetApp,
+      hasChosenResultType, setHasChosenResultType
     }}>
       {children}
     </AppContext.Provider>
