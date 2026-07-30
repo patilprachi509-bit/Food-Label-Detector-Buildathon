@@ -242,6 +242,10 @@ export const VerdictScreen: React.FC = () => {
           </p>
         )}
 
+        {aiInsights.map((insight, idx) => (
+          <AIInsightCard key={`insight-${idx}`} insight={insight} isEn={isEn} />
+        ))}
+
         {/* GENDER TOGGLE */}
         {flags.some(f => f.type === 'general_health') && (
           <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
@@ -289,9 +293,6 @@ export const VerdictScreen: React.FC = () => {
           </div>
         ))}
 
-        {aiInsights.map((insight, idx) => (
-          <AIInsightCard key={`insight-${idx}`} insight={insight} isEn={isEn} />
-        ))}
 
 
         {/* Food Pharmer YouTube Embed */}

@@ -26,7 +26,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ insight, isEn }) =
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '1.5rem', opacity: 0.7 }}>
         <IconSparkle size={14} color="var(--color-text)" />
         <span style={{ fontSize: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 'bold' }}>
-          {isEn ? 'AI INSIGHT' : 'एआई अंतर्दृष्टि'}
+          {isEn ? 'UNVERIFIED CLAIM' : 'असत्यापित दावा'}
         </span>
       </div>
       
