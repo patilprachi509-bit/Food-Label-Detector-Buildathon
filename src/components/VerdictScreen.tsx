@@ -12,85 +12,12 @@ import { AnnotatedPhotoReveal, MatchedClaim } from './AnnotatedPhotoReveal';
 import { VerdictSummaryVisual } from './VerdictSummaryVisual';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
 import { IconShield, IconCandy, IconFlask, IconPalette, IconLeaf } from './Icons';
-import type { SavedScan } from '../context/AppContext';
-
-const IngredientPill: React.FC<{ rawName: string; plainName: string; isExpandable: boolean; isFaded: boolean; isEn: boolean }> = ({ rawName, plainName, isExpandable, isFaded, isEn }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  
-  const isAdditiveCategory = /preservative|emulsifier|sweetener|colorant|antioxidant|stabilizer|acidity regulator|flavoring|thickener|humectant/i.test(plainName) || /INS|E\s?\d+/i.test(rawName);
-
-  let CategoryIcon = null;
-  if (/preservative/i.test(plainName)) CategoryIcon = IconShield;
-  else if (/sweetener/i.test(plainName)) CategoryIcon = IconCandy;
-  else if (/color|colour/i.test(plainName)) CategoryIcon = IconPalette;
-  else if (/antioxidant/i.test(plainName)) CategoryIcon = IconLeaf;
-  else if (/emulsifier|stabilizer|acidity regulator|thickener/i.test(plainName)) CategoryIcon = IconFlask;
-
-  const lowerRaw = rawName.toLowerCase();
-  let restrictionEn = "";
-  let restrictionHi = "";
-  
-  if (lowerRaw.includes("red dye 3") || lowerRaw.includes("erythrosine") || lowerRaw.includes("ins 127") || lowerRaw.includes("e127") || lowerRaw.includes("e 127")) {
-    restrictionEn = "This ingredient is banned in food in the US (since January 2025) and strictly restricted in the EU, though permitted in India. (verified 30 July 2026)";
-    restrictionHi = "यह सामग्री अमेरिका में भोजन में प्रतिबंधित है (जनवरी 2025 से) और यूरोपीय संघ में सख्ती से प्रतिबंधित है, हालांकि भारत में इसकी अनुमति है। (सत्यापित 30 जुलाई 2026)";
-  } else if (lowerRaw.includes("potassium iodate")) {
-    restrictionEn = "This ingredient is banned in the EU, though permitted in India. (verified 30 July 2026)";
-    restrictionHi = "यह सामग्री यूरोपीय संघ में प्रतिबंधित है, हालांकि भारत में इसकी अनुमति है। (सत्यापित 30 जुलाई 2026)";
-  }
-
-  return (
-    <div 
-      onClick={() => isExpandable && setIsExpanded(!isExpanded)}
-      style={{ 
-        padding: '0.5rem 1rem', 
-        border: '1px solid var(--color-divider)', 
-        borderRadius: isExpanded ? '12px' : '50px', 
-        fontSize: '0.9rem', 
-        opacity: isFaded ? 0.6 : 1,
-        cursor: isExpandable ? 'pointer' : 'default',
-        backgroundColor: isExpandable && isExpanded ? 'rgba(0,0,0,0.05)' : 'transparent',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        transition: 'all 0.2s ease',
-        userSelect: isExpandable ? 'none' : 'auto'
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
-        <span>{rawName}</span>
-        {isExpandable && (
-          <span style={{ fontSize: '0.6rem', opacity: 0.6, transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-            ▼
-          </span>
-        )}
-      </div>
-      {isExpandable && isExpanded && (
-        <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--color-divider)', fontSize: '0.85rem', color: 'var(--color-text)', fontWeight: 'bold', width: '100%' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            {CategoryIcon && <CategoryIcon size={14} color="var(--color-text)" />}
-            {plainName}
-          </div>
-          {isAdditiveCategory && (
-            <div style={{ fontSize: '0.75rem', fontWeight: 'normal', opacity: 0.8, marginTop: '0.25rem' }}>
-              {isEn ? "Permitted for use in food by FSSAI (FSSAI regulates how much can be used, not just whether it's allowed)." : "FSSAI द्वारा भोजन में उपयोग के लिए अनुमत (FSSAI यह नियंत्रित करता है कि कितना उपयोग किया जा सकता है, न कि केवल इसकी अनुमति है)।"}
-            </div>
-          )}
-          {restrictionEn && (
-            <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--color-fail)', marginTop: '0.5rem', padding: '0.4rem 0.6rem', backgroundColor: 'rgba(233,116,81,0.1)', borderRadius: '4px' }}>
-              <strong>{isEn ? 'Global Context:' : 'वैश्विक संदर्भ:'}</strong> {isEn ? restrictionEn : restrictionHi}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
+import { IngredientPill } from './IngredientPill';
 
 export const VerdictScreen: React.FC = () => {
-  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, frontImage, userGender, setUserGender } = useAppContext();
+  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, frontImage, userGender, setUserGender, setIsIngredientsOpen } = useAppContext();
   const isEn = userLanguage === 'en';
   const [isAudioLoading, setIsAudioLoading] = useState(false);
-  const [showAllIngredients, setShowAllIngredients] = useState(false);
   const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
   const [isPickingCompare, setIsPickingCompare] = useState(false);
   const [compareAgainstScan, setCompareAgainstScan] = useState<SavedScan | null>(null);
@@ -360,38 +287,52 @@ export const VerdictScreen: React.FC = () => {
         {(relevantIngredients.length > 0 || (extractionResult?.ingredients.raw_list.length ?? 0) > 0) && (
           <div style={{ marginTop: '2.5rem', borderTop: '1px solid var(--color-divider)', paddingTop: '2rem' }}>
             <h4 style={{ letterSpacing: '1px', fontSize: '0.9rem', marginBottom: '1rem' }}>
-              {showAllIngredients 
-                ? (isEn ? 'ALL INGREDIENTS' : 'सभी सामग्री') 
-                : (isEn ? 'RELEVANT INGREDIENTS' : 'प्रासंगिक सामग्री')}
+              {isEn ? 'RELEVANT INGREDIENTS' : 'प्रासंगिक सामग्री'}
             </h4>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-              {(showAllIngredients ? (extractionResult?.ingredients.raw_list || []) : relevantIngredients).map((ing, idx) => {
-                const rawName = isEn ? ing.normalized_english : (ing.localized_display || ing.normalized_english);
-                const rawClean = ing.normalized_english?.trim().toLowerCase() || '';
-                const plainClean = ing.plain_name?.trim().toLowerCase() || '';
-                const isExpandable = Boolean(plainClean && plainClean !== rawClean);
-                const isFaded = showAllIngredients && !relevantIngredients.find(r => r.normalized_english === ing.normalized_english);
+            
+            {relevantIngredients.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                {relevantIngredients.map((ing, idx) => {
+                  const rawName = isEn ? ing.normalized_english : (ing.localized_display || ing.normalized_english);
+                  const rawClean = ing.normalized_english?.trim().toLowerCase() || '';
+                  const plainClean = ing.plain_name?.trim().toLowerCase() || '';
+                  const isExpandable = Boolean(plainClean && plainClean !== rawClean);
 
-                return (
-                  <IngredientPill 
-                    key={idx} 
-                    rawName={rawName} 
-                    plainName={ing.plain_name || ''} 
-                    isExpandable={isExpandable} 
-                    isFaded={!!isFaded} 
-                    isEn={isEn}
-                  />
-                );
-              })}
-            </div>
-            {(extractionResult?.ingredients.raw_list.length ?? 0) > relevantIngredients.length && (
+                  return (
+                    <IngredientPill 
+                      key={idx} 
+                      rawName={rawName} 
+                      plainName={ing.plain_name || ''} 
+                      isExpandable={isExpandable} 
+                      isFaded={false} 
+                      isEn={isEn}
+                    />
+                  );
+                })}
+              </div>
+            )}
+            
+            {(extractionResult?.ingredients.raw_list.length ?? 0) > 0 && (
               <button 
-                onClick={(e) => { e.preventDefault(); setShowAllIngredients(!showAllIngredients); }} 
-                style={{ background: 'none', border: 'none', color: 'var(--color-text)', textDecoration: 'underline', fontSize: '0.9rem', cursor: 'pointer', padding: 0 }}
+                onClick={(e) => { e.preventDefault(); setIsIngredientsOpen(true); }} 
+                style={{ 
+                  width: '100%',
+                  background: 'none', 
+                  border: '1px solid var(--color-text)', 
+                  color: 'var(--color-text)', 
+                  borderRadius: '12px',
+                  padding: '1rem',
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem'
+                }}
               >
-                {showAllIngredients 
-                  ? (isEn ? 'Show only relevant ingredients' : 'केवल प्रासंगिक सामग्री दिखाएं') 
-                  : (isEn ? 'Show full ingredient list' : 'पूरी सामग्री सूची दिखाएं')}
+                {isEn ? 'View Full Ingredient List' : 'पूरी सामग्री सूची देखें'}
+                <span style={{ opacity: 0.5 }}>&rarr;</span>
               </button>
             )}
           </div>

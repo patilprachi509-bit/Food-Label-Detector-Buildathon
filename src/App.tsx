@@ -10,9 +10,10 @@ import { PersonalizationScreen } from './components/PersonalizationScreen';
 import { SavedScansScreen } from './components/SavedScansScreen';
 import { HomeScreen } from './components/HomeScreen';
 import { HowItWorksScreen } from './components/HowItWorksScreen';
+import { IngredientsScreen } from './components/IngredientsScreen';
 
 const AppContent: React.FC = () => {
-  const { userLanguage, frontImage, ingredientsImage, extractionResult, userFocus, isHistoryOpen, isHowItWorksOpen, viewingSavedScanId, isScanning } = useAppContext();
+  const { userLanguage, frontImage, ingredientsImage, extractionResult, userFocus, isHistoryOpen, isHowItWorksOpen, isIngredientsOpen, viewingSavedScanId, isScanning } = useAppContext();
 
   if (!userLanguage) {
     return <LanguagePicker />;
@@ -34,7 +35,12 @@ const AppContent: React.FC = () => {
     if (extractionResult?.extraction_confidence === 'low') {
       return <LowConfidenceScreen />;
     }
-    return <VerdictScreen />;
+    return (
+      <>
+        <VerdictScreen />
+        {isIngredientsOpen && <IngredientsScreen />}
+      </>
+    );
   }
 
   if (extractionResult) {
@@ -48,7 +54,12 @@ const AppContent: React.FC = () => {
     }
 
     // Branch 3: Verdict Screen
-    return <VerdictScreen />;
+    return (
+      <>
+        <VerdictScreen />
+        {isIngredientsOpen && <IngredientsScreen />}
+      </>
+    );
   }
 
   if (frontImage && ingredientsImage) {
