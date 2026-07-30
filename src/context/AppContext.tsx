@@ -63,6 +63,8 @@ interface AppContextType {
   clearScans: () => void;
   isHistoryOpen: boolean;
   setIsHistoryOpen: (open: boolean) => void;
+  isHowItWorksOpen: boolean;
+  setIsHowItWorksOpen: (open: boolean) => void;
   viewingSavedScanId: string | null;
   setViewingSavedScanId: (id: string | null) => void;
   isScanning: boolean;
@@ -89,6 +91,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   });
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const [viewingSavedScanId, setViewingSavedScanId] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
 
@@ -110,6 +113,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setExtractionResult(null);
     setUserFocus(null);
     setIsHistoryOpen(false);
+    setIsHowItWorksOpen(false);
     setViewingSavedScanId(null);
     setIsScanning(false);
   };
@@ -150,6 +154,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       userFocus, setUserFocus,
       savedScans, saveScan, deleteScan, clearScans,
       isHistoryOpen, setIsHistoryOpen,
+      isHowItWorksOpen, setIsHowItWorksOpen,
       viewingSavedScanId, setViewingSavedScanId,
       isScanning, setIsScanning, resetApp
     }}>

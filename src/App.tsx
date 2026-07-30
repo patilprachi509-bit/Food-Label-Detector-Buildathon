@@ -9,12 +9,17 @@ import { VerdictScreen } from './components/VerdictScreen';
 import { PersonalizationScreen } from './components/PersonalizationScreen';
 import { SavedScansScreen } from './components/SavedScansScreen';
 import { HomeScreen } from './components/HomeScreen';
+import { HowItWorksScreen } from './components/HowItWorksScreen';
 
 const AppContent: React.FC = () => {
-  const { userLanguage, frontImage, ingredientsImage, extractionResult, userFocus, isHistoryOpen, viewingSavedScanId, isScanning } = useAppContext();
+  const { userLanguage, frontImage, ingredientsImage, extractionResult, userFocus, isHistoryOpen, isHowItWorksOpen, viewingSavedScanId, isScanning } = useAppContext();
 
   if (!userLanguage) {
     return <LanguagePicker />;
+  }
+
+  if (isHowItWorksOpen) {
+    return <HowItWorksScreen />;
   }
 
   if (!isScanning && !isHistoryOpen && !viewingSavedScanId && !extractionResult && !frontImage) {

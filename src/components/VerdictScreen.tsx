@@ -267,9 +267,16 @@ export const VerdictScreen: React.FC = () => {
         {/* Overarching Verdict */}
         <div style={{ marginBottom: '1.5rem', textAlign: 'center', paddingTop: '1.5rem' }}>
           {flags.some(f => f.type === 'claim_contradiction' || f.type === 'general_health') ? (
-            <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-fail)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>
-              {isEn ? 'NOT RECOMMENDED' : 'अनुशंसित नहीं'}
-            </h2>
+            <>
+              <h2 className="headline-en" style={{ fontSize: '2.5rem', color: 'var(--color-fail)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>
+                {isEn ? 'NOT RECOMMENDED' : 'अनुशंसित नहीं'}
+              </h2>
+              <p className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.85rem', opacity: 0.8, fontStyle: 'italic', marginTop: '0.75rem', lineHeight: 1.4 }}>
+                {isEn 
+                  ? "We call it exactly as the rules say it is. A flagged product is not recommended — that verdict never changes. Where portion guidance appears, it's there to help you make the best of a real choice, not to soften the verdict."
+                  : "हम नियमों के अनुसार जो सही है वही बताते हैं। जिस उत्पाद को फ़्लैग किया गया है, वह अनुशंसित नहीं है — यह फैसला कभी नहीं बदलता। जहाँ मात्रा से जुड़ी सलाह दी जाती है, वह आपके असली विकल्प को बेहतर बनाने के लिए है, फैसले को नरम करने के लिए नहीं।"}
+              </p>
+            </>
           ) : flags.some(f => f.type === 'needs_verification') ? (
             <h2 className="headline-en" style={{ fontSize: '2.2rem', color: 'var(--color-verify)', lineHeight: 1, fontWeight: 900, margin: 0, wordBreak: 'break-word' }}>
               {isEn ? 'VERIFICATION NEEDED' : 'सत्यापन की आवश्यकता है'}

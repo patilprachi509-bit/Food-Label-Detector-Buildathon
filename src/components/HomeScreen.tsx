@@ -2,7 +2,7 @@ import React from 'react';
 import { useAppContext } from '../context/AppContext';
 
 export const HomeScreen: React.FC = () => {
-  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsScanning } = useAppContext();
+  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsScanning, setIsHowItWorksOpen } = useAppContext();
   const isEn = userLanguage === 'en';
 
   const toggleLanguage = () => {
@@ -63,7 +63,7 @@ export const HomeScreen: React.FC = () => {
         </div>
         
         <p className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '1.1rem', opacity: 0.8, maxWidth: '280px', margin: '0 auto', lineHeight: 1.4 }}>
-          {isEn ? "Scan any pack.\nWe check the claim against the real numbers." : "किसी भी पैक को स्कैन करें।\nहम वास्तविक संख्याओं के विरुद्ध दावों की जाँच करते हैं।"}
+          {isEn ? "Scan any pack.\nWe check the claim against the real numbers." : "किसी भी पैकेट को स्कैन करें।\nहम दावे की जांच असली आंकड़ों से करते हैं।"}
         </p>
       </div>
 
@@ -101,21 +101,41 @@ export const HomeScreen: React.FC = () => {
           </svg>
         </button>
         
-        <a 
-          href="https://forms.gle/QzGgJSZbhV4Sc62A6" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{
-            color: 'var(--color-text)',
-            opacity: 0.7,
-            fontSize: '0.9rem',
-            textDecoration: 'underline',
-            letterSpacing: '0.5px',
-            textTransform: 'uppercase'
-          }}
-        >
-          {isEn ? 'Give Feedback' : 'प्रतिक्रिया दें'}
-        </a>
+        
+        <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
+          <button 
+            onClick={() => setIsHowItWorksOpen(true)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--color-text)',
+              opacity: 0.7,
+              fontSize: '0.9rem',
+              textDecoration: 'underline',
+              letterSpacing: '0.5px',
+              textTransform: 'uppercase',
+              cursor: 'pointer'
+            }}
+          >
+            {isEn ? 'How it works' : 'यह कैसे काम करता है'}
+          </button>
+          
+          <a 
+            href="https://forms.gle/QzGgJSZbhV4Sc62A6" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{
+              color: 'var(--color-text)',
+              opacity: 0.7,
+              fontSize: '0.9rem',
+              textDecoration: 'underline',
+              letterSpacing: '0.5px',
+              textTransform: 'uppercase'
+            }}
+          >
+            {isEn ? 'Give Feedback' : 'प्रतिक्रिया दें'}
+          </a>
+        </div>
       </div>
     </div>
   );
