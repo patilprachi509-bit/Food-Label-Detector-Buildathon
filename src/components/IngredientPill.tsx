@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IconShield, IconCandy, IconFlask, IconPalette, IconLeaf } from './Icons';
+import { Citation } from './Citation';
 
 interface IngredientPillProps {
   rawName: string;
@@ -77,19 +78,30 @@ export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainNa
             </div>
           )}
           {isAdditiveCategory && (
-            <div style={{ fontSize: '0.75rem', fontWeight: 'normal', opacity: 0.8, marginTop: '0.25rem' }}>
-              {isEn ? "Permitted for use in food by FSSAI (FSSAI regulates how much can be used, not just whether it's allowed)." : "FSSAI द्वारा भोजन में उपयोग के लिए अनुमत (FSSAI यह नियंत्रित करता है कि कितना उपयोग किया जा सकता है, न कि केवल इसकी अनुमति है)।"}
-            </div>
+            <Citation 
+              shortLabel="FSSAI"
+              textEn="Permitted for use in food by FSSAI (FSSAI regulates how much can be used, not just whether it's allowed)."
+              textHi="FSSAI द्वारा भोजन में उपयोग के लिए अनुमत (FSSAI यह नियंत्रित करता है कि कितना उपयोग किया जा सकता है, न कि केवल इसकी अनुमति है)।"
+              isEn={isEn}
+            />
           )}
           {restrictionEn && (
-            <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--color-fail)', marginTop: '0.5rem', padding: '0.4rem 0.6rem', backgroundColor: 'rgba(233,116,81,0.1)', borderRadius: '4px' }}>
-              <strong>{isEn ? 'Global Context:' : 'वैश्विक संदर्भ:'}</strong> {isEn ? restrictionEn : restrictionHi}
-            </div>
+            <Citation 
+              shortLabel="Global Context"
+              textEn={restrictionEn}
+              textHi={restrictionHi}
+              isEn={isEn}
+              color="var(--color-fail)"
+              bgColor="rgba(233,116,81,0.1)"
+            />
           )}
           {maidaEn && (
-            <div style={{ fontSize: '0.75rem', fontWeight: 'normal', color: 'var(--color-text)', marginTop: '0.5rem', padding: '0.4rem 0.6rem', backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: '4px' }}>
-              {isEn ? maidaEn : maidaHi}
-            </div>
+            <Citation 
+              shortLabel="Nutrition Note"
+              textEn={maidaEn}
+              textHi={maidaHi}
+              isEn={isEn}
+            />
           )}
         </div>
       )}

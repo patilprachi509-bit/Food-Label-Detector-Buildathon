@@ -3,6 +3,7 @@ import type { Flag } from '../utils/ruleEngine';
 import { useAppContext } from '../context/AppContext';
 import { IconHeart, IconScale, IconSpoon, IconSugarCube, IconSaltShaker, IconDroplet } from './Icons';
 import { getDailyLimitInfo } from '../utils/dailyLimits';
+import { Citation } from './Citation';
 
 interface FlagCardProps {
   flag: Flag;
@@ -251,17 +252,31 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
             </p>
           )}
 
-          {/* Citation Footnote */}
-          <p style={{ fontSize: '0.75rem', opacity: 0.6, marginTop: '0.75rem' }}>
-            {isEn ? `Source: ${flag.source}` : `स्रोत: ${flag.source}`}
-          </p>
-          
-          {/* Personalization Note */}
-          {userFocus === flag.nutrientFocus && flag.evalDirection && (
-            <p style={{ fontSize: '0.85rem', fontWeight: 'bold', marginTop: '0.5rem', color: 'var(--color-fail)' }}>
-              {isEn ? `As per ${flag.source}, this is ${flag.evalDirection} the general threshold.` : `${flag.source} के अनुसार, यह सामान्य सीमा से ${flag.evalDirection === 'above' ? 'ऊपर' : 'नीचे'} है।`}
-            </p>
-          )}
+          {/* Compact Citation */}
+          <Citation 
+            shortLabel={flag.source.includes('ICMR') ? 'ICMR-NIN' : flag.source.includes('FSSAI') ? 'FSSAI' : 'Source'}
+            textEn={
+              <>
+                Source: {flag.source}
+                {userFocus === flag.nutrientFocus && flag.evalDirection && (
+                  <div style={{ marginTop: '0.4rem', color: 'var(--color-fail)' }}>
+                    As per {flag.source}, this is {flag.evalDirection} the general threshold.
+                  </div>
+                )}
+              </>
+            }
+            textHi={
+              <>
+                स्रोत: {flag.source}
+                {userFocus === flag.nutrientFocus && flag.evalDirection && (
+                  <div style={{ marginTop: '0.4rem', color: 'var(--color-fail)' }}>
+                    {flag.source} के अनुसार, यह सामान्य सीमा से {flag.evalDirection === 'above' ? 'ऊपर' : 'नीचे'} है।
+                  </div>
+                )}
+              </>
+            }
+            isEn={isEn}
+          />
 
           {/* What This Means Block (G1-G4 only) */}
           {hasWhatThisMeans && (
