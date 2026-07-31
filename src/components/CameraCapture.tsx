@@ -41,7 +41,9 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
 
   const handleCaptureClick = () => {
     if (videoRef.current) {
-      const MAX_WIDTH = 800;
+      // Step 1 (Front image) is sent to the backend, so it must be compressed (max 800px, 0.6 quality) to avoid 4.5MB payload limits.
+      // Step 2 (Ingredients) stays on the client side for Tesseract OCR, so it requires high resolution and high quality to prevent OCR failure.
+      const MAX_WIDTH = step === 1 ? 800 : 2500;
       let width = videoRef.current.videoWidth;
       let height = videoRef.current.videoHeight;
 
@@ -56,8 +58,9 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
       const ctx = canvas.getContext('2d');
       if (ctx) {
         ctx.drawImage(videoRef.current, 0, 0, width, height);
-        // Compress jpeg to 0.6 quality to significantly save serverless payload size
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+        
+        const quality = step === 1 ? 0.6 : 0.95;
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
         
         if (step === 1) {
           setFrontImage(dataUrl);
@@ -77,7 +80,8 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
         const dataUrl = event.target?.result as string;
         const img = new Image();
         img.onload = () => {
-          const MAX_WIDTH = 800;
+          // Same dual-resolution logic for gallery uploads
+          const MAX_WIDTH = step === 1 ? 800 : 2500;
           let width = img.width;
           let height = img.height;
           if (width > MAX_WIDTH) {
@@ -90,7 +94,9 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
           const ctx = canvas.getContext('2d');
           if (ctx) {
             ctx.drawImage(img, 0, 0, width, height);
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
+            
+            const quality = step === 1 ? 0.6 : 0.95;
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
             if (step === 1) {
               setFrontImage(compressedDataUrl);
             } else {
