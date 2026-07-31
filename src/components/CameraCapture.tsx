@@ -41,9 +41,9 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
 
   const handleCaptureClick = () => {
     if (videoRef.current) {
-      // Step 1 (Front image) is sent to the backend, so it must be compressed (max 800px, 0.6 quality) to avoid 4.5MB payload limits.
-      // Step 2 (Ingredients) stays on the client side for Tesseract OCR, so it requires high resolution and high quality to prevent OCR failure.
-      const MAX_WIDTH = step === 1 ? 800 : 2500;
+      // Step 1 (Front image) is sent to the backend compressed (max 800px, 0.6 quality).
+      // Step 2 (Ingredients) is sent to the backend for Cloud Vision OCR. 1800px at 0.8 quality ensures it is sharp enough for tiny text while easily staying under Vercel's 4.5MB request limit.
+      const MAX_WIDTH = step === 1 ? 800 : 1800;
       let width = videoRef.current.videoWidth;
       let height = videoRef.current.videoHeight;
 
@@ -59,7 +59,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
       if (ctx) {
         ctx.drawImage(videoRef.current, 0, 0, width, height);
         
-        const quality = step === 1 ? 0.6 : 0.95;
+        const quality = step === 1 ? 0.6 : 0.8;
         const dataUrl = canvas.toDataURL('image/jpeg', quality);
         
         if (step === 1) {
@@ -81,7 +81,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
         const img = new Image();
         img.onload = () => {
           // Same dual-resolution logic for gallery uploads
-          const MAX_WIDTH = step === 1 ? 800 : 2500;
+          const MAX_WIDTH = step === 1 ? 800 : 1800;
           let width = img.width;
           let height = img.height;
           if (width > MAX_WIDTH) {
@@ -95,7 +95,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
           if (ctx) {
             ctx.drawImage(img, 0, 0, width, height);
             
-            const quality = step === 1 ? 0.6 : 0.95;
+            const quality = step === 1 ? 0.6 : 0.8;
             const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
             if (step === 1) {
               setFrontImage(compressedDataUrl);

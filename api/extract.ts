@@ -8,7 +8,7 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const { frontBase64, ocrText } = await req.json();
+    const { frontBase64, ingredientsBase64 } = await req.json();
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -60,6 +60,38 @@ export default async function handler(req: Request) {
         }
       }
     };
+
+    // --- Google Cloud Vision OCR Pass (Ingredients Only) ---
+    let ocrText = "";
+    const visionApiKey = process.env.VISION_API_KEY;
+    
+    if (visionApiKey) {
+      try {
+        const visionRes = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${visionApiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            requests: [
+              {
+                image: { content: ingredientsBase64 },
+                features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
+              }
+            ]
+          })
+        });
+        
+        if (visionRes.ok) {
+          const visionData = await visionRes.json();
+          ocrText = visionData.responses?.[0]?.fullTextAnnotation?.text || "";
+        } else {
+          console.error("Cloud Vision API Error:", await visionRes.text());
+        }
+      } catch (err) {
+        console.error("Cloud Vision Network Error:", err);
+      }
+    } else {
+      console.warn("VISION_API_KEY is not set. Proceeding with empty OCR text.");
+    }
 
     const payload = {
       contents: [
