@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
+import Tesseract from 'tesseract.js';
 
 async function generateHash(str: string) {
   const encoder = new TextEncoder();
@@ -22,6 +23,7 @@ export const ProcessingScreen: React.FC = () => {
   const { userLanguage, frontImage, ingredientsImage, setExtractionResult } = useAppContext();
   const [error, setError] = useState<string | null>(null);
   const [loadingStep, setLoadingStep] = useState(0);
+  const [ocrProgress, setOcrProgress] = useState<string | null>(null);
   const fetchPromiseRef = React.useRef<Promise<any> | null>(null);
 
   useEffect(() => {
@@ -54,12 +56,49 @@ export const ProcessingScreen: React.FC = () => {
             console.error("Cache read error", e);
           }
 
+          // --- NEW: Client-side OCR PASS ---
+          let ocrText = "";
+          try {
+            setOcrProgress(isEn ? "Preparing text scanner..." : "टेक्स्ट स्कैनर तैयार कर रहा है...");
+            
+            const tesseractPromise = (async () => {
+              const worker = await Tesseract.createWorker('eng', 1, {
+                logger: m => {
+                  if (m.status === 'loading language traineddata') {
+                    const pct = Math.round(m.progress * 100);
+                    setOcrProgress(isEn 
+                      ? `Downloading text scanner data (${pct}%)...` 
+                      : `टेक्स्ट स्कैनर डेटा डाउनलोड हो रहा है (${pct}%)...`);
+                  } else if (m.status === 'recognizing text') {
+                    setOcrProgress(isEn ? "Extracting ingredients text..." : "सामग्री पाठ निकाल रहा है...");
+                  }
+                }
+              });
+              const { data: { text } } = await worker.recognize(ingredientsImage);
+              await worker.terminate();
+              return text;
+            })();
+
+            // 30 second generous timeout to allow for downloads on slow connections
+            ocrText = await Promise.race([
+              tesseractPromise,
+              new Promise<string>((_, reject) => setTimeout(() => reject(new Error("OCR Timeout")), 30000))
+            ]);
+            ocrText = ocrText.trim();
+          } catch (ocrErr) {
+            console.error("Client-side Tesseract OCR Error/Timeout:", ocrErr);
+            // Graceful failure: if OCR fails/times out, feed empty string, causing Gemini to drop confidence and show low confidence screen
+            ocrText = "";
+          } finally {
+            setOcrProgress(null);
+          }
+
           const response = await fetch('/api/extract', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               frontBase64,
-              ingredientsBase64
+              ocrText
             })
           });
 
@@ -218,10 +257,12 @@ export const ProcessingScreen: React.FC = () => {
     }}>
       <div className="loader"></div>
       <h2 className={`processing-text ${isEn ? 'headline-en' : 'headline-hi'}`} style={{ minHeight: '3rem', textAlign: 'center', transition: 'opacity 0.3s ease-in-out', fontWeight: 900 }}>
-        {currentMessage}
+        {ocrProgress || currentMessage}
       </h2>
       <p style={{ marginTop: '1rem', opacity: 0.7, fontSize: '0.9rem', textAlign: 'center' }}>
-        {isEn ? "Gemini is analyzing the fine print..." : "Gemini सूक्ष्म प्रिंट का विश्लेषण कर रहा है..."}
+        {ocrProgress 
+          ? (isEn ? "This runs locally on your device for privacy." : "यह आपकी गोपनीयता के लिए आपके डिवाइस पर स्थानीय रूप से चलता है।")
+          : (isEn ? "Gemini is analyzing the fine print..." : "Gemini सूक्ष्म प्रिंट का विश्लेषण कर रहा है...")}
       </p>
     </div>
   );

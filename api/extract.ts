@@ -1,4 +1,6 @@
-import Tesseract from 'tesseract.js';
+export const config = {
+  runtime: 'edge',
+};
 
 export default async function handler(req: Request) {
   if (req.method !== 'POST') {
@@ -6,7 +8,7 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const { frontBase64, ingredientsBase64 } = await req.json();
+    const { frontBase64, ocrText } = await req.json();
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -58,34 +60,6 @@ export default async function handler(req: Request) {
         }
       }
     };
-
-    // --- NEW: OCR PASS ---
-    // Run Tesseract OCR on the ingredients photo first
-    let ocrText = "";
-    try {
-      const buffer = Buffer.from(ingredientsBase64, 'base64');
-      
-      const tesseractPromise = (async () => {
-        const worker = await Tesseract.createWorker('eng', 1, {
-          cachePath: '/tmp',
-        });
-        const { data: { text } } = await worker.recognize(buffer);
-        await worker.terminate();
-        return text;
-      })();
-
-      // Wait max 5 seconds for OCR to prevent Vercel 504 timeout on cold starts
-      ocrText = await Promise.race([
-        tesseractPromise,
-        new Promise<string>((_, reject) => setTimeout(() => reject(new Error("OCR Timeout")), 5000))
-      ]);
-      
-      ocrText = ocrText.trim();
-    } catch (ocrErr) {
-      console.error("Tesseract OCR Error/Timeout:", ocrErr);
-      // Graceful failure: if OCR completely fails or times out, we feed empty string, which will cause Gemini to drop confidence
-      ocrText = "";
-    }
 
     const payload = {
       contents: [
