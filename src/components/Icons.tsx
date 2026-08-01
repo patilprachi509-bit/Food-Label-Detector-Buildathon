@@ -101,32 +101,26 @@ export const IconSparkle = ({ size = 16, color = "currentColor" }) => (
   </svg>
 );
 
-export const IconFaceWorried = ({ size = 24, color = "currentColor" }) => (
+export const IconCross = ({ size = 24, color = "currentColor" }) => (
   <svg {...svgProps} width={size} height={size} color={color}>
     <circle cx="12" cy="12" r="10" />
-    <path d="M8 9l2.5 1.5" />
-    <path d="M16 9l-2.5 1.5" />
-    <circle cx="9" cy="12" r="1.5" fill="currentColor" stroke="none" />
-    <circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none" />
-    <path d="M9 17c1.5-1.5 4.5-1.5 6 0" />
+    <path d="M15 9l-6 6" />
+    <path d="M9 9l6 6" />
   </svg>
 );
 
-export const IconFaceCalm = ({ size = 24, color = "currentColor" }) => (
+export const IconCheck = ({ size = 24, color = "currentColor" }) => (
   <svg {...svgProps} width={size} height={size} color={color}>
     <circle cx="12" cy="12" r="10" />
-    <circle cx="9" cy="10" r="1.5" fill="currentColor" stroke="none" />
-    <circle cx="15" cy="10" r="1.5" fill="currentColor" stroke="none" />
-    <path d="M8 14c2 2 6 2 8 0" />
+    <path d="M9 12l2 2 4-4" />
   </svg>
 );
 
-export const IconFaceNeutral = ({ size = 24, color = "currentColor" }) => (
+export const IconWarning = ({ size = 24, color = "currentColor" }) => (
   <svg {...svgProps} width={size} height={size} color={color}>
     <circle cx="12" cy="12" r="10" />
-    <circle cx="9" cy="10" r="1.5" fill="currentColor" stroke="none" />
-    <circle cx="15" cy="10" r="1.5" fill="currentColor" stroke="none" />
-    <path d="M8 15h8" />
+    <line x1="12" y1="8" x2="12" y2="12" />
+    <line x1="12" y1="16" x2="12.01" y2="16" />
   </svg>
 );
 

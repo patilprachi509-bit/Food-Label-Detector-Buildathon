@@ -2,9 +2,9 @@ import React from 'react';
 import type { Flag } from '../utils/ruleEngine';
 import type { ExtractionResult } from '../context/AppContext';
 import { 
-  IconFaceWorried, 
-  IconFaceCalm, 
-  IconFaceNeutral, 
+  IconCross, 
+  IconCheck, 
+  IconWarning, 
   IconSugarCube, 
   IconDroplet, 
   IconSaltShaker, 
@@ -27,14 +27,14 @@ export const VerdictSummaryVisual: React.FC<Props> = ({ flags, extractionResult,
   const transFatNull = extractionResult.nutrition.trans_fat_g === null;
 
   // Face Icon based on overallState
-  let FaceIcon = IconFaceCalm;
+  let FaceIcon = IconCheck;
   let faceColor = 'var(--color-pass)';
   
   if (overallState === 'NOT RECOMMENDED') {
-    FaceIcon = IconFaceWorried;
+    FaceIcon = IconCross;
     faceColor = 'var(--color-fail)';
   } else if (overallState === 'VERIFICATION NEEDED' || overallState === 'MINOR ISSUES') {
-    FaceIcon = IconFaceNeutral;
+    FaceIcon = IconWarning;
     faceColor = 'var(--color-verify)';
   }
 
