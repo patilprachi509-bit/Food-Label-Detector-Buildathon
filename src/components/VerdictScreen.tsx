@@ -156,29 +156,6 @@ export const VerdictScreen: React.FC = () => {
     );
   }
 
-  if (compareAgainstScan && extractionResult) {
-    return (
-      <CompareOverlay 
-        currentScan={extractionResult} 
-        savedScan={compareAgainstScan} 
-        onClose={() => setCompareAgainstScan(null)} 
-        isEn={isEn} 
-      />
-    );
-  }
-
-  if (isPickingCompare) {
-    return (
-      <SavedScansScreen 
-        onSelectForCompare={(scan) => {
-          setCompareAgainstScan(scan);
-          setIsPickingCompare(false);
-        }} 
-        onCloseCompare={() => setIsPickingCompare(false)} 
-      />
-    );
-  }
-
   // The old "NO ISSUES FOUND" screen block has been removed, as the new VerdictSummaryVisual handles it natively.
 
   return (

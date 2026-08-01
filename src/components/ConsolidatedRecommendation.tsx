@@ -46,6 +46,8 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
   let minTargetGrams = Infinity;
   let limitingNutrientEn = '';
   let limitingNutrientHi = '';
+  let limitingNutrientPer100g = 0;
+  let limitingDailyLimitGrams = 0;
 
   gFlags.forEach(f => {
     const limitInfo = getDailyLimitInfo(f, extractionResult, userGender);
@@ -54,6 +56,8 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
       
       if (targetGrams < minTargetGrams) {
         minTargetGrams = targetGrams;
+        limitingNutrientPer100g = limitInfo.nutrientPer100g;
+        limitingDailyLimitGrams = limitInfo.dailyLimitGrams;
         if (f.ruleId === 'G1') { limitingNutrientEn = 'sugar'; limitingNutrientHi = 'चीनी'; }
         else if (f.ruleId === 'G2') { limitingNutrientEn = 'fat/oil'; limitingNutrientHi = 'वसा/तेल'; }
         else if (f.ruleId === 'G3') { limitingNutrientEn = 'salt'; limitingNutrientHi = 'नमक'; }
@@ -65,7 +69,7 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
 
   const roundedTarget = Math.round(minTargetGrams);
   const fraction = minTargetGrams / refWeight;
-  const percentage = (refWeight / minTargetGrams) * 100;
+  const percentage = (refWeight / 100 * limitingNutrientPer100g / limitingDailyLimitGrams) * 100;
   const roundedPct = Math.round(percentage);
 
   let primaryEn = "";
