@@ -1,5 +1,7 @@
-import Tesseract from 'tesseract.js';
-import path from 'path';
+export const config = {
+  runtime: 'nodejs',
+};
+
 export default async function handler(req: Request) {
   if (req.method !== 'POST') {
     return new Response('Method Not Allowed', { status: 405 });
@@ -32,10 +34,10 @@ export default async function handler(req: Request) {
            - Return these insights in the 'unverified_claim_notes' array.
            - Set 'concern' to a short note ONLY IF something looks inconsistent. If the claim is plausible or you have no evidence against it, set 'concern' to null.
            - The language in 'concern' MUST be strictly provisional and non-evaluative (e.g., "This claim may not be fully supported by the visible ingredients — worth checking further"). Never use "FAILS", "VIOLATION", or absolute language.
-        7. BOUNDING BOXES FOR LOCALIZATION: For each entry in front_of_pack.claims, you MUST include a 'bounding_box' object { x, y, width, height } indicating exactly where that text appears on the front-of-pack photo.
+        7. BOUNDING BOXES FOR LOCALIZATION: For each entry in front_of_pack.claims AND each entry in ingredients.raw_list, you MUST include a 'bounding_box' object { x, y, width, height } indicating exactly where that text appears on the respective photo.
            - These values MUST be expressed as percentages of the full image dimensions (0 to 100).
-           - If you cannot confidently localize a claim on the image, you MUST set 'bounding_box' to null. Do not guess or hallucinate a bounding box.
-         8. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredient text that is literally present in the OCR text provided. DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. If the provided OCR text is garbled, empty, or unreadable, lower 'extraction_confidence' to 'low' and return what you can. Never fabricate additional items to complete the list.
+           - If you cannot confidently localize an item on the image (e.g. it is inferred, illegible, or fabricated), you MUST set 'bounding_box' to null. Do not guess or hallucinate a bounding box.
+         8. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredient text that is literally, clearly legible in the ingredients photo. DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. If the ingredients photo is blurry or illegible, lower 'extraction_confidence' to 'low' and return what you can actually read. Never fabricate additional items to complete the list.
          
          Output strictly in the provided JSON schema.
     `;
@@ -59,43 +61,13 @@ export default async function handler(req: Request) {
       }
     };
 
-    // --- Server-Side Tesseract OCR Pass (Ingredients Only) ---
-    let ocrText = "";
-    const tesseractPromise = (async () => {
-      let worker;
-      try {
-        const modelPath = path.join(process.cwd(), 'api', 'models');
-        worker = await Tesseract.createWorker('eng', 1, {
-          langPath: modelPath,
-          cachePath: modelPath,
-          logger: m => {} 
-        });
-        const imgBuffer = Buffer.from(ingredientsBase64, 'base64');
-        const { data: { text } } = await worker.recognize(imgBuffer);
-        return text;
-      } finally {
-        if (worker) await worker.terminate();
-      }
-    })();
-
-    try {
-      ocrText = await Promise.race([
-        tesseractPromise,
-        new Promise<string>((_, reject) => setTimeout(() => reject(new Error("OCR Timeout")), 10000))
-      ]);
-      ocrText = ocrText.trim();
-    } catch (ocrErr) {
-      console.error("Server-side Tesseract Error/Timeout:", ocrErr);
-      ocrText = ""; // Fallback triggers low confidence
-    }
-
     const payload = {
       contents: [
         {
           parts: [
             { text: promptText },
             { inlineData: { mimeType: 'image/jpeg', data: frontBase64 } },
-            { text: `[START RAW OCR TEXT OF INGREDIENTS PANEL]\n${ocrText || "(No legible text detected)"}\n[END RAW OCR TEXT]` }
+            { inlineData: { mimeType: 'image/jpeg', data: ingredientsBase64 } }
           ]
         }
       ],
