@@ -98,8 +98,8 @@ export const getDailyLimitInfo = (
   } else if (flag.ruleId === 'G4') {
     info.dailyLimitGrams = 2.2;
     info.nutrientPer100g = nutrition.trans_fat_g || 0;
-    info.limitStrEn = "Under 1% of daily energy intake (~2.2g) (WHO)";
-    info.limitStrHi = "दैनिक ऊर्जा सेवन के 1% से कम (~2.2 ग्राम) (WHO)";
+    info.limitStrEn = "Less than 1% of daily energy intake (~2.2g) (WHO)";
+    info.limitStrHi = "हर दिन की ऊर्जा के 1% से कम (~2.2 ग्राम) (WHO)";
     info.healthEn = "Association with increased LDL cholesterol and cardiovascular disease risk.";
     info.healthHi = "बढ़े हुए एलडीएल कोलेस्ट्रॉल और हृदय रोग के जोखिम से संबंध।";
     info.spoonCount = 0;

@@ -19,7 +19,7 @@ export const LowConfidenceScreen: React.FC = () => {
           {isEn ? (
             <>Let's try<br/>that scan again.</>
           ) : (
-            <>आइए उस स्कैन का<br/>फिर से प्रयास करें।</>
+            <>आइए उस स्कैन की<br/>फिर से कोशिश करें।</>
           )}
         </h2>
         
@@ -27,7 +27,7 @@ export const LowConfidenceScreen: React.FC = () => {
           {isEn ? (
             <>The photo was a little unclear —<br/>good lighting and a flat angle<br/>usually help.</>
           ) : (
-            <>तस्वीर थोड़ी अस्पष्ट थी —<br/>अच्छी रोशनी और एक समतल कोण<br/>आमतौर पर मदद करते हैं।</>
+            <>तस्वीर थोड़ी धुंधली थी —<br/>अच्छी रोशनी और एक समतल कोण<br/>आमतौर पर मदद करते हैं।</>
           )}
         </p>
         

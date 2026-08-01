@@ -30,10 +30,10 @@ export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainNa
   
   if (lowerRaw.includes("red dye 3") || lowerRaw.includes("erythrosine") || lowerRaw.includes("ins 127") || lowerRaw.includes("e127") || lowerRaw.includes("e 127")) {
     restrictionEn = "This ingredient is banned in food in the US (since January 2025) and strictly restricted in the EU, though permitted in India. (verified 30 July 2026)";
-    restrictionHi = "यह सामग्री अमेरिका में भोजन में प्रतिबंधित है (जनवरी 2025 से) और यूरोपीय संघ में सख्ती से प्रतिबंधित है, हालांकि भारत में इसकी अनुमति है। (सत्यापित 30 जुलाई 2026)";
+    restrictionHi = "यह सामग्री अमेरिका में भोजन में प्रतिबंधित है (जनवरी 2025 से) और यूरोपीय संघ में सख्ती से प्रतिबंधित है, हालांकि भारत में इसकी इजाज़त है। (सत्यापित 30 जुलाई 2026)";
   } else if (lowerRaw.includes("potassium iodate")) {
     restrictionEn = "This ingredient is banned in the EU, though permitted in India. (verified 30 July 2026)";
-    restrictionHi = "यह सामग्री यूरोपीय संघ में प्रतिबंधित है, हालांकि भारत में इसकी अनुमति है। (सत्यापित 30 जुलाई 2026)";
+    restrictionHi = "यह सामग्री यूरोपीय संघ में प्रतिबंधित है, हालांकि भारत में इसकी इजाज़त है। (सत्यापित 30 जुलाई 2026)";
   }
 
   // Preserve maida context note
@@ -81,7 +81,7 @@ export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainNa
             <Citation 
               shortLabel="FSSAI"
               textEn="Permitted for use in food by FSSAI (FSSAI regulates how much can be used, not just whether it's allowed)."
-              textHi="FSSAI द्वारा भोजन में उपयोग के लिए अनुमत (FSSAI यह नियंत्रित करता है कि कितना उपयोग किया जा सकता है, न कि केवल इसकी अनुमति है)।"
+              textHi="FSSAI से खाने में इस्तेमाल की इजाज़त है (FSSAI सिर्फ इजाज़त ही नहीं, बल्कि यह भी तय करता है कि इसे कितना इस्तेमाल किया जा सकता है)।"
               isEn={isEn}
             />
           )}

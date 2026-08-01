@@ -38,6 +38,7 @@ export default async function handler(req: Request) {
            - These values MUST be expressed as percentages of the full image dimensions (0 to 100).
            - If you cannot confidently localize an item on the image (e.g. it is inferred, illegible, or fabricated), you MUST set 'bounding_box' to null. Do not guess or hallucinate a bounding box.
          8. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredient text that is literally, clearly legible in the ingredients photo. DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. If the ingredients photo is blurry or illegible, lower 'extraction_confidence' to 'low' and return what you can actually read. Never fabricate additional items to complete the list.
+         9. HINDI TRANSLATION QUALITY: For 'localized_display' and any other Hindi text, you MUST use simple, everyday spoken Hindi (the register used in normal conversation). DO NOT use formal, Sanskrit-derived vocabulary if a common alternative exists (e.g., use कोशिश करें instead of प्रयास करें, इजाज़त instead of अनुमति). The tone should be human, conversational, and accessible.
          
          Output strictly in the provided JSON schema.
     `;
