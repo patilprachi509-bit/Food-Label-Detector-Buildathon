@@ -162,8 +162,8 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
       <div style={{ borderTop: '1px solid var(--color-divider)', paddingTop: '0.25rem' }}>
         <Citation 
           shortLabel="ICMR-NIN"
-          textEn={`Daily limit: ICMR-NIN. Portion guidance: capped conservatively to leave room for other meals.`}
-          textHi={`हर दिन की सीमा: ICMR-NIN। मात्रा की सलाह: बाकी खान-पान के लिए जगह बचाने के लिए इसे 25% पर रखा गया है।`}
+          textEn={`Source: Adult reference, ICMR-NIN Dietary Guidelines 2024`}
+          textHi={`स्रोत: वयस्क संदर्भ, ICMR-NIN आहार दिशानिर्देश 2024`}
           isEn={isEn}
         />
       </div>

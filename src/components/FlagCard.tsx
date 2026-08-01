@@ -187,10 +187,10 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
             }
             textHi={
               <>
-                स्रोत: {flag.source}
+                स्रोत: {flag.source === 'Adult reference, ICMR-NIN Dietary Guidelines 2024' ? 'वयस्क संदर्भ, ICMR-NIN आहार दिशानिर्देश 2024' : flag.source}
                 {userFocus === flag.nutrientFocus && flag.evalDirection && (
                   <div style={{ marginTop: '0.4rem', color: 'var(--color-fail)' }}>
-                    {flag.source} के अनुसार, यह सामान्य सीमा से {flag.evalDirection === 'above' ? 'ऊपर' : 'नीचे'} है।
+                    {flag.source === 'Adult reference, ICMR-NIN Dietary Guidelines 2024' ? 'ICMR-NIN' : flag.source} के अनुसार, यह सामान्य सीमा से {flag.evalDirection === 'above' ? 'ऊपर' : 'नीचे'} है।
                   </div>
                 )}
               </>
