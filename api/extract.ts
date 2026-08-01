@@ -1,7 +1,5 @@
-export const config = {
-  runtime: 'edge',
-};
-
+import Tesseract from 'tesseract.js';
+import path from 'path';
 export default async function handler(req: Request) {
   if (req.method !== 'POST') {
     return new Response('Method Not Allowed', { status: 405 });
@@ -61,36 +59,34 @@ export default async function handler(req: Request) {
       }
     };
 
-    // --- Google Cloud Vision OCR Pass (Ingredients Only) ---
+    // --- Server-Side Tesseract OCR Pass (Ingredients Only) ---
     let ocrText = "";
-    const visionApiKey = process.env.VISION_API_KEY;
-    
-    if (visionApiKey) {
+    const tesseractPromise = (async () => {
+      let worker;
       try {
-        const visionRes = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${visionApiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            requests: [
-              {
-                image: { content: ingredientsBase64 },
-                features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
-              }
-            ]
-          })
+        const modelPath = path.join(process.cwd(), 'api', 'models');
+        worker = await Tesseract.createWorker('eng', 1, {
+          langPath: modelPath,
+          cachePath: modelPath,
+          logger: m => {} 
         });
-        
-        if (visionRes.ok) {
-          const visionData = await visionRes.json();
-          ocrText = visionData.responses?.[0]?.fullTextAnnotation?.text || "";
-        } else {
-          console.error("Cloud Vision API Error:", await visionRes.text());
-        }
-      } catch (err) {
-        console.error("Cloud Vision Network Error:", err);
+        const imgBuffer = Buffer.from(ingredientsBase64, 'base64');
+        const { data: { text } } = await worker.recognize(imgBuffer);
+        return text;
+      } finally {
+        if (worker) await worker.terminate();
       }
-    } else {
-      console.warn("VISION_API_KEY is not set. Proceeding with empty OCR text.");
+    })();
+
+    try {
+      ocrText = await Promise.race([
+        tesseractPromise,
+        new Promise<string>((_, reject) => setTimeout(() => reject(new Error("OCR Timeout")), 10000))
+      ]);
+      ocrText = ocrText.trim();
+    } catch (ocrErr) {
+      console.error("Server-side Tesseract Error/Timeout:", ocrErr);
+      ocrText = ""; // Fallback triggers low confidence
     }
 
     const payload = {
