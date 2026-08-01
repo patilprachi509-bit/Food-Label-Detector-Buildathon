@@ -50,7 +50,7 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
   gFlags.forEach(f => {
     const limitInfo = getDailyLimitInfo(f, extractionResult, userGender);
     if (limitInfo && limitInfo.dailyLimitGrams > 0 && limitInfo.nutrientPer100g > 0) {
-      const targetGrams = (limitInfo.dailyLimitGrams / limitInfo.nutrientPer100g) * 100;
+      const targetGrams = (limitInfo.dailyLimitGrams * 0.25 / limitInfo.nutrientPer100g) * 100;
       
       if (targetGrams < minTargetGrams) {
         minTargetGrams = targetGrams;
@@ -90,22 +90,22 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
   
   if (fraction >= 1) {
     if (isPack && packWeight) {
-      primaryEn = `Good news — the full pack (${packWeight}g) fits within your daily ${limitingNutrientEn} balance today.`;
-      primaryHi = `अच्छी खबर — पूरा पैक (${packWeight}g) आज आपके दैनिक ${limitingNutrientHi} संतुलन में फिट बैठता है।`;
+      primaryEn = `Even the full pack (${packWeight}g) stays within a quarter of your daily ${limitingNutrientEn} budget — still worth pairing with lighter choices for the rest of the day.`;
+      primaryHi = `यहां तक कि पूरा पैक (${packWeight}g) आपके दैनिक ${limitingNutrientHi} बजट के एक चौथाई के भीतर रहता है — फिर भी दिन के बाकी समय के लिए हल्के विकल्पों के साथ जोड़ना बेहतर है।`;
     } else {
-      primaryEn = `Good news — a full serving (${refWeight}g) fits within your daily ${limitingNutrientEn} balance today.`;
-      primaryHi = `अच्छी खबर — एक पूरी सर्विंग (${refWeight}g) आज आपके दैनिक ${limitingNutrientHi} संतुलन में फिट बैठती है।`;
+      primaryEn = `Even a full serving (${refWeight}g) stays within a quarter of your daily ${limitingNutrientEn} budget — still worth pairing with lighter choices for the rest of the day.`;
+      primaryHi = `यहां तक कि एक पूरी सर्विंग (${refWeight}g) आपके दैनिक ${limitingNutrientHi} बजट के एक चौथाई के भीतर रहती है — फिर भी दिन के बाकी समय के लिए हल्के विकल्पों के साथ जोड़ना बेहतर है।`;
     }
   } else if (isSmallTaste) {
-    primaryEn = `Just a small taste (about ${roundedTarget}g) fits your balance today — best enjoyed occasionally.`;
-    primaryHi = `बस एक छोटा सा स्वाद (लगभग ${roundedTarget}g) आज आपके संतुलन में फिट बैठता है — कभी-कभार आनंद लेना सबसे अच्छा है।`;
+    primaryEn = `To leave room for the rest of your day, keep this to just a small taste (about ${roundedTarget}g).`;
+    primaryHi = `अपने बाकी दिन के लिए जगह छोड़ने के लिए, इसे सिर्फ एक छोटे से स्वाद (लगभग ${roundedTarget}g) तक सीमित रखें।`;
   } else {
     const fracTextEn = getFractionTextEn(fraction);
     const fracTextHi = getFractionTextHi(fraction);
     
     if (isPack) {
-      primaryEn = `To stay balanced today, limit yourself to about ${roundedTarget}g of this pack${fracTextEn ? ` — ${fracTextEn}` : ''}.`;
-      primaryHi = `आज संतुलित रहने के लिए, खुद को इस पैक के लगभग ${roundedTarget}g तक सीमित रखें${fracTextHi ? ` — ${fracTextHi}` : ''}।`;
+      primaryEn = `To leave room for the rest of your day, keep this to about ${roundedTarget}g of the pack${fracTextEn ? ` (${fracTextEn})` : ''}.`;
+      primaryHi = `अपने बाकी दिन के लिए जगह छोड़ने के लिए, इसे इस पैक के लगभग ${roundedTarget}g${fracTextHi ? ` (${fracTextHi})` : ''} तक सीमित रखें।`;
     } else if (isSpoon) {
       let spoonTextEn = `${roundedTarget}g`;
       let spoonTextHi = `${roundedTarget}g`;
@@ -113,11 +113,11 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
       else if (Math.abs(roundedTarget - 10) <= 2) { spoonTextEn = `2 teaspoons (${roundedTarget}g)`; spoonTextHi = `2 चम्मच (${roundedTarget}g)`; }
       else if (Math.abs(roundedTarget - 15) <= 2) { spoonTextEn = `1 tablespoon (${roundedTarget}g)`; spoonTextHi = `1 बड़ा चम्मच (${roundedTarget}g)`; }
       
-      primaryEn = `To stay balanced today, limit yourself to about ${spoonTextEn} of this today.`;
-      primaryHi = `आज संतुलित रहने के लिए, खुद को आज इसके लगभग ${spoonTextHi} तक सीमित रखें।`;
+      primaryEn = `To leave room for the rest of your day, keep this to about ${spoonTextEn}.`;
+      primaryHi = `अपने बाकी दिन के लिए जगह छोड़ने के लिए, इसे लगभग ${spoonTextHi} तक सीमित रखें।`;
     } else {
-      primaryEn = `To stay balanced today, limit yourself to about ${roundedTarget}g of this product.`;
-      primaryHi = `आज संतुलित रहने के लिए, खुद को इस उत्पाद के लगभग ${roundedTarget}g तक सीमित रखें।`;
+      primaryEn = `To leave room for the rest of your day, keep this to about ${roundedTarget}g of this product.`;
+      primaryHi = `अपने बाकी दिन के लिए जगह छोड़ने के लिए, इसे इस उत्पाद के लगभग ${roundedTarget}g तक सीमित रखें।`;
     }
   }
 
@@ -146,8 +146,8 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
       <div style={{ borderTop: '1px solid var(--color-divider)', paddingTop: '0.25rem' }}>
         <Citation 
           shortLabel="ICMR-NIN"
-          textEn={`Based on ${limitingNutrientEn}, the most limiting nutrient in this product (ICMR-NIN adult reference).`}
-          textHi={`${limitingNutrientHi} के आधार पर, इस उत्पाद में सबसे सीमित पोषक तत्व (ICMR-NIN वयस्क संदर्भ)।`}
+          textEn={`Daily limit: ICMR-NIN. Portion guidance: capped conservatively to leave room for other meals.`}
+          textHi={`दैनिक सीमा: ICMR-NIN। मात्रा मार्गदर्शन: अन्य भोजन के लिए जगह छोड़ने के लिए रूढ़िवादी रूप से 25% तक सीमित।`}
           isEn={isEn}
         />
       </div>
