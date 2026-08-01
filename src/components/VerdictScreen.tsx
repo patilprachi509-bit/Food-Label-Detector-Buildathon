@@ -102,8 +102,9 @@ export const VerdictScreen: React.FC = () => {
       if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) {
         verdictStr = isEn ? "NOT RECOMMENDED" : "अनुशंसित नहीं";
       } else if (isMostlyFine) {
-        const nutrient = flags[0].ruleId === 'G1' ? (isEn ? 'SUGAR' : 'चीनी') : flags[0].ruleId === 'G2' ? (isEn ? 'FAT' : 'वसा') : (isEn ? 'SALT' : 'नमक');
-        verdictStr = isEn ? `MOSTLY FINE — WATCH THE ${nutrient}` : `ज़्यादातर ठीक है, बस ${nutrient} पर ध्यान दें।`;
+        const nutrientEn = flags[0].ruleId === 'G1' ? 'SUGAR' : flags[0].ruleId === 'G2' ? 'FAT/OIL' : 'SALT';
+        const nutrientHi = flags[0].ruleId === 'G1' ? 'चीनी' : flags[0].ruleId === 'G2' ? 'वसा/तेल' : 'नमक';
+        verdictStr = isEn ? `MOSTLY FINE — WATCH THE ${nutrientEn}` : `ज़्यादातर ठीक है, बस ${nutrientHi} पर ध्यान दें।`;
       } else if (flags.some(f => f.type === 'needs_verification')) {
         verdictStr = isEn ? "VERIFICATION NEEDED" : "सत्यापन की आवश्यकता है";
       } else {
@@ -214,10 +215,11 @@ export const VerdictScreen: React.FC = () => {
                 </h2>
               );
             } else if (isMostlyFine) {
-              const nutrient = flags[0].ruleId === 'G1' ? (isEn ? 'SUGAR' : 'चीनी') : flags[0].ruleId === 'G2' ? (isEn ? 'FAT' : 'वसा') : (isEn ? 'SALT' : 'नमक');
+              const nutrientEn = flags[0].ruleId === 'G1' ? 'SUGAR' : flags[0].ruleId === 'G2' ? 'FAT/OIL' : 'SALT';
+              const nutrientHi = flags[0].ruleId === 'G1' ? 'चीनी' : flags[0].ruleId === 'G2' ? 'वसा/तेल' : 'नमक';
               return (
                 <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-verify)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
-                  {isEn ? `MOSTLY FINE — WATCH THE ${nutrient}` : `ज़्यादातर ठीक है, बस ${nutrient} पर ध्यान दें।`}
+                  {isEn ? `MOSTLY FINE — WATCH THE ${nutrientEn}` : `ज़्यादातर ठीक है, बस ${nutrientHi} पर ध्यान दें।`}
                 </h2>
               );
             } else if (flags.some(f => f.type === 'needs_verification')) {
