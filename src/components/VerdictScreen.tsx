@@ -185,7 +185,7 @@ export const VerdictScreen: React.FC = () => {
         <div style={{ marginBottom: '1.5rem', textAlign: 'center', paddingTop: '1.5rem' }}>
           
           {/* Product Name Display */}
-          <h1 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.5rem', marginTop: 0, letterSpacing: '1px', lineHeight: 1.2 }}>
+          <h1 style={{ fontSize: '1.2rem', fontWeight: 'normal', marginBottom: '0.5rem', marginTop: 0, opacity: 0.8, lineHeight: 1.2 }}>
             {(() => {
               const brand = extractionResult?.front_of_pack?.brand_name?.trim();
               const product = extractionResult?.front_of_pack?.product_name?.trim();
