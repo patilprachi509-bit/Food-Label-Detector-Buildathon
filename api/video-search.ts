@@ -8,7 +8,7 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const { brandName, productName } = await req.json();
+    const { brandName, productName } = (await req.json()) as any;
     const apiKey = process.env.YOUTUBE_API_KEY;
 
     if (!apiKey) {
@@ -36,7 +36,7 @@ export default async function handler(req: Request) {
       return new Response(JSON.stringify({ videoId: null }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as any;
     
     // Conservative whole-word matching
     const searchTerms = [brandName, productName].filter(Boolean).map(term => term.toLowerCase());

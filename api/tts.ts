@@ -8,7 +8,7 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const { synthesisText } = await req.json();
+    const { synthesisText } = (await req.json()) as any;
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -39,7 +39,7 @@ export default async function handler(req: Request) {
       return new Response(`Gemini API Error: ${errorText}`, { status: response.status });
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as any;
     const audioBase64 = data.candidates[0].content.parts.find((p: any) => p.inlineData && p.inlineData.mimeType.startsWith('audio')).inlineData.data;
     
     return new Response(JSON.stringify({ audioBase64 }), {

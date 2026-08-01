@@ -8,7 +8,7 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const { frontBase64, ingredientsBase64 } = await req.json();
+    const { frontBase64, ingredientsBase64 } = (await req.json()) as any;
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -142,7 +142,7 @@ export default async function handler(req: Request) {
       return new Response(`Gemini API Error: ${errorText}`, { status: response.status });
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as any;
     const rawResult = data.candidates[0].content.parts[0].text;
     
     return new Response(rawResult, {
