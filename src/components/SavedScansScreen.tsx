@@ -154,7 +154,14 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.1rem', flex: 1 }}>
-              {scan.productName || scan.brandName || (isEn ? "Unknown Product" : "अज्ञात उत्पाद")}
+              {(() => {
+                const brand = scan.brandName?.trim();
+                const prod = scan.productName?.trim();
+                if (brand && prod) return `${brand} ${prod}`;
+                if (brand) return brand;
+                if (prod) return prod;
+                return isEn ? "Unknown Product" : "अज्ञात उत्पाद";
+              })()}
             </h4>
             <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: badgeColor, backgroundColor: badgeBg, padding: '2px 8px', borderRadius: '12px', marginLeft: '0.5rem', whiteSpace: 'nowrap' }}>
               {badgeText}

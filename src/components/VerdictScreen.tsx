@@ -206,6 +206,19 @@ export const VerdictScreen: React.FC = () => {
         
         {/* Overarching Verdict */}
         <div style={{ marginBottom: '1.5rem', textAlign: 'center', paddingTop: '1.5rem' }}>
+          
+          {/* Product Name Display */}
+          <h1 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.5rem', marginTop: 0, letterSpacing: '1px', lineHeight: 1.2 }}>
+            {(() => {
+              const brand = extractionResult?.front_of_pack?.brand_name?.trim();
+              const product = extractionResult?.front_of_pack?.product_name?.trim();
+              if (brand && product) return `${brand} ${product}`;
+              if (brand) return brand;
+              if (product) return product;
+              return isEn ? "Unknown Product" : "अज्ञात उत्पाद";
+            })()}
+          </h1>
+
           {(() => {
             const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
             if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) {
