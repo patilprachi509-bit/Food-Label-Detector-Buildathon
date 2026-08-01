@@ -43,6 +43,16 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
     }
   }
 
+  console.log("=== PORTION CALCULATION DEBUG LOG ===");
+  console.log("RAW EXTRACTION VALUES:");
+  console.log("consumption_format:", format);
+  console.log("net_weight_g:", packWeight);
+  console.log("serving_size string:", servingStr);
+  console.log("DERIVED STATE:");
+  console.log("refWeight chosen:", refWeight);
+  console.log("isPack evaluated to:", isPack);
+  console.log("=====================================");
+
   let minTargetGrams = Infinity;
   let limitingNutrientEn = '';
   let limitingNutrientHi = '';
@@ -66,6 +76,8 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
   });
 
   if (minTargetGrams === Infinity) return null;
+
+  console.log("Limiting Nutrient Per 100g:", limitingNutrientPer100g);
 
   const roundedTarget = Math.round(minTargetGrams);
   const fraction = minTargetGrams / refWeight;
