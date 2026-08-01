@@ -9,15 +9,19 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, onShareClick, onCompareClick }) => {
-  const { viewingSavedScanId, setViewingSavedScanId, setIsHistoryOpen, userLanguage, resetApp } = useAppContext();
+  const { viewingSavedScanId, setViewingSavedScanId, setIsHistoryOpen, userLanguage, resetApp, viewingBatchResultId, setViewingBatchResultId, setExtractionResult } = useAppContext();
   const isEn = userLanguage === 'en';
   
   const isSavedView = !!viewingSavedScanId;
+  const isBatchView = !!viewingBatchResultId;
 
   const handleBack = () => {
     if (isSavedView) {
       setViewingSavedScanId(null);
       setIsHistoryOpen(true);
+    } else if (isBatchView) {
+      setViewingBatchResultId(null);
+      setExtractionResult(null);
     } else {
       resetApp();
     }

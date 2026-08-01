@@ -43,6 +43,15 @@ export interface SavedScan {
   userFocus: UserFocus;
 }
 
+export type BatchStatus = 'pending' | 'processing' | 'done' | 'error';
+export interface BatchItem {
+  id: string;
+  frontImage: string | null;
+  ingredientsImage: string | null;
+  status: BatchStatus;
+  result?: ExtractionResult | null;
+}
+
 interface AppContextType {
   userLanguage: Language;
   setUserLanguage: (lang: Language) => void;
@@ -62,6 +71,7 @@ interface AppContextType {
   // Saved Scans
   savedScans: SavedScan[];
   saveScan: () => void;
+  saveMultipleScans: (scans: SavedScan[]) => void;
   deleteScan: (id: string) => void;
   clearScans: () => void;
   isHistoryOpen: boolean;
@@ -75,9 +85,24 @@ interface AppContextType {
   isScanning: boolean;
   setIsScanning: (scanning: boolean) => void;
   resetApp: () => void;
+  
+  // Batch Scanning
+  isBatchMode: boolean;
+  setIsBatchMode: (val: boolean) => void;
+  batchItems: BatchItem[];
+  setBatchItems: React.Dispatch<React.SetStateAction<BatchItem[]>>;
+  isCapturingBatchItem: boolean;
+  setIsCapturingBatchItem: (val: boolean) => void;
+  isBatchProcessing: boolean;
+  setIsBatchProcessing: (val: boolean) => void;
+  isBatchFinished: boolean;
+  setIsBatchFinished: (val: boolean) => void;
+  viewingBatchResultId: string | null;
+  setViewingBatchResultId: (id: string | null) => void;
+  clearBatchMode: () => void;
 }
 
-const AppContext = createContext<AppContextType | undefined>(undefined);
+export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [userLanguage, setUserLanguageState] = useState<Language>(localStorage.getItem('user_language') as Language);
@@ -87,6 +112,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [extractionResult, setExtractionResult] = useState<ExtractionResult | null>(null);
   const [userFocus, setUserFocus] = useState<UserFocus>(null);
   const [hasChosenResultType, setHasChosenResultType] = useState<ResultType>(null);
+
+  // Batch states
+  const [isBatchMode, setIsBatchMode] = useState(false);
+  const [batchItems, setBatchItems] = useState<BatchItem[]>([]);
+  const [isCapturingBatchItem, setIsCapturingBatchItem] = useState(false);
+  const [isBatchProcessing, setIsBatchProcessing] = useState(false);
+  const [isBatchFinished, setIsBatchFinished] = useState(false);
+  const [viewingBatchResultId, setViewingBatchResultId] = useState<string | null>(null);
 
   const [savedScans, setSavedScans] = useState<SavedScan[]>(() => {
     try {
@@ -114,6 +147,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setUserGenderState(gender);
   };
 
+  const clearBatchMode = () => {
+    setIsBatchMode(false);
+    setBatchItems([]);
+    setIsCapturingBatchItem(false);
+    setIsBatchProcessing(false);
+    setIsBatchFinished(false);
+    setViewingBatchResultId(null);
+    setFrontImage(null);
+    setIngredientsImage(null);
+    setExtractionResult(null);
+  };
+
   const resetApp = () => {
     setFrontImage(null);
     setIngredientsImage(null);
@@ -125,6 +170,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setViewingSavedScanId(null);
     setIsScanning(false);
     setHasChosenResultType(null);
+    clearBatchMode();
   };
 
   const saveScan = () => {
@@ -138,6 +184,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       userFocus
     };
     const updated = [newScan, ...savedScans];
+    setSavedScans(updated);
+    localStorage.setItem('saved_scans', JSON.stringify(updated));
+  };
+
+  const saveMultipleScans = (newScans: SavedScan[]) => {
+    const updated = [...newScans, ...savedScans];
     setSavedScans(updated);
     localStorage.setItem('saved_scans', JSON.stringify(updated));
   };
@@ -161,13 +213,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ingredientsImage, setIngredientsImage,
       extractionResult, setExtractionResult,
       userFocus, setUserFocus,
-      savedScans, saveScan, deleteScan, clearScans,
+      savedScans, saveScan, saveMultipleScans, deleteScan, clearScans,
       isHistoryOpen, setIsHistoryOpen,
       isHowItWorksOpen, setIsHowItWorksOpen,
       isIngredientsOpen, setIsIngredientsOpen,
       viewingSavedScanId, setViewingSavedScanId,
       isScanning, setIsScanning, resetApp,
-      hasChosenResultType, setHasChosenResultType
+      hasChosenResultType, setHasChosenResultType,
+      isBatchMode, setIsBatchMode,
+      batchItems, setBatchItems,
+      isCapturingBatchItem, setIsCapturingBatchItem,
+      isBatchProcessing, setIsBatchProcessing,
+      isBatchFinished, setIsBatchFinished,
+      viewingBatchResultId, setViewingBatchResultId,
+      clearBatchMode
     }}>
       {children}
     </AppContext.Provider>

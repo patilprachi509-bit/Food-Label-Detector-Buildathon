@@ -2,7 +2,7 @@ import React from 'react';
 import { useAppContext } from '../context/AppContext';
 
 export const HomeScreen: React.FC = () => {
-  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsScanning, setIsHowItWorksOpen } = useAppContext();
+  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsScanning, setIsHowItWorksOpen, setIsBatchMode } = useAppContext();
   const isEn = userLanguage === 'en';
 
   const toggleLanguage = () => {
@@ -101,8 +101,38 @@ export const HomeScreen: React.FC = () => {
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </button>
-        
-        
+
+        <button 
+          onClick={() => setIsBatchMode(true)}
+          style={{ 
+            width: '100%', 
+            backgroundColor: 'transparent', 
+            color: 'var(--color-text)', 
+            border: '2px solid var(--color-pass)', 
+            borderRadius: '16px', 
+            padding: '1.25rem', 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            transition: 'opacity 0.2s',
+            marginTop: '0.5rem'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--color-pass)' }}>
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <line x1="9" y1="3" x2="9" y2="21"/>
+            </svg>
+            <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255,255,255,0.3)', flexShrink: 0 }}></div>
+            <span className="headline-en" style={{ fontSize: '1.1rem', letterSpacing: '0.5px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+              {isEn ? 'SCAN MULTIPLE' : 'कई उत्पाद स्कैन करें'}
+            </span>
+          </div>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--color-pass)' }}>
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
         <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
           <button 
             onClick={() => setIsHowItWorksOpen(true)}
