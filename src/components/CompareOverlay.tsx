@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ExtractionResult, SavedScan } from '../context/AppContext';
 import { evaluateRules } from '../utils/ruleEngine';
+import type { Flag } from '../utils/ruleEngine';
 
 interface CompareOverlayProps {
   currentScan: ExtractionResult;
@@ -14,8 +15,23 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
   const currentFlags = evaluateRules(currentScan, null);
   const savedFlags = evaluateRules(savedScan.extractionResult, savedScan.userFocus);
 
-  const currentVerdict = currentFlags.length > 0 ? (isEn ? "Flagged" : "फ़्लैग किया गया") : (isEn ? "Grade A" : "ग्रेड ए");
-  const savedVerdict = savedFlags.length > 0 ? (isEn ? "Flagged" : "फ़्लैग किया गया") : (isEn ? "Grade A" : "ग्रेड ए");
+  const getOverallVerdict = (flagsList: Flag[]) => {
+    if (flagsList.length === 0) return isEn ? "Grade A" : "ग्रेड ए";
+    const isMostlyFine = flagsList.length === 1 && ['G1', 'G2', 'G3'].includes(flagsList[0].ruleId);
+    if (flagsList.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) {
+      return isEn ? "Flagged" : "फ़्लैग किया गया";
+    }
+    if (isMostlyFine) {
+      return isEn ? "Mostly Fine" : "ज़्यादातर ठीक है";
+    }
+    if (flagsList.some(f => f.type === 'needs_verification')) {
+      return isEn ? "Needs Verification" : "सत्यापन की आवश्यकता है";
+    }
+    return isEn ? "Minor Issues" : "मामूली समस्याएँ";
+  };
+
+  const currentVerdict = getOverallVerdict(currentFlags);
+  const savedVerdict = getOverallVerdict(savedFlags);
 
   const currentIsFlagged = currentFlags.length > 0;
   const savedIsFlagged = savedFlags.length > 0;

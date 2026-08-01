@@ -15,7 +15,7 @@ interface Props {
   flags: Flag[];
   extractionResult: ExtractionResult;
   isEn: boolean;
-  overallState: 'NOT RECOMMENDED' | 'VERIFICATION NEEDED' | 'MINOR ISSUES' | 'GOOD CHOICE';
+  overallState: 'NOT RECOMMENDED' | 'MOSTLY FINE' | 'VERIFICATION NEEDED' | 'MINOR ISSUES' | 'GOOD CHOICE';
 }
 
 export const VerdictSummaryVisual: React.FC<Props> = ({ flags, extractionResult, isEn, overallState }) => {
@@ -33,7 +33,7 @@ export const VerdictSummaryVisual: React.FC<Props> = ({ flags, extractionResult,
   if (overallState === 'NOT RECOMMENDED') {
     FaceIcon = IconCross;
     faceColor = 'var(--color-fail)';
-  } else if (overallState === 'VERIFICATION NEEDED' || overallState === 'MINOR ISSUES') {
+  } else if (overallState === 'MOSTLY FINE' || overallState === 'VERIFICATION NEEDED' || overallState === 'MINOR ISSUES') {
     FaceIcon = IconWarning;
     faceColor = 'var(--color-verify)';
   }

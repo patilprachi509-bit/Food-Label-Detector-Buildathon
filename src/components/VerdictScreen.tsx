@@ -98,8 +98,12 @@ export const VerdictScreen: React.FC = () => {
     
     let verdictStr = isEn ? "NO ISSUES FOUND" : "कोई समस्या नहीं मिली";
     if (flags.length > 0) {
-      if (flags.some(f => f.type === 'claim_contradiction' || f.type === 'general_health')) {
+      const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
+      if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) {
         verdictStr = isEn ? "NOT RECOMMENDED" : "अनुशंसित नहीं";
+      } else if (isMostlyFine) {
+        const nutrient = flags[0].ruleId === 'G1' ? (isEn ? 'SUGAR' : 'चीनी') : flags[0].ruleId === 'G2' ? (isEn ? 'FAT' : 'वसा') : (isEn ? 'SALT' : 'नमक');
+        verdictStr = isEn ? `MOSTLY FINE — WATCH THE ${nutrient}` : `ज़्यादातर ठीक है, बस ${nutrient} पर ध्यान दें।`;
       } else if (flags.some(f => f.type === 'needs_verification')) {
         verdictStr = isEn ? "VERIFICATION NEEDED" : "सत्यापन की आवश्यकता है";
       } else {
@@ -201,23 +205,41 @@ export const VerdictScreen: React.FC = () => {
         
         {/* Overarching Verdict */}
         <div style={{ marginBottom: '1.5rem', textAlign: 'center', paddingTop: '1.5rem' }}>
-          {flags.some(f => f.type === 'claim_contradiction' || f.type === 'general_health') ? (
-            <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-fail)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
-              {isEn ? 'NOT RECOMMENDED' : 'अनुशंसित नहीं'}
-            </h2>
-          ) : flags.some(f => f.type === 'needs_verification') ? (
-            <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-verify)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
-              {isEn ? 'VERIFICATION NEEDED' : 'सत्यापन की आवश्यकता है'}
-            </h2>
-          ) : flags.length > 0 ? (
-            <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-pass)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
-              {isEn ? 'MINOR ISSUES' : 'मामूली समस्याएँ'}
-            </h2>
-          ) : (
-             <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-pass)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
-              {isEn ? 'GOOD CHOICE' : 'अच्छा विकल्प'}
-            </h2>
-          )}
+          {(() => {
+            const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
+            if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) {
+              return (
+                <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-fail)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
+                  {isEn ? 'NOT RECOMMENDED' : 'अनुशंसित नहीं'}
+                </h2>
+              );
+            } else if (isMostlyFine) {
+              const nutrient = flags[0].ruleId === 'G1' ? (isEn ? 'SUGAR' : 'चीनी') : flags[0].ruleId === 'G2' ? (isEn ? 'FAT' : 'वसा') : (isEn ? 'SALT' : 'नमक');
+              return (
+                <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-verify)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
+                  {isEn ? `MOSTLY FINE — WATCH THE ${nutrient}` : `ज़्यादातर ठीक है, बस ${nutrient} पर ध्यान दें।`}
+                </h2>
+              );
+            } else if (flags.some(f => f.type === 'needs_verification')) {
+              return (
+                <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-verify)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
+                  {isEn ? 'VERIFICATION NEEDED' : 'सत्यापन की आवश्यकता है'}
+                </h2>
+              );
+            } else if (flags.length > 0) {
+              return (
+                <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-pass)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
+                  {isEn ? 'MINOR ISSUES' : 'मामूली समस्याएँ'}
+                </h2>
+              );
+            } else {
+              return (
+                <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-pass)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
+                  {isEn ? 'GOOD CHOICE' : 'अच्छा विकल्प'}
+                </h2>
+              );
+            }
+          })()}
         </div>
 
         {/* Verdict Summary Visual */}
@@ -226,11 +248,14 @@ export const VerdictScreen: React.FC = () => {
             flags={flags}
             extractionResult={extractionResult}
             isEn={isEn}
-            overallState={
-              flags.some(f => f.type === 'claim_contradiction' || f.type === 'general_health') ? 'NOT RECOMMENDED' :
-              flags.some(f => f.type === 'needs_verification') ? 'VERIFICATION NEEDED' :
-              flags.length > 0 ? 'MINOR ISSUES' : 'GOOD CHOICE'
-            }
+            overallState={(() => {
+              const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
+              if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) return 'NOT RECOMMENDED';
+              if (isMostlyFine) return 'MOSTLY FINE';
+              if (flags.some(f => f.type === 'needs_verification')) return 'VERIFICATION NEEDED';
+              if (flags.length > 0) return 'MINOR ISSUES';
+              return 'GOOD CHOICE';
+            })()}
           />
         )}
 
