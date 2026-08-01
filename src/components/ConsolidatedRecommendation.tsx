@@ -90,22 +90,22 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
   
   if (fraction >= 1) {
     if (isPack && packWeight) {
-      primaryEn = `Even the full pack (${packWeight}g) stays within a quarter of your daily ${limitingNutrientEn} budget — still worth pairing with lighter choices for the rest of the day.`;
-      primaryHi = `यहां तक कि पूरा पैक (${packWeight}g) आपके दैनिक ${limitingNutrientHi} बजट के एक चौथाई के भीतर रहता है — फिर भी दिन के बाकी समय के लिए हल्के विकल्पों के साथ जोड़ना बेहतर है।`;
+      primaryEn = `Even the full pack (${packWeight}g) stays within a quarter of your daily ${limitingNutrientEn} budget — still worth pairing with lighter choices for your daily balance.`;
+      primaryHi = `यहां तक कि पूरा पैक (${packWeight}g) आपके दैनिक ${limitingNutrientHi} बजट के एक चौथाई के भीतर रहता है — फिर भी अपने दैनिक संतुलन के लिए हल्के विकल्पों के साथ जोड़ना बेहतर है।`;
     } else {
-      primaryEn = `Even a full serving (${refWeight}g) stays within a quarter of your daily ${limitingNutrientEn} budget — still worth pairing with lighter choices for the rest of the day.`;
-      primaryHi = `यहां तक कि एक पूरी सर्विंग (${refWeight}g) आपके दैनिक ${limitingNutrientHi} बजट के एक चौथाई के भीतर रहती है — फिर भी दिन के बाकी समय के लिए हल्के विकल्पों के साथ जोड़ना बेहतर है।`;
+      primaryEn = `Even a full serving (${refWeight}g) stays within a quarter of your daily ${limitingNutrientEn} budget — still worth pairing with lighter choices for your daily balance.`;
+      primaryHi = `यहां तक कि एक पूरी सर्विंग (${refWeight}g) आपके दैनिक ${limitingNutrientHi} बजट के एक चौथाई के भीतर रहती है — फिर भी अपने दैनिक संतुलन के लिए हल्के विकल्पों के साथ जोड़ना बेहतर है।`;
     }
   } else if (isSmallTaste) {
-    primaryEn = `To leave room for the rest of your day, keep this to just a small taste (about ${roundedTarget}g).`;
-    primaryHi = `अपने बाकी दिन के लिए जगह छोड़ने के लिए, इसे सिर्फ एक छोटे से स्वाद (लगभग ${roundedTarget}g) तक सीमित रखें।`;
+    primaryEn = `To leave room for your daily balance, keep this to just a small taste (about ${roundedTarget}g).`;
+    primaryHi = `अपने दैनिक संतुलन के लिए जगह छोड़ने के लिए, इसे सिर्फ एक छोटे से स्वाद (लगभग ${roundedTarget}g) तक सीमित रखें।`;
   } else {
     const fracTextEn = getFractionTextEn(fraction);
     const fracTextHi = getFractionTextHi(fraction);
     
     if (isPack) {
-      primaryEn = `To leave room for the rest of your day, keep this to about ${roundedTarget}g of the pack${fracTextEn ? ` (${fracTextEn})` : ''}.`;
-      primaryHi = `अपने बाकी दिन के लिए जगह छोड़ने के लिए, इसे इस पैक के लगभग ${roundedTarget}g${fracTextHi ? ` (${fracTextHi})` : ''} तक सीमित रखें।`;
+      primaryEn = `To leave room for your daily balance, keep this to about ${roundedTarget}g of the pack${fracTextEn ? ` (${fracTextEn})` : ''}.`;
+      primaryHi = `अपने दैनिक संतुलन के लिए जगह छोड़ने के लिए, इसे इस पैक के लगभग ${roundedTarget}g${fracTextHi ? ` (${fracTextHi})` : ''} तक सीमित रखें।`;
     } else if (isSpoon) {
       let spoonTextEn = `${roundedTarget}g`;
       let spoonTextHi = `${roundedTarget}g`;
@@ -113,11 +113,11 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
       else if (Math.abs(roundedTarget - 10) <= 2) { spoonTextEn = `2 teaspoons (${roundedTarget}g)`; spoonTextHi = `2 चम्मच (${roundedTarget}g)`; }
       else if (Math.abs(roundedTarget - 15) <= 2) { spoonTextEn = `1 tablespoon (${roundedTarget}g)`; spoonTextHi = `1 बड़ा चम्मच (${roundedTarget}g)`; }
       
-      primaryEn = `To leave room for the rest of your day, keep this to about ${spoonTextEn}.`;
-      primaryHi = `अपने बाकी दिन के लिए जगह छोड़ने के लिए, इसे लगभग ${spoonTextHi} तक सीमित रखें।`;
+      primaryEn = `To leave room for your daily balance, keep this to about ${spoonTextEn}.`;
+      primaryHi = `अपने दैनिक संतुलन के लिए जगह छोड़ने के लिए, इसे लगभग ${spoonTextHi} तक सीमित रखें।`;
     } else {
-      primaryEn = `To leave room for the rest of your day, keep this to about ${roundedTarget}g of this product.`;
-      primaryHi = `अपने बाकी दिन के लिए जगह छोड़ने के लिए, इसे इस उत्पाद के लगभग ${roundedTarget}g तक सीमित रखें।`;
+      primaryEn = `To leave room for your daily balance, keep this to about ${roundedTarget}g of this product.`;
+      primaryHi = `अपने दैनिक संतुलन के लिए जगह छोड़ने के लिए, इसे इस उत्पाद के लगभग ${roundedTarget}g तक सीमित रखें।`;
     }
   }
 
