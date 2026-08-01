@@ -13,7 +13,7 @@ const CACHE_KEY = 'extraction_cache_v2';
 const MAX_CACHE_SIZE = 100;
 
 export const BatchProcessingScreen: React.FC = () => {
-  const { userLanguage, batchItems, setBatchItems, setIsBatchFinished } = useAppContext();
+  const { userLanguage, batchItems, setBatchItems, setIsBatchFinished, setViewingBatchResultId, setExtractionResult } = useAppContext();
   const isEn = userLanguage === 'en';
   const processingStartedRef = useRef(false);
 
@@ -54,11 +54,17 @@ export const BatchProcessingScreen: React.FC = () => {
           }
 
           if (!data) {
-            const response = await fetch('/api/extract', {
+            const fetchPromise = fetch('/api/extract', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ frontBase64, ingredientsBase64 })
             });
+
+            const timeoutPromise = new Promise<Response>((_, reject) => {
+              setTimeout(() => reject(new Error("Processing timeout")), 25000);
+            });
+
+            const response = await Promise.race([fetchPromise, timeoutPromise]);
 
             if (!response.ok) {
               const errText = await response.text();
@@ -175,30 +181,51 @@ export const BatchProcessingScreen: React.FC = () => {
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {batchItems.map((item, idx) => (
-          <div key={item.id} style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--color-surface)', padding: '1rem', borderRadius: '12px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '8px', overflow: 'hidden', backgroundColor: 'var(--color-divider)', marginRight: '1rem', flexShrink: 0 }}>
-              {item.frontImage && <img src={item.frontImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-            </div>
-            
-            <div style={{ flex: 1 }}>
-              <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem' }}>
-                {isEn ? `Product ${idx + 1}` : `उत्पाद ${idx + 1}`}
-              </h4>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                {item.status === 'pending' && <span style={{ opacity: 0.5, fontSize: '0.85rem' }}>{isEn ? 'Waiting...' : 'प्रतीक्षा में...'}</span>}
-                {item.status === 'processing' && (
-                  <>
-                    <div className="loader" style={{ width: '12px', height: '12px', borderWidth: '2px', margin: 0 }}></div>
-                    <span style={{ color: 'var(--color-pass)', fontSize: '0.85rem', fontWeight: 'bold' }}>{isEn ? 'Processing' : 'प्रोसेसिंग'}</span>
-                  </>
-                )}
-                {item.status === 'done' && <span style={{ color: 'var(--color-pass)', fontSize: '0.85rem', fontWeight: 'bold' }}>{isEn ? 'Done' : 'पूरा हुआ'}</span>}
-                {item.status === 'error' && <span style={{ color: 'var(--color-fail)', fontSize: '0.85rem', fontWeight: 'bold' }}>{isEn ? 'Failed' : 'विफल रहा'}</span>}
+        {batchItems.map((item, idx) => {
+          const isDone = item.status === 'done';
+          return (
+            <div 
+              key={item.id} 
+              onClick={() => {
+                if (isDone) {
+                  setViewingBatchResultId(item.id);
+                  if (item.result) {
+                    setExtractionResult(item.result);
+                  }
+                }
+              }}
+              style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--color-surface)', padding: '1rem', borderRadius: '12px', cursor: isDone ? 'pointer' : 'default', boxShadow: isDone ? '0 2px 8px rgba(0,0,0,0.05)' : 'none' }}
+            >
+              <div style={{ width: '40px', height: '40px', borderRadius: '8px', overflow: 'hidden', backgroundColor: 'var(--color-divider)', marginRight: '1rem', flexShrink: 0 }}>
+                {item.frontImage && <img src={item.frontImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
               </div>
+              
+              <div style={{ flex: 1 }}>
+                <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem' }}>
+                  {isEn ? `Product ${idx + 1}` : `उत्पाद ${idx + 1}`}
+                </h4>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  {item.status === 'pending' && <span style={{ opacity: 0.5, fontSize: '0.85rem' }}>{isEn ? 'Waiting...' : 'प्रतीक्षा में...'}</span>}
+                  {item.status === 'processing' && (
+                    <>
+                      <div className="loader" style={{ width: '12px', height: '12px', borderWidth: '2px', margin: 0 }}></div>
+                      <span style={{ color: 'var(--color-pass)', fontSize: '0.85rem', fontWeight: 'bold' }}>{isEn ? 'Processing' : 'प्रोसेसिंग'}</span>
+                    </>
+                  )}
+                  {item.status === 'done' && <span style={{ color: 'var(--color-pass)', fontSize: '0.85rem', fontWeight: 'bold' }}>{isEn ? 'Done' : 'पूरा हुआ'}</span>}
+                  {item.status === 'error' && <span style={{ color: 'var(--color-fail)', fontSize: '0.85rem', fontWeight: 'bold' }}>{isEn ? 'Failed' : 'विफल रहा'}</span>}
+                </div>
+              </div>
+              {isDone && (
+                <div style={{ marginLeft: '1rem', opacity: 0.5 }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
     </div>
