@@ -19,7 +19,10 @@ interface CacheEntry {
 }
 
 export const ProcessingScreen: React.FC = () => {
-  const { userLanguage, frontImage, ingredientsImage, thirdImage, setExtractionResult } = useAppContext();
+  const { 
+    userLanguage, frontImage, ingredientsImage, thirdImage, 
+    setExtractionResult, setPendingExtractionResult
+  } = useAppContext();
   const [error, setError] = useState<string | null>(null);
   const [loadingStep, setLoadingStep] = useState(0);
   const fetchPromiseRef = React.useRef<Promise<any> | null>(null);
@@ -111,7 +114,7 @@ export const ProcessingScreen: React.FC = () => {
           .then(res => res.json())
           .then(videoData => {
             if (isMounted && videoData.videoId) {
-              setExtractionResult(prev => {
+              setPendingExtractionResult((prev: any) => {
                 if (!prev) return prev;
                 return {
                   ...prev,

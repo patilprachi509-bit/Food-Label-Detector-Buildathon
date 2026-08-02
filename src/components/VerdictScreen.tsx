@@ -13,7 +13,7 @@ import { VerdictSummaryVisual } from './VerdictSummaryVisual';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
 
 export const VerdictScreen: React.FC = () => {
-  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, frontImage, ingredientsImage, thirdImage, userGender, setUserGender, setHasChosenResultType } = useAppContext();
+  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType } = useAppContext();
   const isEn = userLanguage === 'en';
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
@@ -184,9 +184,8 @@ export const VerdictScreen: React.FC = () => {
               if (g3Fired) { exceededEn.push('SALT'); exceededHi.push('नमक'); }
               if (g4Fired) { exceededEn.push('TRANS FAT'); exceededHi.push('ट्रांस फैट'); }
 
-              let headlineTextEn = 'NOT RECOMMENDED';
-              let headlineTextHi = 'अनुशंसित नहीं';
               
+
               const headlinesEn: string[] = [];
               const headlinesHi: string[] = [];
               
