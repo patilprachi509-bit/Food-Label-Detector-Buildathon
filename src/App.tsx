@@ -3,7 +3,6 @@ import './App.css';
 import { AppProvider, useAppContext } from './context/AppContext';
 import { LanguagePicker } from './components/LanguagePicker';
 import { CameraCapture } from './components/CameraCapture';
-import { ThirdImageInterstitial } from './components/ThirdImageInterstitial';
 import { ProcessingScreen } from './components/ProcessingScreen';
 import { LowConfidenceScreen } from './components/PlaceholderScreens';
 import { VerdictScreen } from './components/VerdictScreen';
@@ -38,12 +37,8 @@ const BatchCaptureManager: React.FC = () => {
     }
   }, [frontImage, ingredientsImage, thirdImage, thirdImageStatus, setBatchItems, setFrontImage, setIngredientsImage, setThirdImage, setThirdImageStatus, setIsCapturingBatchItem]);
 
-  if (thirdImageStatus === 'pending') {
-    return <CameraCapture step={3} onCapture={() => setThirdImageStatus('done')} />;
-  }
-
-  if (frontImage && ingredientsImage && thirdImageStatus === null) {
-    return <ThirdImageInterstitial />;
+  if (thirdImageStatus === 'pending' || thirdImageStatus === null) {
+    return <CameraCapture step={3} onCapture={() => setThirdImageStatus('done')} onSkip={() => setThirdImageStatus('skipped')} />;
   }
 
   if (!frontImage) return <CameraCapture step={1} onCapture={() => {}} />;
@@ -120,11 +115,8 @@ const AppContent: React.FC = () => {
   }
 
   if (frontImage && ingredientsImage) {
-    if (thirdImageStatus === 'pending') {
-      return <CameraCapture step={3} onCapture={() => setThirdImageStatus('done')} />;
-    }
-    if (thirdImageStatus === null) {
-      return <ThirdImageInterstitial />;
+    if (thirdImageStatus === 'pending' || thirdImageStatus === null) {
+      return <CameraCapture step={3} onCapture={() => setThirdImageStatus('done')} onSkip={() => setThirdImageStatus('skipped')} />;
     }
     return <ProcessingScreen />;
   }

@@ -4,9 +4,10 @@ import { useAppContext } from '../context/AppContext';
 interface CameraCaptureProps {
   step: 1 | 2 | 3;
   onCapture: () => void;
+  onSkip?: () => void;
 }
 
-export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture }) => {
+export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, onSkip }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { userLanguage, setFrontImage, setIngredientsImage, setThirdImage, resetApp } = useAppContext();
   const isEn = userLanguage === 'en';
@@ -120,8 +121,8 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
   const titleEn = step === 1 ? 'SCAN THE FRONT OF THE PACK' : (step === 2 ? 'NOW SCAN THE INGREDIENTS & NUTRITION PANEL.' : 'NOW SCAN THE REST OF THE PANEL.');
   const titleHi = step === 1 ? 'पैक के सामने का हिस्सा स्कैन करें' : (step === 2 ? 'अब सामग्री और पोषण पैनल को स्कैन करें।' : 'अब बाकी पैनल को स्कैन करें।');
   
-  const subtextEn = step === 1 ? 'Make sure the claim or product name is visible.' : (step === 2 ? 'Fit the whole panel in frame if you can.' : 'Capture the rest of the ingredients or nutrition information.');
-  const subtextHi = step === 1 ? 'सुनिश्चित करें कि उत्पाद का नाम दिखाई दे रहा है।' : (step === 2 ? 'यदि आप कर सकते हैं तो पूरे पैनल को फ्रेम में फिट करें।' : 'बाकी सामग्री या पोषण संबंधी जानकारी कैप्चर करें।');
+  const subtextEn = step === 1 ? 'Make sure the claim or product name is visible.' : (step === 2 ? 'Fit the whole panel in frame if you can.' : 'Capture the rest of the panel if needed, or skip if you already got everything.');
+  const subtextHi = step === 1 ? 'सुनिश्चित करें कि उत्पाद का नाम दिखाई दे रहा है।' : (step === 2 ? 'यदि आप कर सकते हैं तो पूरे पैनल को फ्रेम में फिट करें।' : 'यदि आवश्यकता हो तो बाकी का हिस्सा कैप्चर करें, या यदि आपको सब कुछ मिल गया है तो स्किप करें।');
 
   return (
     <div style={{ 
@@ -283,6 +284,28 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
             {/* Empty space to balance the layout (Right) */}
             <div style={{ width: '60px' }}></div>
           </div>
+          
+          {step === 3 && onSkip && (
+            <div style={{ marginTop: '1.5rem' }}>
+              <button 
+                onClick={onSkip}
+                style={{
+                  background: 'none',
+                  border: '1px solid white',
+                  color: 'white',
+                  borderRadius: '24px',
+                  padding: '0.6rem 2.5rem',
+                  fontSize: '0.9rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  opacity: 0.9,
+                  transition: 'opacity 0.2s'
+                }}
+              >
+                {isEn ? 'Skip' : 'स्किप करें'}
+              </button>
+            </div>
+          )}
         </div>
 
       </div>
