@@ -24,7 +24,11 @@ export interface ExtractionResult {
     video_id?: string | null,
     consumption_format?: 'solid_snack' | 'spoonable' | 'beverage' | 'other'
   };
-  ingredients: { raw_list: TranslatableString[], order_index: boolean, detected_language: string };
+  ingredients: { 
+    raw_list: (TranslatableString & { description?: TranslatableString })[], 
+    order_index: boolean, 
+    detected_language: string 
+  };
   nutrition: { 
     serving_size: string, energy_kcal: number, total_fat_g: number,
     saturated_fat_g: number, trans_fat_g: number | null, sugar_g: number, 

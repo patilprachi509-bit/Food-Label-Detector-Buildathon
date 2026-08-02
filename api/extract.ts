@@ -62,6 +62,7 @@ export async function POST(req: Request) {
            - If it is not in the dictionary but is a highly scientific or chemical term, generate a strictly definitional, categorical name for what it is (e.g., "Preservative", "Emulsifier", "Sweetener", "Colorant", "Antioxidant").
            - If the term is already plain language (e.g., "Sugar", "Milk", "Wheat Flour"), set plain_name to exactly equal the raw name unchanged.
            - HARD CONSTRAINT: The generated plain_name MUST be strictly categorical. It must NEVER be evaluative or imply health impacts (e.g., output "Preservative", never "Harmful Preservative").
+           - You MUST also provide a 'description' object for every ingredient. This description must be a simple, 1-sentence explanation of what the ingredient is and its common purpose, in simple, everyday language (provided in both English and Hindi).
         6. AI INSIGHT FOR UNVERIFIED CLAIMS: For any claim in front_of_pack.claims that does NOT clearly map to standard deterministic rules (like sugar limits, whole wheat definitions, cholesterol/trans fat limits), you must reason over the ingredients.raw_list and nutrition data to assess if the claim appears plausible or potentially contradicted.
            - Return these insights in the 'unverified_claim_notes' array.
            - Set 'concern' to a short note ONLY IF something looks inconsistent. If the claim is plausible or you have no evidence against it, set 'concern' to null.
@@ -127,7 +128,18 @@ export async function POST(req: Request) {
             ingredients: {
               type: "OBJECT",
               properties: {
-                raw_list: { type: "ARRAY", items: translatableStringSchema },
+                raw_list: { 
+                  type: "ARRAY", 
+                  items: {
+                    type: "OBJECT",
+                    properties: {
+                      normalized_english: { type: "STRING" },
+                      localized_display: { type: "STRING" },
+                      plain_name: { type: "STRING" },
+                      description: translatableStringSchema
+                    }
+                  }
+                },
                 order_index: { type: "BOOLEAN" },
                 detected_language: { type: "STRING" }
               }

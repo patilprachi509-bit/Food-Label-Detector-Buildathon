@@ -8,9 +8,10 @@ interface IngredientPillProps {
   isExpandable: boolean;
   isFaded: boolean;
   isEn: boolean;
+  description?: string;
 }
 
-export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainName, isExpandable, isFaded, isEn }) => {
+export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainName, isExpandable, isFaded, isEn, description }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
   const isAdditiveCategory = /preservative|emulsifier|sweetener|colorant|antioxidant|stabilizer|acidity regulator|flavoring|thickener|humectant/i.test(plainName) || /INS|E\s?\d+/i.test(rawName);
@@ -102,6 +103,11 @@ export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainNa
               textHi={maidaHi}
               isEn={isEn}
             />
+          )}
+          {description && (
+            <div style={{ marginTop: '0.5rem', fontWeight: 'normal', fontStyle: 'italic', opacity: 0.9 }}>
+              {description}
+            </div>
           )}
         </div>
       )}

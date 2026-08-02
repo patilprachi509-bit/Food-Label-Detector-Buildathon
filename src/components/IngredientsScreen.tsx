@@ -36,18 +36,21 @@ export const IngredientsScreen: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {extractionResult.ingredients.raw_list.map((ing, idx) => {
             const rawName = isEn ? ing.normalized_english : (ing.localized_display || ing.normalized_english);
+            const plainName = ing.plain_name || '';
             const rawClean = ing.normalized_english?.trim().toLowerCase() || '';
-            const plainClean = ing.plain_name?.trim().toLowerCase() || '';
-            const isExpandable = Boolean(plainClean && plainClean !== rawClean);
+            const plainClean = plainName.trim().toLowerCase();
+            const descStr = ing.description ? (isEn ? ing.description.normalized_english : ing.description.localized_display) : '';
+            const isExpandable = Boolean((plainClean && plainClean !== rawClean) || descStr);
 
             return (
               <IngredientPill 
                 key={idx} 
                 rawName={rawName} 
-                plainName={ing.plain_name || ''} 
+                plainName={plainName} 
                 isExpandable={isExpandable} 
                 isFaded={false} 
                 isEn={isEn}
+                description={descStr}
               />
             );
           })}
