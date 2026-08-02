@@ -95,40 +95,60 @@ export const VerdictSummaryVisual: React.FC<Props> = ({ flags, extractionResult,
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.25rem' }}>
         
         {/* Sugar */}
-        <div style={{ 
-          width: '56px', height: '56px', borderRadius: '50%', 
-          backgroundColor: g1Fired ? 'var(--color-fail)' : 'var(--color-pass)',
-          display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white'
-        }}>
-          <IconSugarCube size={28} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+          <div style={{ 
+            width: '56px', height: '56px', borderRadius: '50%', 
+            backgroundColor: g1Fired ? 'var(--color-fail)' : 'var(--color-pass)',
+            display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white'
+          }}>
+            <IconSugarCube size={28} />
+          </div>
+          <span className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.7rem', opacity: 0.8, fontWeight: 'bold' }}>
+            {isEn ? 'Sugar' : 'चीनी'}
+          </span>
         </div>
 
         {/* Fat */}
-        <div style={{ 
-          width: '56px', height: '56px', borderRadius: '50%', 
-          backgroundColor: g2Fired ? 'var(--color-fail)' : 'var(--color-pass)',
-          display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white'
-        }}>
-          <IconDroplet size={28} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+          <div style={{ 
+            width: '56px', height: '56px', borderRadius: '50%', 
+            backgroundColor: g2Fired ? 'var(--color-fail)' : 'var(--color-pass)',
+            display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white'
+          }}>
+            <IconDroplet size={28} />
+          </div>
+          <span className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.7rem', opacity: 0.8, fontWeight: 'bold' }}>
+            {isEn ? 'Fat' : 'वसा'}
+          </span>
         </div>
 
         {/* Salt */}
-        <div style={{ 
-          width: '56px', height: '56px', borderRadius: '50%', 
-          backgroundColor: g3Fired ? 'var(--color-fail)' : 'var(--color-pass)',
-          display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white'
-        }}>
-          <IconSaltShaker size={28} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+          <div style={{ 
+            width: '56px', height: '56px', borderRadius: '50%', 
+            backgroundColor: g3Fired ? 'var(--color-fail)' : 'var(--color-pass)',
+            display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white'
+          }}>
+            <IconSaltShaker size={28} />
+          </div>
+          <span className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.7rem', opacity: 0.8, fontWeight: 'bold' }}>
+            {isEn ? 'Salt' : 'नमक'}
+          </span>
         </div>
 
         {/* Trans Fat */}
-        <div style={{ 
-          width: '56px', height: '56px', borderRadius: '50%', 
-          backgroundColor: transFatNull ? '#9E9E9E' : (g4Fired ? 'var(--color-fail)' : 'var(--color-pass)'),
-          display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white',
-          opacity: transFatNull ? 0.7 : 1
-        }}>
-          <IconTransFatDroplet size={28} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+          <div style={{ 
+            width: '56px', height: '56px', borderRadius: '50%', 
+            backgroundColor: transFatNull ? '#9E9E9E' : (g4Fired ? 'var(--color-fail)' : 'var(--color-pass)'),
+            display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white',
+            opacity: transFatNull ? 0.7 : 1
+          }}>
+            <IconTransFatDroplet size={28} />
+          </div>
+          <span className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.7rem', opacity: 0.8, fontWeight: 'bold' }}>
+            {isEn ? 'Trans Fat' : 'ट्रांस फैट'}
+          </span>
         </div>
 
       </div>
