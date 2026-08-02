@@ -143,7 +143,8 @@ export async function POST(req: Request) {
             extraction_confidence: {
               type: "STRING",
               enum: ["high", "medium", "low"]
-            }
+            },
+            raw_transcription: { type: "STRING" }
           }
         }
       }
@@ -160,9 +161,18 @@ export async function POST(req: Request) {
     }
 
     const pass2Data = (await pass2Response.json()) as any;
-    const rawResult = pass2Data.candidates[0].content.parts[0].text;
+    let rawResultStr = pass2Data.candidates[0].content.parts[0].text;
     
-    return new Response(rawResult, {
+    // Inject raw_transcription manually so we can debug Pass 1 output
+    try {
+      const parsed = JSON.parse(rawResultStr);
+      parsed.raw_transcription = rawTranscription;
+      rawResultStr = JSON.stringify(parsed);
+    } catch (e) {
+      // fallback
+    }
+
+    return new Response(rawResultStr, {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
