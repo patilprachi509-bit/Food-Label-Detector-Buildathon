@@ -36,6 +36,7 @@ export interface ExtractionResult {
     sodium_mg: number, protein_g: number 
   };
   extraction_confidence: ExtractionConfidence;
+  raw_transcription?: string;
 }
 
 export interface SavedScan {
