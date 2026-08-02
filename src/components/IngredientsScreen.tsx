@@ -55,6 +55,18 @@ export const IngredientsScreen: React.FC = () => {
             );
           })}
         </div>
+
+        {/* Gated Debug Raw Transcription View */}
+        {window.location.search.includes('debug=true') && extractionResult.raw_transcription && (
+          <div style={{ marginTop: '2rem', padding: '1rem', backgroundColor: 'var(--color-bg)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <h3 style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '0.5rem', marginTop: 0, textTransform: 'uppercase', letterSpacing: '1px' }}>
+              Raw OCR Transcription
+            </h3>
+            <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontSize: '0.85rem', color: 'var(--color-text)', opacity: 0.8, fontFamily: 'monospace' }}>
+              {extractionResult.raw_transcription}
+            </pre>
+          </div>
+        )}
       </div>
     </div>
   );
