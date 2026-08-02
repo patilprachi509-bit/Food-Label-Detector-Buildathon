@@ -29,7 +29,7 @@ export const VerdictScreen: React.FC = () => {
     if (!extractionResult?.front_of_pack?.unverified_claim_notes) return [];
     const ruleClaimMatches = flags.map(f => f.claim?.normalized_english).filter(Boolean);
     return extractionResult.front_of_pack.unverified_claim_notes.filter(
-      note => note.concern && !ruleClaimMatches.includes(note.claim)
+      note => note.concern && !ruleClaimMatches.includes(note.claim.normalized_english)
     );
   }, [extractionResult, flags]);
 
