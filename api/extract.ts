@@ -68,6 +68,7 @@ export async function POST(req: Request) {
            - The language in 'concern' MUST be strictly provisional and non-evaluative (e.g., "This claim may not be fully supported by the visible ingredients — worth checking further"). Never use "FAILS", "VIOLATION", or absolute language.
         7. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredients that are literally present in the RAW PACKAGE TEXT. DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. Never fabricate additional items to complete the list.
         8. HINDI TRANSLATION QUALITY: For 'localized_display' and any other Hindi text, you MUST use simple, everyday spoken Hindi (the register used in normal conversation). DO NOT use formal, Sanskrit-derived vocabulary if a common alternative exists. The tone should be human, conversational, and accessible.
+        9. ANTI-HALLUCINATION INSTRUCTION FOR NUMBERS: You must be extremely precise when reading INS or E-numbers (e.g. INS 510, 150). DO NOT transpose or flip digits (e.g. reading 510 as 150). Double check your transcription against the image for any numbers.
         
         Output strictly in the provided JSON schema.
     `;

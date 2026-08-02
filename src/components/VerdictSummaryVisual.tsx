@@ -2,7 +2,7 @@ import React from 'react';
 import type { Flag } from '../utils/ruleEngine';
 import type { ExtractionResult } from '../context/AppContext';
 import { 
-  IconCross, 
+  IconThumbsDown, 
   IconCheck, 
   IconWarning, 
   IconSugarCube, 
@@ -31,7 +31,7 @@ export const VerdictSummaryVisual: React.FC<Props> = ({ flags, extractionResult,
   let faceColor = 'var(--color-pass)';
   
   if (overallState === 'NOT RECOMMENDED') {
-    FaceIcon = IconCross;
+    FaceIcon = IconThumbsDown;
     faceColor = 'var(--color-fail)';
   } else if (overallState === 'MOSTLY FINE' || overallState === 'VERIFICATION NEEDED' || overallState === 'MINOR ISSUES') {
     FaceIcon = IconWarning;
