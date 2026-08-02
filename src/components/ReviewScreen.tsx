@@ -6,38 +6,27 @@ export const ReviewScreen: React.FC = () => {
   const { pendingExtractionResult, setPendingExtractionResult, setExtractionResult, userLanguage } = useAppContext();
   const isEn = userLanguage === 'en';
   
-  // We initialize the local state with the raw list from the pending extraction
+  // We initialize the local state with the raw list objects
   const [ingredientsList, setIngredientsList] = useState(
-    pendingExtractionResult?.ingredients?.raw_list?.map(ing => ing.normalized_english) || []
+    pendingExtractionResult?.ingredients?.raw_list || []
   );
 
   if (!pendingExtractionResult) return null;
 
   const handleConfirm = () => {
-    // Reconstruct the raw_list with potentially edited values
     const updatedResult = { ...pendingExtractionResult };
-    
-    // Create new raw_list, reusing original properties where possible, but updating text
-    updatedResult.ingredients.raw_list = ingredientsList.map((text, i) => {
-      const original = pendingExtractionResult.ingredients.raw_list[i] || {};
-      return {
-        ...original,
-        normalized_english: text,
-        // If they edit the English, we'll just fall back to using it as the plain_name if it wasn't already generated,
-        // or just let the rule engine use the updated normalized_english.
-        plain_name: text,
-        localized_display: original.localized_display || text // ideally we'd re-translate, but for simple edits this is safe
-      };
-    });
-
-    // Move from pending to final
+    updatedResult.ingredients.raw_list = ingredientsList;
     setExtractionResult(updatedResult);
     setPendingExtractionResult(null);
   };
 
   const handleEdit = (index: number, newText: string) => {
     const newList = [...ingredientsList];
-    newList[index] = newText;
+    if (isEn) {
+      newList[index] = { ...newList[index], normalized_english: newText, plain_name: newText };
+    } else {
+      newList[index] = { ...newList[index], localized_display: newText };
+    }
     setIngredientsList(newList);
   };
 
@@ -48,7 +37,7 @@ export const ReviewScreen: React.FC = () => {
   };
 
   const handleAdd = () => {
-    setIngredientsList([...ingredientsList, ""]);
+    setIngredientsList([...ingredientsList, { normalized_english: "", localized_display: "", plain_name: "" }]);
   };
 
   return (
@@ -72,7 +61,7 @@ export const ReviewScreen: React.FC = () => {
             <div key={idx} style={{ display: 'flex', gap: '0.5rem' }}>
               <input
                 type="text"
-                value={ing}
+                value={isEn ? (ing.normalized_english || '') : (ing.localized_display || '')}
                 onChange={(e) => handleEdit(idx, e.target.value)}
                 style={{
                   flex: 1,
