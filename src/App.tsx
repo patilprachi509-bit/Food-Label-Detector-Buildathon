@@ -47,7 +47,7 @@ const BatchCaptureManager: React.FC = () => {
 
 const AppContent: React.FC = () => {
   const { 
-    userLanguage, frontImage, ingredientsImage, thirdImageStatus, extractionResult, userFocus, 
+    userLanguage, frontImage, ingredientsImage, thirdImageStatus, setThirdImageStatus, extractionResult, userFocus, 
     isHistoryOpen, isHowItWorksOpen, viewingSavedScanId, isScanning, hasChosenResultType,
     isBatchMode, isCapturingBatchItem, isBatchProcessing, isBatchFinished, viewingBatchResultId
   } = useAppContext();
