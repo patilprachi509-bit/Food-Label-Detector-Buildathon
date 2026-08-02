@@ -76,15 +76,16 @@ export const VerdictScreen: React.FC = () => {
     const pName = extractionResult?.front_of_pack?.product_name || extractionResult?.front_of_pack?.brand_name || (isEn ? 'this product' : 'यह उत्पाद');
     
     let verdictStr = isEn ? "NO ISSUES FOUND" : "कोई समस्या नहीं मिली";
-    if (flags.length > 0) {
-      const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
-      if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) {
+    const tierFlags = flags.filter(f => f.ruleId !== 'PROV_OIL' && f.ruleId !== 'PROV_150' && f.ruleId !== 'INFO1');
+    if (tierFlags.length > 0) {
+      const isMostlyFine = tierFlags.length === 1 && ['G1', 'G2', 'G3'].includes(tierFlags[0].ruleId);
+      if (tierFlags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) {
         verdictStr = isEn ? "NOT RECOMMENDED" : "अनुशंसित नहीं";
       } else if (isMostlyFine) {
-        const nutrientEn = flags[0].ruleId === 'G1' ? 'SUGAR' : flags[0].ruleId === 'G2' ? 'FAT/OIL' : 'SALT';
-        const nutrientHi = flags[0].ruleId === 'G1' ? 'चीनी' : flags[0].ruleId === 'G2' ? 'वसा/तेल' : 'नमक';
+        const nutrientEn = tierFlags[0].ruleId === 'G1' ? 'SUGAR' : tierFlags[0].ruleId === 'G2' ? 'FAT/OIL' : 'SALT';
+        const nutrientHi = tierFlags[0].ruleId === 'G1' ? 'चीनी' : tierFlags[0].ruleId === 'G2' ? 'वसा/तेल' : 'नमक';
         verdictStr = isEn ? `MOSTLY FINE — WATCH THE ${nutrientEn}` : `ज़्यादातर ठीक है, बस ${nutrientHi} पर ध्यान दें।`;
-      } else if (flags.some(f => f.type === 'needs_verification')) {
+      } else if (tierFlags.some(f => f.type === 'needs_verification')) {
         verdictStr = isEn ? "VERIFICATION NEEDED" : "सत्यापन की आवश्यकता है";
       } else {
         verdictStr = isEn ? "MINOR ISSUES" : "मामूली समस्याएँ";
@@ -170,12 +171,13 @@ export const VerdictScreen: React.FC = () => {
           </h1>
 
           {(() => {
-            const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
-            if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) {
-              const g1Fired = flags.some(f => f.ruleId === 'G1');
-              const g2Fired = flags.some(f => f.ruleId === 'G2');
-              const g3Fired = flags.some(f => f.ruleId === 'G3');
-              const g4Fired = flags.some(f => f.ruleId === 'G4');
+            const tierFlags = flags.filter(f => f.ruleId !== 'PROV_OIL' && f.ruleId !== 'PROV_150' && f.ruleId !== 'INFO1');
+            const isMostlyFine = tierFlags.length === 1 && ['G1', 'G2', 'G3'].includes(tierFlags[0].ruleId);
+            if (tierFlags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) {
+              const g1Fired = tierFlags.some(f => f.ruleId === 'G1');
+              const g2Fired = tierFlags.some(f => f.ruleId === 'G2');
+              const g3Fired = tierFlags.some(f => f.ruleId === 'G3');
+              const g4Fired = tierFlags.some(f => f.ruleId === 'G4');
               const exceededEn: string[] = [];
               const exceededHi: string[] = [];
               
@@ -211,7 +213,7 @@ export const VerdictScreen: React.FC = () => {
                 headlinesHi.push(`${joinedHi} बहुत अधिक ${isPluralHi ? 'हैं' : 'है'}`);
               }
               
-              if (flags.some(f => f.type === 'claim_contradiction')) {
+              if (tierFlags.some(f => f.type === 'claim_contradiction')) {
                  headlinesEn.push('MISLEADING CLAIMS DETECTED');
                  headlinesHi.push('भ्रामक दावे पाए गए');
               }
@@ -228,20 +230,20 @@ export const VerdictScreen: React.FC = () => {
                 </h2>
               );
             } else if (isMostlyFine) {
-              const nutrientEn = flags[0].ruleId === 'G1' ? 'SUGAR' : flags[0].ruleId === 'G2' ? 'FAT/OIL' : 'SALT';
-              const nutrientHi = flags[0].ruleId === 'G1' ? 'चीनी' : flags[0].ruleId === 'G2' ? 'वसा/तेल' : 'नमक';
+              const nutrientEn = tierFlags[0].ruleId === 'G1' ? 'SUGAR' : tierFlags[0].ruleId === 'G2' ? 'FAT/OIL' : 'SALT';
+              const nutrientHi = tierFlags[0].ruleId === 'G1' ? 'चीनी' : tierFlags[0].ruleId === 'G2' ? 'वसा/तेल' : 'नमक';
               return (
                 <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-verify)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
                   {isEn ? `MOSTLY FINE — WATCH THE ${nutrientEn}` : `ज़्यादातर ठीक है, बस ${nutrientHi} पर ध्यान दें।`}
                 </h2>
               );
-            } else if (flags.some(f => f.type === 'needs_verification')) {
+            } else if (tierFlags.some(f => f.type === 'needs_verification')) {
               return (
                 <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-verify)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
                   {isEn ? 'VERIFICATION NEEDED' : 'सत्यापन की आवश्यकता है'}
                 </h2>
               );
-            } else if (flags.length > 0) {
+            } else if (tierFlags.length > 0) {
               return (
                 <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-pass)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
                   {isEn ? 'MINOR ISSUES' : 'मामूली समस्याएँ'}

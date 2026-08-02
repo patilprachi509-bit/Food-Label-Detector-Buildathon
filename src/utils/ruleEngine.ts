@@ -32,7 +32,7 @@ const checkSynonyms = (ingredients: TranslatableString[], synonyms: string[]): T
 };
 
 const SUGAR_SYNONYMS = ["sugar", "dextrose", "fructose", "glucose", "raw cane sugar", "brown sugar", "lactose", "jaggery", "gur", "honey", "molasses", "treacle", "sweetener"];
-const FAT_SYNONYMS = ["palm oil", "palmolein", "vanaspati", "vegetable oil", "hydrogenated oil", "margarine", "shortening", "interesterified fat", "fat", "oil", "butter", "ghee"];
+const FAT_SYNONYMS = ["palm oil", "palmolein", "vanaspati", "vegetable oil", "hydrogenated oil", "margarine", "shortening", "interesterified fat", "fat", "oil", "butter", "ghee", "sunflower oil"];
 const SALT_SYNONYMS = ["salt", "sodium", "msg", "monosodium glutamate"];
 
 export const evaluateRules = (result: ExtractionResult, userFocus: string | null): Flag[] => {
@@ -139,6 +139,39 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
   // Informational (Maida)
   if (ingredients.raw_list.some(ing => ing.normalized_english.toLowerCase().includes('maida') || ing.normalized_english.toLowerCase().includes('refined wheat flour'))) {
     flags.push({ type: 'informational', ruleId: 'INFO1', message_en: 'Contains Refined Wheat Flour (Maida). Low in fiber and high GI.', message_hi: 'मैदा शामिल है। फाइबर कम और GI उच्च।', source: 'General Nutrition Context', relevantIngredients: checkSynonyms(ingredients.raw_list, ['maida', 'refined wheat flour']) });
+  }
+
+  // Provisional Guardrails
+  const foundOils = checkSynonyms(ingredients.raw_list, FAT_SYNONYMS.filter(s => s.includes('oil') || s.includes('fat') || s === 'vanaspati' || s === 'palmolein' || s === 'margarine' || s === 'shortening' || s === 'butter' || s === 'ghee'));
+  if (foundOils.length > 0) {
+    flags.push({ 
+      type: 'needs_verification', 
+      ruleId: 'PROV_OIL', 
+      message_en: 'Cooking oil type needs manual verification (frequently hallucinated by AI)', 
+      message_hi: 'खाना पकाने के तेल के प्रकार को मैन्युअल सत्यापन की आवश्यकता है (AI द्वारा अक्सर गलत समझा जाता है)', 
+      source: 'AI Confidence Guardrail', 
+      relevantIngredients: foundOils,
+      headline_en: 'VERIFY OIL INGREDIENT',
+      headline_hi: 'तेल सामग्री की पुष्टि करें'
+    });
+  }
+
+  const has150 = ingredients.raw_list.some(ing => {
+    const raw = ing.normalized_english;
+    const plain = ing.plain_name || '';
+    return /(?:ins|e)\s*150/i.test(raw) || /(?:ins|e)\s*150/i.test(plain) || /\(150\)/.test(raw) || /\(150\)/.test(plain);
+  });
+  if (has150 || /(?:ins|e)\s*150/i.test(result.raw_transcription || '') || /\(150\)/.test(result.raw_transcription || '')) {
+    flags.push({ 
+      type: 'needs_verification', 
+      ruleId: 'PROV_150', 
+      message_en: 'Double check INS 150 (Often a misread of INS 510 Flour Treatment Agent)', 
+      message_hi: 'INS 150 की दोबारा जांच करें (अक्सर INS 510 को गलत पढ़ा जाता है)', 
+      source: 'AI Confidence Guardrail', 
+      relevantIngredients: [],
+      headline_en: 'VERIFY INS 150 / 510',
+      headline_hi: 'INS 150 / 510 की पुष्टि करें'
+    });
   }
 
   // Sort: Personalization > Claim Contradiction > General Health > Needs Verification > Informational
