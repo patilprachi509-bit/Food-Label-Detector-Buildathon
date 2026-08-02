@@ -38,7 +38,7 @@ export const getDailyLimitInfo = (
   };
 
   if (flag.ruleId === 'G1') {
-    info.nutrientPer100g = nutrition.sugar_g;
+    info.nutrientPer100g = nutrition.total_sugar_g;
     info.householdMeasureEn = "(About 6-7 teaspoons)";
     info.householdMeasureHi = "(लगभग 6-7 चम्मच)";
     info.healthEn = "Association with weight gain and type 2 diabetes risk with regular excess intake.";

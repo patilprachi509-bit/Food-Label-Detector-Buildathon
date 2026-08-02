@@ -40,7 +40,7 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
   const getValues = (res: ExtractionResult) => {
     const n = res.nutrition;
     const hasEnergy = n.energy_kcal > 0;
-    const sugar = hasEnergy ? Math.round(((n.sugar_g * 4) / n.energy_kcal) * 100) : null;
+    const sugar = hasEnergy ? Math.round(((n.total_sugar_g * 4) / n.energy_kcal) * 100) : null;
     const fat = hasEnergy ? Math.round(((n.total_fat_g * 9) / n.energy_kcal) * 100) : null;
     const salt = Number(((n.sodium_mg * 2.5) / 1000).toFixed(2));
     const transFat = (n.trans_fat_g !== null && n.total_fat_g > 0) ? Math.round((n.trans_fat_g / n.total_fat_g) * 100) : null;
