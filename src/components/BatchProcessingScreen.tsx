@@ -27,7 +27,7 @@ export const BatchProcessingScreen: React.FC = () => {
       // Loop sequentially
       for (let i = 0; i < batchItems.length; i++) {
         const item = batchItems[i];
-        if (item.status !== 'pending') continue; // Only process pending items (handles retries safely)
+        if (item.status === 'done' || item.status === 'error') continue; // Recover interrupted 'processing' items
 
         // Mark as processing
         if (isMounted) {
@@ -156,7 +156,7 @@ export const BatchProcessingScreen: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [batchItems, setBatchItems, setIsBatchFinished]);
+  }, [setBatchItems, setIsBatchFinished]); // REMOVED batchItems from dependencies
 
   return (
     <div style={{ 
