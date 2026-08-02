@@ -181,9 +181,7 @@ export async function POST(req: Request) {
     const pass2Data = (await pass2Response.json()) as any;
     let rawResultStr = pass2Data.candidates[0].content.parts[0].text;
     
-    // Heuristic replacements for known persistent hallucinations despite prompt tuning
-    rawResultStr = rawResultStr.replace(/Flour Treatment Agent \(150\)/gi, 'Flour Treatment Agent (510)');
-    rawResultStr = rawResultStr.replace(/INS\s*150(?!\d)/gi, 'INS 510');
+    // Removed hardcoded regex per user instruction to avoid blind corruption
 
     // Inject raw_transcription manually so we can debug Pass 1 output
     try {
