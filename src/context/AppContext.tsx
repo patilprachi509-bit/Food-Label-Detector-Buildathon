@@ -13,7 +13,6 @@ export interface TranslatableString {
   localized_display: string;
   plain_name?: string;
 }
-}
 
 export interface ExtractionResult {
   front_of_pack: { 
