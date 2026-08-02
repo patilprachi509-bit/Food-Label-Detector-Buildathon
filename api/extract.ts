@@ -105,8 +105,12 @@ export async function POST(req: Request) {
                   items: {
                     type: "OBJECT",
                     properties: {
-                      claim: { type: "STRING" },
-                      concern: { type: "STRING", nullable: true }
+                      claim: translatableStringSchema,
+                      concern: {
+                        type: "OBJECT",
+                        nullable: true,
+                        properties: translatableStringSchema.properties
+                      }
                     }
                   }
                 },

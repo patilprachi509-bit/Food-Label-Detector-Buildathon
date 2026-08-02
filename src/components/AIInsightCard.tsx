@@ -1,10 +1,12 @@
 import React from 'react';
 import { IconSparkle } from './Icons';
 
+import type { TranslatableString } from '../context/AppContext';
+
 interface AIInsightCardProps {
   insight: {
-    claim: string;
-    concern: string | null;
+    claim: TranslatableString;
+    concern: TranslatableString | null;
   };
   isEn: boolean;
 }
@@ -37,12 +39,12 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ insight, isEn }) =
         wordBreak: 'break-word',
         color: 'var(--color-text)'
       }}>
-        "{insight.claim}"
+        "{isEn ? insight.claim.normalized_english : insight.claim.localized_display}"
       </h2>
 
       <div style={{ marginTop: '1.5rem', opacity: 0.9 }}>
         <p style={{ margin: 0, fontSize: '1rem', lineHeight: 1.4, fontStyle: 'italic' }}>
-          {insight.concern}
+          {isEn ? insight.concern.normalized_english : insight.concern.localized_display}
         </p>
       </div>
     </div>

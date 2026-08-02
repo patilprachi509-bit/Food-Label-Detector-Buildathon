@@ -98,7 +98,7 @@ export const ProcessingScreen: React.FC = () => {
       try {
         const data = await fetchPromiseRef.current;
         if (isMounted) {
-          setPendingExtractionResult(data);
+          setExtractionResult(data);
         }
 
         // Fire a non-blocking request for video search

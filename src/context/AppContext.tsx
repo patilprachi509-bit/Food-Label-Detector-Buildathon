@@ -17,7 +17,7 @@ export interface TranslatableString {
 export interface ExtractionResult {
   front_of_pack: { 
     claims: TranslatableString[], 
-    unverified_claim_notes?: { claim: string, concern: string | null }[],
+    unverified_claim_notes?: { claim: TranslatableString, concern: TranslatableString | null }[],
     brand_name: string, 
     product_name: string, 
     net_weight_g?: number, 

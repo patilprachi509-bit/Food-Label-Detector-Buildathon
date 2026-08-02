@@ -12,7 +12,6 @@ import { HomeScreen } from './components/HomeScreen';
 import { HowItWorksScreen } from './components/HowItWorksScreen';
 import { IngredientsScreen } from './components/IngredientsScreen';
 import { ResultChoiceScreen } from './components/ResultChoiceScreen';
-import { ReviewScreen } from './components/ReviewScreen';
 
 import { BatchQueueScreen } from './components/BatchQueueScreen';
 import { BatchProcessingScreen } from './components/BatchProcessingScreen';
@@ -89,9 +88,6 @@ const AppContent: React.FC = () => {
     return <HomeScreen />;
   }
 
-  if (pendingExtractionResult) {
-    return <ReviewScreen />;
-  }
 
   if (isHistoryOpen) {
     return <SavedScansScreen />;
