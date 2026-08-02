@@ -12,6 +12,7 @@ import { HomeScreen } from './components/HomeScreen';
 import { HowItWorksScreen } from './components/HowItWorksScreen';
 import { IngredientsScreen } from './components/IngredientsScreen';
 import { ResultChoiceScreen } from './components/ResultChoiceScreen';
+import { ReviewScreen } from './components/ReviewScreen';
 
 import { BatchQueueScreen } from './components/BatchQueueScreen';
 import { BatchProcessingScreen } from './components/BatchProcessingScreen';
@@ -47,7 +48,7 @@ const BatchCaptureManager: React.FC = () => {
 
 const AppContent: React.FC = () => {
   const { 
-    userLanguage, frontImage, ingredientsImage, thirdImageStatus, setThirdImageStatus, extractionResult, userFocus, 
+    userLanguage, frontImage, ingredientsImage, thirdImageStatus, setThirdImageStatus, extractionResult, pendingExtractionResult, userFocus, 
     isHistoryOpen, isHowItWorksOpen, viewingSavedScanId, isScanning, hasChosenResultType,
     isBatchMode, isCapturingBatchItem, isBatchProcessing, isBatchFinished, viewingBatchResultId
   } = useAppContext();
@@ -84,8 +85,12 @@ const AppContent: React.FC = () => {
     return <BatchQueueScreen />;
   }
 
-  if (!isScanning && !isHistoryOpen && !viewingSavedScanId && !extractionResult && !frontImage) {
+  if (!isScanning && !isHistoryOpen && !viewingSavedScanId && !extractionResult && !pendingExtractionResult && !frontImage) {
     return <HomeScreen />;
+  }
+
+  if (pendingExtractionResult) {
+    return <ReviewScreen />;
   }
 
   if (isHistoryOpen) {

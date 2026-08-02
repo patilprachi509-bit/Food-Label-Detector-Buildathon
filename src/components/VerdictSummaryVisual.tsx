@@ -46,6 +46,7 @@ export const VerdictSummaryVisual: React.FC<Props> = ({ flags, extractionResult,
   if (g4Fired) exceeded.push(isEn ? 'Trans Fat' : 'ट्रांस फैट');
 
   let dynamicSentence = '';
+  const sentences: string[] = [];
   if (exceeded.length > 0) {
     let joined = '';
     if (exceeded.length === 1) {
@@ -61,27 +62,29 @@ export const VerdictSummaryVisual: React.FC<Props> = ({ flags, extractionResult,
     const isPlural = exceeded.length > 0 || joined.includes(' and ') || joined.includes(' और ');
     
     if (isEn) {
-      dynamicSentence = `${joined} ${isPlural ? 'are' : 'is'} too high.`;
+      sentences.push(`${joined} ${isPlural ? 'are' : 'is'} too high.`);
     } else {
-      dynamicSentence = `${joined} बहुत अधिक ${isPlural ? 'हैं' : 'है'}।`;
+      sentences.push(`${joined} बहुत अधिक ${isPlural ? 'हैं' : 'है'}।`);
     }
   } else {
     // No G1-G4 exceeded
-    if (overallState === 'NOT RECOMMENDED') {
-      // Claim contradiction but clean macros
-      dynamicSentence = isEn 
-        ? 'Nutrition is within limits, but claims are misleading.' 
-        : 'पोषण सीमा के भीतर है, लेकिन दावे भ्रामक हैं।';
-    } else if (transFatNull) {
-      dynamicSentence = isEn 
+    if (transFatNull) {
+      sentences.push(isEn 
         ? 'Sugar, Fat, and Salt are within limits (trans fat data not available).' 
-        : 'चीनी, वसा और नमक सीमा के भीतर हैं (ट्रांस फैट डेटा उपलब्ध नहीं है)।';
+        : 'चीनी, वसा और नमक सीमा के भीतर हैं (ट्रांस फैट डेटा उपलब्ध नहीं है)।');
     } else {
-      dynamicSentence = isEn 
+      sentences.push(isEn 
         ? 'All key nutrients are within recommended limits.' 
-        : 'सभी प्रमुख पोषक तत्व अनुशंसित सीमा के भीतर हैं।';
+        : 'सभी प्रमुख पोषक तत्व अनुशंसित सीमा के भीतर हैं।');
     }
   }
+
+  const claimContradiction = flags.some(f => f.type === 'claim_contradiction');
+  if (claimContradiction) {
+    sentences.push(isEn ? 'Misleading claims detected.' : 'भ्रामक दावे पाए गए।');
+  }
+
+  dynamicSentence = sentences.join(' ');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>

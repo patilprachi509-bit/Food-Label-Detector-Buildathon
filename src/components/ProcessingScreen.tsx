@@ -72,26 +72,7 @@ export const ProcessingScreen: React.FC = () => {
           
           const data = await response.json();
           
-          // Guardrail: Filter out ingredients lacking a localized bounding_box
-          if (data?.ingredients?.raw_list) {
-            const originalLength = data.ingredients.raw_list.length;
-            data.ingredients.raw_list = data.ingredients.raw_list.filter((ing: any) => ing.bounding_box !== null && ing.bounding_box !== undefined);
-            const newLength = data.ingredients.raw_list.length;
-            
-            if (originalLength > 0 && newLength < originalLength) {
-               // If filtering removed items (meaning the model hallucinated/couldn't localize them),
-               // force a low confidence state to avoid silently presenting an incomplete/fabricated list.
-               data.extraction_confidence = 'low';
-               
-               // Optionally add a note for the UI
-               if (!data.front_of_pack.unverified_claim_notes) data.front_of_pack.unverified_claim_notes = [];
-               data.front_of_pack.unverified_claim_notes.push({
-                 claim: "Ingredient List",
-                 concern: "Some ingredients were filtered out because they could not be reliably localized on the physical pack."
-               });
-            }
-          }
-          
+
           try {
             const cacheStr = localStorage.getItem(CACHE_KEY);
             let cache: CacheEntry[] = cacheStr ? JSON.parse(cacheStr) : [];
@@ -114,7 +95,7 @@ export const ProcessingScreen: React.FC = () => {
       try {
         const data = await fetchPromiseRef.current;
         if (isMounted) {
-          setExtractionResult(data);
+          setPendingExtractionResult(data);
         }
 
         // Fire a non-blocking request for video search

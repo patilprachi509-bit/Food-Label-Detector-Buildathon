@@ -88,19 +88,6 @@ export const BatchProcessingScreen: React.FC = () => {
             }
           }
 
-          // Guardrail logic (same as single scan)
-          if (data?.ingredients?.raw_list) {
-            const originalLength = data.ingredients.raw_list.length;
-            data.ingredients.raw_list = data.ingredients.raw_list.filter((ing: any) => ing.bounding_box !== null && ing.bounding_box !== undefined);
-            if (originalLength > 0 && data.ingredients.raw_list.length < originalLength) {
-               data.extraction_confidence = 'low';
-               if (!data.front_of_pack.unverified_claim_notes) data.front_of_pack.unverified_claim_notes = [];
-               data.front_of_pack.unverified_claim_notes.push({
-                 claim: "Ingredient List",
-                 concern: "Some ingredients were filtered out because they could not be reliably localized on the physical pack."
-               });
-            }
-          }
 
           if (data.extraction_confidence === 'low') {
             throw new Error("Low confidence extraction");

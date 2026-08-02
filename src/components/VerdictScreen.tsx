@@ -8,8 +8,7 @@ import { FlagCard } from './FlagCard';
 import { CompareOverlay } from './CompareOverlay';
 import { SavedScansScreen } from './SavedScansScreen';
 import { AIInsightCard } from './AIInsightCard';
-import { AnnotatedPhotoReveal } from './AnnotatedPhotoReveal';
-import type { MatchedClaim } from './AnnotatedPhotoReveal';
+
 import { VerdictSummaryVisual } from './VerdictSummaryVisual';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
 
@@ -60,39 +59,7 @@ export const VerdictScreen: React.FC = () => {
     return allIngredients;
   }, [flags, extractionResult]);
 
-  const matchedClaims = useMemo(() => {
-    if (viewingSavedScanId || !extractionResult) return [];
-    
-    const claimFlags = flags.filter(f => f.type === 'claim_contradiction' && f.claim?.normalized_english);
-    const matches: MatchedClaim[] = [];
-    
-    claimFlags.forEach(flag => {
-      const apiClaim = extractionResult.front_of_pack.claims.find(
-        c => c.normalized_english === flag.claim?.normalized_english
-      );
-      if (apiClaim && apiClaim.bounding_box) {
-        matches.push({
-          flag,
-          claimText: apiClaim.normalized_english,
-          box: apiClaim.bounding_box
-        });
-      }
-    });
-    
-    return matches;
-  }, [flags, extractionResult, viewingSavedScanId]);
 
-  const claimsByImage = useMemo(() => {
-    const front: MatchedClaim[] = [];
-    const ing: MatchedClaim[] = [];
-    const third: MatchedClaim[] = [];
-    matchedClaims.forEach(mc => {
-      if (mc.box.image_index === 1) ing.push(mc);
-      else if (mc.box.image_index === 2) third.push(mc);
-      else front.push(mc); // default to 0
-    });
-    return { front, ing, third };
-  }, [matchedClaims]);
 
   const handleAudioClick = async () => {
     if (!userLanguage) return;
@@ -185,27 +152,7 @@ export const VerdictScreen: React.FC = () => {
           </button>
         </div>
         
-        {claimsByImage.front.length > 0 && frontImage && (
-          <AnnotatedPhotoReveal 
-            image={frontImage} 
-            matchedClaims={claimsByImage.front} 
-            isEn={isEn} 
-          />
-        )}
-        {claimsByImage.ing.length > 0 && ingredientsImage && (
-          <AnnotatedPhotoReveal 
-            image={ingredientsImage} 
-            matchedClaims={claimsByImage.ing} 
-            isEn={isEn} 
-          />
-        )}
-        {claimsByImage.third.length > 0 && thirdImage && (
-          <AnnotatedPhotoReveal 
-            image={thirdImage} 
-            matchedClaims={claimsByImage.third} 
-            isEn={isEn} 
-          />
-        )}
+
         
         {/* Overarching Verdict */}
         <div style={{ marginBottom: '1.5rem', textAlign: 'center', paddingTop: '1.5rem' }}>
@@ -240,6 +187,9 @@ export const VerdictScreen: React.FC = () => {
               let headlineTextEn = 'NOT RECOMMENDED';
               let headlineTextHi = 'अनुशंसित नहीं';
               
+              const headlinesEn: string[] = [];
+              const headlinesHi: string[] = [];
+              
               if (exceededEn.length > 0) {
                 let joinedEn = '';
                 let joinedHi = '';
@@ -258,16 +208,24 @@ export const VerdictScreen: React.FC = () => {
                 const isPluralEn = exceededEn.length > 0 || joinedEn.includes(' AND ');
                 const isPluralHi = exceededHi.length > 0 || joinedHi.includes(' और ');
                 
-                headlineTextEn = `${joinedEn} ${isPluralEn ? 'ARE' : 'IS'} TOO HIGH`;
-                headlineTextHi = `${joinedHi} बहुत अधिक ${isPluralHi ? 'हैं' : 'है'}`;
-              } else {
-                 headlineTextEn = 'NUTRITION WITHIN LIMITS, BUT CLAIMS MISLEADING';
-                 headlineTextHi = 'पोषण सीमा के भीतर है, लेकिन दावे भ्रामक हैं';
+                headlinesEn.push(`${joinedEn} ${isPluralEn ? 'ARE' : 'IS'} TOO HIGH`);
+                headlinesHi.push(`${joinedHi} बहुत अधिक ${isPluralHi ? 'हैं' : 'है'}`);
+              }
+              
+              if (flags.some(f => f.type === 'claim_contradiction')) {
+                 headlinesEn.push('MISLEADING CLAIMS DETECTED');
+                 headlinesHi.push('भ्रामक दावे पाए गए');
+              }
+
+              if (headlinesEn.length === 0) {
+                 // Should not happen since we are in the 'NOT RECOMMENDED' block but just in case
+                 headlinesEn.push('NOT RECOMMENDED');
+                 headlinesHi.push('अनुशंसित नहीं');
               }
 
               return (
                 <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-fail)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
-                  {isEn ? headlineTextEn : headlineTextHi}
+                  {isEn ? headlinesEn.join('\n•\n') : headlinesHi.join('\n•\n')}
                 </h2>
               );
             } else if (isMostlyFine) {

@@ -68,8 +68,36 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
       if (claimMatches(c, ['immunity', 'health', 'boosts', 'defends', 'protects'])) {
         flags.push({ type: 'needs_verification', ruleId: 'R10', claim: claimObj, message_en: 'Needs Verification', message_hi: 'सत्यापन की आवश्यकता है', source: 'FSSAI Regulation 7', relevantIngredients: [] });
       }
-      if (claimMatches(c, ['100%']) && ingredients.raw_list.length > 1) {
-        flags.push({ type: 'claim_contradiction', ruleId: 'R11', claim: claimObj, message_en: 'Unsubstantiated 100% claim', message_hi: 'अप्रमाणित 100% दावा', source: 'FSSAI May 2025 advisory', relevantIngredients: [] });
+      if (claimMatches(c, ['100% whole wheat', '100% atta'])) {
+        const hasMaida = ingredients.raw_list.some(ing => ing.normalized_english.toLowerCase().includes('maida') || ing.normalized_english.toLowerCase().includes('refined wheat flour'));
+        if (hasMaida) {
+          flags.push({ type: 'claim_contradiction', ruleId: 'R11', claim: claimObj, message_en: 'Contains refined flour despite 100% whole wheat claim', message_hi: '100% साबुत गेहूं के दावे के बावजूद रिफाइंड आटा है', source: 'FSSAI May 2025 advisory', relevantIngredients: checkSynonyms(ingredients.raw_list, ['maida', 'refined wheat flour']) });
+        }
+      }
+
+      // R12 - No [Ingredient] Claims
+      let forbiddenIngredient = "";
+      const lowerC = c.toLowerCase();
+      if (lowerC.startsWith('no ')) forbiddenIngredient = lowerC.replace('no ', '').trim();
+      else if (lowerC.includes('contains no ')) forbiddenIngredient = lowerC.split('contains no ')[1].trim();
+      
+      if (forbiddenIngredient) {
+        let searchTerms = [forbiddenIngredient];
+        if (forbiddenIngredient === 'maida') searchTerms.push('refined wheat flour');
+        if (forbiddenIngredient === 'palm oil') searchTerms.push('palmolein');
+
+        const found = checkSynonyms(ingredients.raw_list, searchTerms);
+        if (found.length > 0) {
+          flags.push({
+            type: 'claim_contradiction',
+            ruleId: 'R12',
+            claim: claimObj,
+            message_en: `Contains ${forbiddenIngredient} despite claim`,
+            message_hi: `दावे के बावजूद ${forbiddenIngredient} है`,
+            source: 'Deterministic Verification',
+            relevantIngredients: found
+          });
+        }
       }
     });
   }

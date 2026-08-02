@@ -12,7 +12,7 @@ export interface TranslatableString {
   normalized_english: string;
   localized_display: string;
   plain_name?: string;
-  bounding_box?: { x: number, y: number, width: number, height: number } | null;
+}
 }
 
 export interface ExtractionResult {
@@ -67,7 +67,9 @@ interface AppContextType {
   thirdImageStatus: ThirdImageStatus;
   setThirdImageStatus: (status: ThirdImageStatus) => void;
   extractionResult: ExtractionResult | null;
-  setExtractionResult: React.Dispatch<React.SetStateAction<ExtractionResult | null>>;
+  setExtractionResult: (val: ExtractionResult | null) => void;
+  pendingExtractionResult: ExtractionResult | null;
+  setPendingExtractionResult: (val: ExtractionResult | null) => void;
   userFocus: UserFocus;
   setUserFocus: (focus: UserFocus) => void;
   userGender: UserGender;
@@ -119,6 +121,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [thirdImage, setThirdImage] = useState<string | null>(null);
   const [thirdImageStatus, setThirdImageStatus] = useState<ThirdImageStatus>(null);
   const [extractionResult, setExtractionResult] = useState<ExtractionResult | null>(null);
+  const [pendingExtractionResult, setPendingExtractionResult] = useState<ExtractionResult | null>(null);
   const [userFocus, setUserFocus] = useState<UserFocus>(null);
   const [hasChosenResultType, setHasChosenResultType] = useState<ResultType>(null);
 
@@ -226,7 +229,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ingredientsImage, setIngredientsImage,
       thirdImage, setThirdImage,
       thirdImageStatus, setThirdImageStatus,
-      extractionResult, setExtractionResult,
+      extractionResult,
+      setExtractionResult,
+      pendingExtractionResult,
+      setPendingExtractionResult,
       userFocus, setUserFocus,
       savedScans, saveScan, saveMultipleScans, deleteScan, clearScans,
       isHistoryOpen, setIsHistoryOpen,

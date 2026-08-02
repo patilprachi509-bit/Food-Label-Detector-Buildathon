@@ -10,9 +10,45 @@ export async function POST(req: Request) {
       return new Response('Server configuration error: missing API key', { status: 500 });
     }
 
+    const pass1Payload = {
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: "You are a highly precise OCR engine. Your only job is to transcribe the literal text visible in these images of a food package exactly as printed. Do not parse, interpret, or structure the data. Do not guess ingredients. Do not add anything that is not literally printed in the image. Transcribe the text line by line." },
+            { inlineData: { mimeType: 'image/jpeg', data: frontBase64 } },
+            { inlineData: { mimeType: 'image/jpeg', data: ingredientsBase64 } },
+            ...(thirdBase64 ? [{ inlineData: { mimeType: 'image/jpeg', data: thirdBase64 } }] : [])
+          ]
+        }
+      ],
+      generationConfig: {
+        temperature: 0
+      }
+    };
+
+    const pass1Response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(pass1Payload)
+    });
+
+    if (!pass1Response.ok) {
+      const errorText = await pass1Response.text();
+      return new Response(`Gemini API Error (Pass 1): ${errorText}`, { status: pass1Response.status });
+    }
+
+    const pass1Data = (await pass1Response.json()) as any;
+    const rawTranscription = pass1Data.candidates[0].content.parts[0].text;
+
     const promptText = `
-        Extract the product information and nutrition panel data from these ${thirdBase64 ? 'three' : 'two'} images of a food package.
-        ${thirdBase64 ? 'NOTE: A third image has been provided because the ingredients and nutrition facts are printed on different panels. Treat all provided images as views of the same single product, and combine/reconcile ingredient and nutrition information across all images into one unified extraction — do not treat them as separate products or conflicting sources.' : ''}
+        Extract the product information and nutrition panel data from the following raw text transcription of a food package.
+        
+        RAW PACKAGE TEXT:
+        """
+        ${rawTranscription}
+        """
+
         CRITICAL INSTRUCTIONS:
         1. You MUST normalize all nutrition values to a strict per-100g basis. Do not output per-serving values. If the panel only lists per-serving, calculate the per-100g equivalent.
         2. To prevent floating point anomalies and non-deterministic behavior across executions:
@@ -30,15 +66,10 @@ export async function POST(req: Request) {
            - Return these insights in the 'unverified_claim_notes' array.
            - Set 'concern' to a short note ONLY IF something looks inconsistent. If the claim is plausible or you have no evidence against it, set 'concern' to null.
            - The language in 'concern' MUST be strictly provisional and non-evaluative (e.g., "This claim may not be fully supported by the visible ingredients — worth checking further"). Never use "FAILS", "VIOLATION", or absolute language.
-        7. BOUNDING BOXES FOR LOCALIZATION: For each entry in front_of_pack.claims AND each entry in ingredients.raw_list, you MUST include a 'bounding_box' object { x, y, width, height, image_index } indicating exactly where that text appears.
-           - Bounding box coordinates must ALWAYS be relative to the specific image the text was found in.
-           - You MUST set 'image_index' to 0 if the text is found in the first image, 1 for the second image, and 2 for the third image (if present) to unambiguously indicate which image the bounding box refers to.
-           - x, y, width, height MUST be expressed as percentages of the full image dimensions (0 to 100).
-           - If you cannot confidently localize an item on the image (e.g. it is inferred, illegible, or fabricated), you MUST set 'bounding_box' to null. Do not guess or hallucinate a bounding box.
-         8. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredient text that is literally, clearly legible in the ingredients photo. DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. If the ingredients photo is blurry or illegible, lower 'extraction_confidence' to 'low' and return what you can actually read. Never fabricate additional items to complete the list.
-         9. HINDI TRANSLATION QUALITY: For 'localized_display' and any other Hindi text, you MUST use simple, everyday spoken Hindi (the register used in normal conversation). DO NOT use formal, Sanskrit-derived vocabulary if a common alternative exists (e.g., use कोशिश करें instead of प्रयास करें, इजाज़त instead of अनुमति). The tone should be human, conversational, and accessible.
-         
-         Output strictly in the provided JSON schema.
+        7. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredients that are literally present in the RAW PACKAGE TEXT. DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. Never fabricate additional items to complete the list.
+        8. HINDI TRANSLATION QUALITY: For 'localized_display' and any other Hindi text, you MUST use simple, everyday spoken Hindi (the register used in normal conversation). DO NOT use formal, Sanskrit-derived vocabulary if a common alternative exists. The tone should be human, conversational, and accessible.
+        
+        Output strictly in the provided JSON schema.
     `;
 
     const translatableStringSchema = {
@@ -46,29 +77,16 @@ export async function POST(req: Request) {
       properties: {
         normalized_english: { type: "STRING" },
         localized_display: { type: "STRING" },
-        plain_name: { type: "STRING" },
-        bounding_box: {
-          type: "OBJECT",
-          nullable: true,
-          properties: {
-            x: { type: "NUMBER" },
-            y: { type: "NUMBER" },
-            width: { type: "NUMBER" },
-            height: { type: "NUMBER" },
-            image_index: { type: "NUMBER" }
-          }
-        }
+        plain_name: { type: "STRING" }
       }
     };
 
     const payload = {
       contents: [
         {
+          role: 'user',
           parts: [
-            { text: promptText },
-            { inlineData: { mimeType: 'image/jpeg', data: frontBase64 } },
-            { inlineData: { mimeType: 'image/jpeg', data: ingredientsBase64 } },
-            ...(thirdBase64 ? [{ inlineData: { mimeType: 'image/jpeg', data: thirdBase64 } }] : [])
+            { text: promptText }
           ]
         }
       ],
@@ -97,8 +115,7 @@ export async function POST(req: Request) {
                 net_weight_g: { type: "NUMBER", nullable: true },
                 consumption_format: { 
                   type: "STRING", 
-                  enum: ["solid_snack", "spoonable", "beverage", "other"],
-                  description: "Categorize the product format for consumption sizing. Use 'solid_snack' for items like chips/biscuits where pack fraction makes sense. Use 'spoonable' for sauces, spreads, ghee, oils, pickles. Use 'beverage' for drinks. Use 'other' for loose items or staples."
+                  enum: ["solid_snack", "spoonable", "beverage", "other"]
                 }
               }
             },
@@ -131,20 +148,19 @@ export async function POST(req: Request) {
         }
       }
     };
-
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+    const pass2Response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      return new Response(`Gemini API Error: ${errorText}`, { status: response.status });
+    if (!pass2Response.ok) {
+      const errorText = await pass2Response.text();
+      return new Response(`Gemini API Error (Pass 2): ${errorText}`, { status: pass2Response.status });
     }
 
-    const data = (await response.json()) as any;
-    const rawResult = data.candidates[0].content.parts[0].text;
+    const pass2Data = (await pass2Response.json()) as any;
+    const rawResult = pass2Data.candidates[0].content.parts[0].text;
     
     return new Response(rawResult, {
       status: 200,
