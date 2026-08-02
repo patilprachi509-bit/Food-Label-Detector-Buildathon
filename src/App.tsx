@@ -3,6 +3,7 @@ import './App.css';
 import { AppProvider, useAppContext } from './context/AppContext';
 import { LanguagePicker } from './components/LanguagePicker';
 import { CameraCapture } from './components/CameraCapture';
+import { ThirdImageInterstitial } from './components/ThirdImageInterstitial';
 import { ProcessingScreen } from './components/ProcessingScreen';
 import { LowConfidenceScreen } from './components/PlaceholderScreens';
 import { VerdictScreen } from './components/VerdictScreen';
@@ -18,28 +19,40 @@ import { BatchProcessingScreen } from './components/BatchProcessingScreen';
 import { BatchResultsScreen } from './components/BatchResultsScreen';
 
 const BatchCaptureManager: React.FC = () => {
-  const { frontImage, ingredientsImage, setBatchItems, setFrontImage, setIngredientsImage, setIsCapturingBatchItem } = useAppContext();
+  const { frontImage, ingredientsImage, thirdImage, thirdImageStatus, setBatchItems, setFrontImage, setIngredientsImage, setThirdImage, setThirdImageStatus, setIsCapturingBatchItem } = useAppContext();
   
   React.useEffect(() => {
-    if (frontImage && ingredientsImage) {
+    if (frontImage && ingredientsImage && (thirdImageStatus === 'skipped' || thirdImageStatus === 'done')) {
       setBatchItems(prev => [...prev, {
         id: Date.now().toString(),
         frontImage,
         ingredientsImage,
+        thirdImage,
         status: 'pending'
       }]);
       setFrontImage(null);
       setIngredientsImage(null);
+      setThirdImage(null);
+      setThirdImageStatus(null);
       setIsCapturingBatchItem(false);
     }
-  }, [frontImage, ingredientsImage, setBatchItems, setFrontImage, setIngredientsImage, setIsCapturingBatchItem]);
+  }, [frontImage, ingredientsImage, thirdImage, thirdImageStatus, setBatchItems, setFrontImage, setIngredientsImage, setThirdImage, setThirdImageStatus, setIsCapturingBatchItem]);
 
+  if (thirdImageStatus === 'pending') {
+    return <CameraCapture step={3} onCapture={() => {}} />;
+  }
+
+  if (frontImage && ingredientsImage && thirdImageStatus === null) {
+    return <ThirdImageInterstitial />;
+  }
+
+  if (!frontImage) return <CameraCapture step={1} onCapture={() => {}} />;
   return <CameraCapture step={2} onCapture={() => {}} />;
 };
 
 const AppContent: React.FC = () => {
   const { 
-    userLanguage, frontImage, ingredientsImage, extractionResult, userFocus, 
+    userLanguage, frontImage, ingredientsImage, thirdImageStatus, extractionResult, userFocus, 
     isHistoryOpen, isHowItWorksOpen, viewingSavedScanId, isScanning, hasChosenResultType,
     isBatchMode, isCapturingBatchItem, isBatchProcessing, isBatchFinished, viewingBatchResultId
   } = useAppContext();
@@ -71,7 +84,6 @@ const AppContent: React.FC = () => {
       return <BatchProcessingScreen />;
     }
     if (isCapturingBatchItem) {
-      if (!frontImage) return <CameraCapture step={1} onCapture={() => {}} />;
       return <BatchCaptureManager />;
     }
     return <BatchQueueScreen />;
@@ -108,6 +120,12 @@ const AppContent: React.FC = () => {
   }
 
   if (frontImage && ingredientsImage) {
+    if (thirdImageStatus === 'pending') {
+      return <CameraCapture step={3} onCapture={() => {}} />;
+    }
+    if (thirdImageStatus === null) {
+      return <ThirdImageInterstitial />;
+    }
     return <ProcessingScreen />;
   }
 

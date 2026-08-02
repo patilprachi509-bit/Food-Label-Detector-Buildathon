@@ -48,9 +48,12 @@ export interface BatchItem {
   id: string;
   frontImage: string | null;
   ingredientsImage: string | null;
+  thirdImage?: string | null;
   status: BatchStatus;
   result?: ExtractionResult | null;
 }
+
+export type ThirdImageStatus = 'pending' | 'skipped' | 'done' | null;
 
 interface AppContextType {
   userLanguage: Language;
@@ -59,6 +62,10 @@ interface AppContextType {
   setFrontImage: (img: string | null) => void;
   ingredientsImage: string | null;
   setIngredientsImage: (img: string | null) => void;
+  thirdImage: string | null;
+  setThirdImage: (img: string | null) => void;
+  thirdImageStatus: ThirdImageStatus;
+  setThirdImageStatus: (status: ThirdImageStatus) => void;
   extractionResult: ExtractionResult | null;
   setExtractionResult: React.Dispatch<React.SetStateAction<ExtractionResult | null>>;
   userFocus: UserFocus;
@@ -109,6 +116,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [userGender, setUserGenderState] = useState<UserGender>((localStorage.getItem('user_gender') as UserGender) || 'standard');
   const [frontImage, setFrontImage] = useState<string | null>(null);
   const [ingredientsImage, setIngredientsImage] = useState<string | null>(null);
+  const [thirdImage, setThirdImage] = useState<string | null>(null);
+  const [thirdImageStatus, setThirdImageStatus] = useState<ThirdImageStatus>(null);
   const [extractionResult, setExtractionResult] = useState<ExtractionResult | null>(null);
   const [userFocus, setUserFocus] = useState<UserFocus>(null);
   const [hasChosenResultType, setHasChosenResultType] = useState<ResultType>(null);
@@ -156,12 +165,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setViewingBatchResultId(null);
     setFrontImage(null);
     setIngredientsImage(null);
+    setThirdImage(null);
+    setThirdImageStatus(null);
     setExtractionResult(null);
   };
 
   const resetApp = () => {
     setFrontImage(null);
     setIngredientsImage(null);
+    setThirdImage(null);
+    setThirdImageStatus(null);
     setExtractionResult(null);
     setUserFocus(null);
     setIsHistoryOpen(false);
@@ -211,6 +224,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       userGender, setUserGender,
       frontImage, setFrontImage,
       ingredientsImage, setIngredientsImage,
+      thirdImage, setThirdImage,
+      thirdImageStatus, setThirdImageStatus,
       extractionResult, setExtractionResult,
       userFocus, setUserFocus,
       savedScans, saveScan, saveMultipleScans, deleteScan, clearScans,

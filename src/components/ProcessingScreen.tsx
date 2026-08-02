@@ -19,7 +19,7 @@ interface CacheEntry {
 }
 
 export const ProcessingScreen: React.FC = () => {
-  const { userLanguage, frontImage, ingredientsImage, setExtractionResult } = useAppContext();
+  const { userLanguage, frontImage, ingredientsImage, thirdImage, setExtractionResult } = useAppContext();
   const [error, setError] = useState<string | null>(null);
   const [loadingStep, setLoadingStep] = useState(0);
   const fetchPromiseRef = React.useRef<Promise<any> | null>(null);
@@ -39,9 +39,10 @@ export const ProcessingScreen: React.FC = () => {
         // Strip data:image/jpeg;base64, prefix
         const frontBase64 = frontImage.split(',')[1];
         const ingredientsBase64 = ingredientsImage.split(',')[1];
+        const thirdBase64 = thirdImage ? thirdImage.split(',')[1] : null;
         
         fetchPromiseRef.current = (async () => {
-          const hashStr = await generateHash(frontBase64 + ingredientsBase64);
+          const hashStr = await generateHash(frontBase64 + ingredientsBase64 + (thirdBase64 || ''));
           
           try {
             const cacheStr = localStorage.getItem(CACHE_KEY);
@@ -59,7 +60,8 @@ export const ProcessingScreen: React.FC = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               frontBase64,
-              ingredientsBase64
+              ingredientsBase64,
+              thirdBase64
             })
           });
 

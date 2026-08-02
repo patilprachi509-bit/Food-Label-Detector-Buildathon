@@ -39,7 +39,8 @@ export const BatchProcessingScreen: React.FC = () => {
           
           const frontBase64 = item.frontImage.split(',')[1];
           const ingredientsBase64 = item.ingredientsImage.split(',')[1];
-          const hashStr = await generateHash(frontBase64 + ingredientsBase64);
+          const thirdBase64 = item.thirdImage ? item.thirdImage.split(',')[1] : null;
+          const hashStr = await generateHash(frontBase64 + ingredientsBase64 + (thirdBase64 || ''));
           
           let data = null;
           try {
@@ -57,7 +58,7 @@ export const BatchProcessingScreen: React.FC = () => {
             const fetchPromise = fetch('/api/extract', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ frontBase64, ingredientsBase64 })
+              body: JSON.stringify({ frontBase64, ingredientsBase64, thirdBase64 })
             });
 
             const timeoutPromise = new Promise<Response>((_, reject) => {

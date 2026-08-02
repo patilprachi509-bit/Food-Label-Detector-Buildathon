@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 
 interface CameraCaptureProps {
-  step: 1 | 2;
+  step: 1 | 2 | 3;
   onCapture: () => void;
 }
 
 export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { userLanguage, setFrontImage, setIngredientsImage, resetApp } = useAppContext();
+  const { userLanguage, setFrontImage, setIngredientsImage, setThirdImage, resetApp } = useAppContext();
   const isEn = userLanguage === 'en';
   const [cameraError, setCameraError] = useState<string | null>(null);
 
@@ -42,7 +42,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
   const handleCaptureClick = () => {
     if (videoRef.current) {
       // Step 1 (Front image) is sent to the backend compressed (max 800px, 0.6 quality).
-      // Step 2 (Ingredients) is sent to the backend for Cloud Vision OCR. 1800px at 0.8 quality ensures it is sharp enough for tiny text while easily staying under Vercel's 4.5MB request limit.
+      // Step 2 & 3 (Ingredients) is sent to the backend for Cloud Vision OCR. 1800px at 0.8 quality ensures it is sharp enough for tiny text while easily staying under Vercel's 4.5MB request limit.
       const MAX_WIDTH = step === 1 ? 800 : 1800;
       let width = videoRef.current.videoWidth;
       let height = videoRef.current.videoHeight;
@@ -64,8 +64,10 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
         
         if (step === 1) {
           setFrontImage(dataUrl);
-        } else {
+        } else if (step === 2) {
           setIngredientsImage(dataUrl);
+        } else {
+          setThirdImage(dataUrl);
         }
         onCapture();
       }
@@ -99,8 +101,10 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
             const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
             if (step === 1) {
               setFrontImage(compressedDataUrl);
-            } else {
+            } else if (step === 2) {
               setIngredientsImage(compressedDataUrl);
+            } else {
+              setThirdImage(compressedDataUrl);
             }
             onCapture();
           }
@@ -112,11 +116,11 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
   };
 
 
-  const titleEn = step === 1 ? 'SCAN THE FRONT OF THE PACK' : 'NOW SCAN THE INGREDIENTS & NUTRITION PANEL.';
-  const titleHi = step === 1 ? 'पैक के सामने का हिस्सा स्कैन करें' : 'अब सामग्री और पोषण पैनल को स्कैन करें।';
+  const titleEn = step === 1 ? 'SCAN THE FRONT OF THE PACK' : (step === 2 ? 'NOW SCAN THE INGREDIENTS & NUTRITION PANEL.' : 'NOW SCAN THE REST OF THE PANEL.');
+  const titleHi = step === 1 ? 'पैक के सामने का हिस्सा स्कैन करें' : (step === 2 ? 'अब सामग्री और पोषण पैनल को स्कैन करें।' : 'अब बाकी पैनल को स्कैन करें।');
   
-  const subtextEn = step === 1 ? 'Make sure the claim or product name is visible.' : 'Fit the whole panel in frame if you can.';
-  const subtextHi = step === 1 ? 'सुनिश्चित करें कि उत्पाद का नाम दिखाई दे रहा है।' : 'यदि आप कर सकते हैं तो पूरे पैनल को फ्रेम में फिट करें।';
+  const subtextEn = step === 1 ? 'Make sure the claim or product name is visible.' : (step === 2 ? 'Fit the whole panel in frame if you can.' : 'Capture the rest of the ingredients or nutrition information.');
+  const subtextHi = step === 1 ? 'सुनिश्चित करें कि उत्पाद का नाम दिखाई दे रहा है।' : (step === 2 ? 'यदि आप कर सकते हैं तो पूरे पैनल को फ्रेम में फिट करें।' : 'बाकी सामग्री या पोषण संबंधी जानकारी कैप्चर करें।');
 
   return (
     <div style={{ 
@@ -218,7 +222,10 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
           {/* Progress Indicator */}
           <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem' }}>
             <div style={{ width: '40px', height: '4px', borderRadius: '2px', backgroundColor: step >= 1 ? 'white' : 'rgba(255,255,255,0.3)' }}></div>
-            <div style={{ width: '40px', height: '4px', borderRadius: '2px', backgroundColor: step === 2 ? 'white' : 'rgba(255,255,255,0.3)' }}></div>
+            <div style={{ width: '40px', height: '4px', borderRadius: '2px', backgroundColor: step >= 2 ? 'white' : 'rgba(255,255,255,0.3)' }}></div>
+            {step === 3 && (
+              <div style={{ width: '40px', height: '4px', borderRadius: '2px', backgroundColor: 'white' }}></div>
+            )}
           </div>
 
           <h2 className={isEn ? 'headline-en' : 'headline-hi'} style={{ fontSize: '1.3rem', marginBottom: '0.5rem', fontWeight: 900, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>

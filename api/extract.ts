@@ -8,7 +8,7 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const { frontBase64, ingredientsBase64 } = (await req.json()) as any;
+    const { frontBase64, ingredientsBase64, thirdBase64 } = (await req.json()) as any;
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -16,7 +16,8 @@ export default async function handler(req: Request) {
     }
 
     const promptText = `
-        Extract the product information and nutrition panel data from these two images of a food package.
+        Extract the product information and nutrition panel data from these ${thirdBase64 ? 'three' : 'two'} images of a food package.
+        ${thirdBase64 ? 'NOTE: A third image has been provided because the ingredients and nutrition facts are printed on different panels. Treat all provided images as views of the same single product, and combine/reconcile ingredient and nutrition information across all images into one unified extraction — do not treat them as separate products or conflicting sources.' : ''}
         CRITICAL INSTRUCTIONS:
         1. You MUST normalize all nutrition values to a strict per-100g basis. Do not output per-serving values. If the panel only lists per-serving, calculate the per-100g equivalent.
         2. To prevent floating point anomalies and non-deterministic behavior across executions:
@@ -34,8 +35,10 @@ export default async function handler(req: Request) {
            - Return these insights in the 'unverified_claim_notes' array.
            - Set 'concern' to a short note ONLY IF something looks inconsistent. If the claim is plausible or you have no evidence against it, set 'concern' to null.
            - The language in 'concern' MUST be strictly provisional and non-evaluative (e.g., "This claim may not be fully supported by the visible ingredients — worth checking further"). Never use "FAILS", "VIOLATION", or absolute language.
-        7. BOUNDING BOXES FOR LOCALIZATION: For each entry in front_of_pack.claims AND each entry in ingredients.raw_list, you MUST include a 'bounding_box' object { x, y, width, height } indicating exactly where that text appears on the respective photo.
-           - These values MUST be expressed as percentages of the full image dimensions (0 to 100).
+        7. BOUNDING BOXES FOR LOCALIZATION: For each entry in front_of_pack.claims AND each entry in ingredients.raw_list, you MUST include a 'bounding_box' object { x, y, width, height, image_index } indicating exactly where that text appears.
+           - Bounding box coordinates must ALWAYS be relative to the specific image the text was found in.
+           - You MUST set 'image_index' to 0 if the text is found in the first image, 1 for the second image, and 2 for the third image (if present) to unambiguously indicate which image the bounding box refers to.
+           - x, y, width, height MUST be expressed as percentages of the full image dimensions (0 to 100).
            - If you cannot confidently localize an item on the image (e.g. it is inferred, illegible, or fabricated), you MUST set 'bounding_box' to null. Do not guess or hallucinate a bounding box.
          8. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredient text that is literally, clearly legible in the ingredients photo. DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. If the ingredients photo is blurry or illegible, lower 'extraction_confidence' to 'low' and return what you can actually read. Never fabricate additional items to complete the list.
          9. HINDI TRANSLATION QUALITY: For 'localized_display' and any other Hindi text, you MUST use simple, everyday spoken Hindi (the register used in normal conversation). DO NOT use formal, Sanskrit-derived vocabulary if a common alternative exists (e.g., use कोशिश करें instead of प्रयास करें, इजाज़त instead of अनुमति). The tone should be human, conversational, and accessible.
@@ -56,7 +59,8 @@ export default async function handler(req: Request) {
             x: { type: "NUMBER" },
             y: { type: "NUMBER" },
             width: { type: "NUMBER" },
-            height: { type: "NUMBER" }
+            height: { type: "NUMBER" },
+            image_index: { type: "NUMBER" }
           }
         }
       }
@@ -68,7 +72,8 @@ export default async function handler(req: Request) {
           parts: [
             { text: promptText },
             { inlineData: { mimeType: 'image/jpeg', data: frontBase64 } },
-            { inlineData: { mimeType: 'image/jpeg', data: ingredientsBase64 } }
+            { inlineData: { mimeType: 'image/jpeg', data: ingredientsBase64 } },
+            ...(thirdBase64 ? [{ inlineData: { mimeType: 'image/jpeg', data: thirdBase64 } }] : [])
           ]
         }
       ],

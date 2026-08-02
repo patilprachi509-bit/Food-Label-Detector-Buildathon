@@ -4,16 +4,16 @@ import type { Flag } from '../utils/ruleEngine';
 export interface MatchedClaim {
   flag: Flag;
   claimText: string;
-  box: { x: number; y: number; width: number; height: number };
+  box: { x: number; y: number; width: number; height: number; image_index?: number };
 }
 
 interface Props {
-  frontImage: string;
+  image: string;
   matchedClaims: MatchedClaim[];
   isEn: boolean;
 }
 
-export const AnnotatedPhotoReveal: React.FC<Props> = ({ frontImage, matchedClaims, isEn }) => {
+export const AnnotatedPhotoReveal: React.FC<Props> = ({ image, matchedClaims, isEn }) => {
   const [showPanel, setShowPanel] = useState(false);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export const AnnotatedPhotoReveal: React.FC<Props> = ({ frontImage, matchedClaim
       boxShadow: '0 8px 24px rgba(0,0,0,0.1)' 
     }}>
       {/* Underlying Photo */}
-      <img src={frontImage} alt="Captured product" style={{ width: '100%', display: 'block', objectFit: 'contain' }} />
+      <img src={image} alt="Captured product" style={{ width: '100%', display: 'block', objectFit: 'contain' }} />
 
       {/* SVG Overlay for bounding boxes & strikethroughs */}
       <svg 

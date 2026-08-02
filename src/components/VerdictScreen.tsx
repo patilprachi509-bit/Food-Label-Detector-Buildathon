@@ -14,7 +14,7 @@ import { VerdictSummaryVisual } from './VerdictSummaryVisual';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
 
 export const VerdictScreen: React.FC = () => {
-  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, frontImage, userGender, setUserGender, setHasChosenResultType } = useAppContext();
+  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, frontImage, ingredientsImage, thirdImage, userGender, setUserGender, setHasChosenResultType } = useAppContext();
   const isEn = userLanguage === 'en';
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
@@ -61,7 +61,7 @@ export const VerdictScreen: React.FC = () => {
   }, [flags, extractionResult]);
 
   const matchedClaims = useMemo(() => {
-    if (viewingSavedScanId || !frontImage || !extractionResult) return [];
+    if (viewingSavedScanId || !extractionResult) return [];
     
     const claimFlags = flags.filter(f => f.type === 'claim_contradiction' && f.claim?.normalized_english);
     const matches: MatchedClaim[] = [];
@@ -80,7 +80,19 @@ export const VerdictScreen: React.FC = () => {
     });
     
     return matches;
-  }, [flags, extractionResult, frontImage, viewingSavedScanId]);
+  }, [flags, extractionResult, viewingSavedScanId]);
+
+  const claimsByImage = useMemo(() => {
+    const front: MatchedClaim[] = [];
+    const ing: MatchedClaim[] = [];
+    const third: MatchedClaim[] = [];
+    matchedClaims.forEach(mc => {
+      if (mc.box.image_index === 1) ing.push(mc);
+      else if (mc.box.image_index === 2) third.push(mc);
+      else front.push(mc); // default to 0
+    });
+    return { front, ing, third };
+  }, [matchedClaims]);
 
   const handleAudioClick = async () => {
     if (!userLanguage) return;
@@ -173,10 +185,24 @@ export const VerdictScreen: React.FC = () => {
           </button>
         </div>
         
-        {matchedClaims.length > 0 && frontImage && (
+        {claimsByImage.front.length > 0 && frontImage && (
           <AnnotatedPhotoReveal 
-            frontImage={frontImage} 
-            matchedClaims={matchedClaims} 
+            image={frontImage} 
+            matchedClaims={claimsByImage.front} 
+            isEn={isEn} 
+          />
+        )}
+        {claimsByImage.ing.length > 0 && ingredientsImage && (
+          <AnnotatedPhotoReveal 
+            image={ingredientsImage} 
+            matchedClaims={claimsByImage.ing} 
+            isEn={isEn} 
+          />
+        )}
+        {claimsByImage.third.length > 0 && thirdImage && (
+          <AnnotatedPhotoReveal 
+            image={thirdImage} 
+            matchedClaims={claimsByImage.third} 
             isEn={isEn} 
           />
         )}
