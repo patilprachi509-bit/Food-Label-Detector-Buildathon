@@ -1,9 +1,6 @@
 export const runtime = 'nodejs';
 
-export default async function handler(req: Request) {
-  if (req.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405 });
-  }
+export async function POST(req: Request) {
 
   try {
     const { frontBase64, ingredientsBase64, thirdBase64 } = (await req.json()) as any;
