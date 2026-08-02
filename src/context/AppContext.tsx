@@ -31,7 +31,8 @@ export interface ExtractionResult {
   };
   nutrition: { 
     serving_size: string, energy_kcal: number, total_fat_g: number,
-    saturated_fat_g: number, trans_fat_g: number | null, sugar_g: number, 
+    saturated_fat_g: number, trans_fat_g: number | null, 
+    total_sugar_g: number, added_sugar_g: number | null,
     sodium_mg: number, protein_g: number 
   };
   extraction_confidence: ExtractionConfidence;

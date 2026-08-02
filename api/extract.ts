@@ -55,7 +55,7 @@ export async function POST(req: Request) {
            - You MUST aggressively round all kcal and mg values to the nearest whole number (e.g., 23.4 -> 23).
            - You MUST round all gram (g) values to exactly 1 decimal place (e.g., 3.46 -> 3.5).
            - Do not attempt to reverse-engineer sub-decimal precision from percentages. Stick strictly to the printed values with these rounding rules applied.
-        3. The field 'trans_fat_g' is nullable. If trans fat is not printed on the panel, you MUST return null, do NOT default to 0.
+        3. 'trans_fat_g' and 'added_sugar_g' are nullable. If they are not explicitly printed on the panel, you MUST return null, do NOT default to 0 and do not assume added sugar equals total sugar. Only extract 'added_sugar_g' if the label separately declares "Added Sugars".
         4. For 'claims' and 'raw_list' items, output an object with 'normalized_english' (always English) and 'localized_display' (always translate to Hindi).
         5. For every ingredient in 'raw_list', you MUST populate 'plain_name' alongside the raw name using this logic:
            - First, check this static dictionary of common terms: sodium -> salt, ascorbic acid -> Vitamin C, tocopherol -> Vitamin E. Also decode INS/E-numbers (e.g. INS 211).
@@ -152,7 +152,8 @@ export async function POST(req: Request) {
                 total_fat_g: { type: "NUMBER" },
                 saturated_fat_g: { type: "NUMBER" },
                 trans_fat_g: { type: "NUMBER", nullable: true },
-                sugar_g: { type: "NUMBER" },
+                total_sugar_g: { type: "NUMBER" },
+                added_sugar_g: { type: "NUMBER", nullable: true },
                 sodium_mg: { type: "NUMBER" },
                 protein_g: { type: "NUMBER" }
               }

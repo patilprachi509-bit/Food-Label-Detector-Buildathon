@@ -101,15 +101,6 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
           </h3>
           {isGeneralHealth && flag.relevantIngredients && flag.relevantIngredients.length > 0 && (
             <div style={{ fontSize: '0.85rem', opacity: 0.7, marginTop: '0.4rem', fontStyle: 'italic' }}>
-              {flag.actualValue !== undefined && flag.nutrientFocus ? (
-                `${flag.actualValue}${flag.unit} ${
-                  flag.nutrientFocus === 'sugar' ? (isEn ? 'Sugar' : 'चीनी') :
-                  flag.nutrientFocus === 'fat' ? (isEn ? 'Fat' : 'वसा') :
-                  flag.nutrientFocus === 'salt' ? (isEn ? 'Salt' : 'नमक') :
-                  (flag.nutrientFocus as string) === 'trans_fat' ? (isEn ? 'Trans Fat' : 'ट्रांस फैट') :
-                  ''
-                } ${isEn ? 'per 100g' : 'प्रति 100g'} `
-              ) : ''}
               — {isEn ? 'from:' : 'से:'} {flag.relevantIngredients.map(ing => isEn ? ing.normalized_english : (ing.localized_display || ing.normalized_english)).join(', ')}
             </div>
           )}

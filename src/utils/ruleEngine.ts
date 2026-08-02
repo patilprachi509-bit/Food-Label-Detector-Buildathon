@@ -53,11 +53,11 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
       if (claimMatches(c, ['fat free', 'zero fat']) && nutrition.total_fat_g > 0.5) {
         flags.push({ type: 'claim_contradiction', ruleId: 'R2', claim: claimObj, message_en: 'Fails fat-free threshold', message_hi: 'फैट-फ्री सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${nutrition.total_fat_g}g fat per 100g`, headline_hi: `${nutrition.total_fat_g}g फैट प्रति 100g`, actualValue: nutrition.total_fat_g, thresholdValue: 0.5, unit: 'g', isMax: true, evalDirection: 'above' });
       }
-      if (claimMatches(c, ['low sugar']) && nutrition.sugar_g > 6) {
-        flags.push({ type: 'claim_contradiction', ruleId: 'R3', claim: claimObj, message_en: 'Fails low-sugar threshold', message_hi: 'लो-शुगर सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${nutrition.sugar_g}g sugar per 100g`, headline_hi: `${nutrition.sugar_g}g चीनी प्रति 100g`, actualValue: nutrition.sugar_g, thresholdValue: 6, unit: 'g', isMax: true, evalDirection: 'above' });
+      if (claimMatches(c, ['low sugar']) && nutrition.total_sugar_g > 6) {
+        flags.push({ type: 'claim_contradiction', ruleId: 'R3', claim: claimObj, message_en: 'Fails low-sugar threshold', message_hi: 'लो-शुगर सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${nutrition.total_sugar_g}g sugar per 100g`, headline_hi: `${nutrition.total_sugar_g}g चीनी प्रति 100g`, actualValue: nutrition.total_sugar_g, thresholdValue: 6, unit: 'g', isMax: true, evalDirection: 'above' });
       }
-      if (claimMatches(c, ['sugar free', 'zero sugar', 'no added sugar']) && nutrition.sugar_g > 0.5) {
-        flags.push({ type: 'claim_contradiction', ruleId: 'R4', claim: claimObj, message_en: 'Fails sugar-free threshold', message_hi: 'शुगर-फ्री सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${nutrition.sugar_g}g sugar per 100g`, headline_hi: `${nutrition.sugar_g}g चीनी प्रति 100g`, actualValue: nutrition.sugar_g, thresholdValue: 0.5, unit: 'g', isMax: true, evalDirection: 'above' });
+      if (claimMatches(c, ['sugar free', 'zero sugar', 'no added sugar']) && nutrition.total_sugar_g > 0.5) {
+        flags.push({ type: 'claim_contradiction', ruleId: 'R4', claim: claimObj, message_en: 'Fails sugar-free threshold', message_hi: 'शुगर-फ्री सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${nutrition.total_sugar_g}g sugar per 100g`, headline_hi: `${nutrition.total_sugar_g}g चीनी प्रति 100g`, actualValue: nutrition.total_sugar_g, thresholdValue: 0.5, unit: 'g', isMax: true, evalDirection: 'above' });
       }
       if (claimMatches(c, ['source of protein']) && nutrition.protein_g < 5) {
         flags.push({ type: 'claim_contradiction', ruleId: 'R5', claim: claimObj, message_en: 'Fails protein-source threshold', message_hi: 'प्रोटीन-स्रोत सीमा में विफल', source: 'FSSAI Schedule I', nutrientFocus: 'protein', relevantIngredients: [], headline_en: `${nutrition.protein_g}g protein per 100g`, headline_hi: `${nutrition.protein_g}g प्रोटीन प्रति 100g`, actualValue: nutrition.protein_g, thresholdValue: 5, unit: 'g', isMax: false, evalDirection: 'below' });
@@ -104,13 +104,21 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
 
   // G1 - G4
   if (nutrition.energy_kcal > 0) {
-    const sugarPct = Math.round(((nutrition.sugar_g * 4) / nutrition.energy_kcal) * 100);
-    if (sugarPct > 10) {
-      flags.push({ type: 'general_health', ruleId: 'G1', message_en: 'High in added sugar', message_hi: 'अतिरिक्त चीनी में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${sugarPct}% CALORIES FROM SUGAR`, headline_hi: `${sugarPct}% कैलोरी चीनी से`, actualValue: sugarPct, thresholdValue: 10, unit: '%', isMax: true, evalDirection: 'above' });
+    if (nutrition.added_sugar_g !== null) {
+      const addedSugarPct = Math.round(((nutrition.added_sugar_g * 4) / nutrition.energy_kcal) * 100);
+      if (addedSugarPct > 10) {
+        flags.push({ type: 'general_health', ruleId: 'G1', message_en: 'High in added sugar', message_hi: 'अतिरिक्त चीनी में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${addedSugarPct}% CALORIES FROM ADDED SUGAR (${nutrition.added_sugar_g}g per 100g)`, headline_hi: `${addedSugarPct}% कैलोरी अतिरिक्त चीनी से (${nutrition.added_sugar_g}g प्रति 100g)`, actualValue: addedSugarPct, thresholdValue: 10, unit: '%', isMax: true, evalDirection: 'above' });
+      }
+    } else {
+      const totalSugarPct = Math.round(((nutrition.total_sugar_g * 4) / nutrition.energy_kcal) * 100);
+      if (totalSugarPct > 10) {
+        flags.push({ type: 'needs_verification', ruleId: 'G1', message_en: "Total sugar is high, but this panel doesn't separately declare added sugar — the ICMR-NIN threshold applies specifically to added sugar, so this can't be confirmed.", message_hi: 'कुल चीनी अधिक है, लेकिन यह पैनल अतिरिक्त चीनी की अलग से घोषणा नहीं करता है — ICMR-NIN सीमा विशेष रूप से अतिरिक्त चीनी पर लागू होती है, इसलिए इसकी पुष्टि नहीं की जा सकती है।', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${totalSugarPct}% CALORIES FROM TOTAL SUGAR (${nutrition.total_sugar_g}g per 100g)`, headline_hi: `${totalSugarPct}% कैलोरी कुल चीनी से (${nutrition.total_sugar_g}g प्रति 100g)`, actualValue: totalSugarPct, thresholdValue: 10, unit: '%', isMax: true, evalDirection: 'above' });
+      }
     }
+
     const fatPct = Math.round(((nutrition.total_fat_g * 9) / nutrition.energy_kcal) * 100);
     if (fatPct > 15) {
-      flags.push({ type: 'general_health', ruleId: 'G2', message_en: 'High in fat', message_hi: 'वसा में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${fatPct}% CALORIES FROM FAT`, headline_hi: `${fatPct}% कैलोरी फैट से`, actualValue: fatPct, thresholdValue: 15, unit: '%', isMax: true, evalDirection: 'above' });
+      flags.push({ type: 'general_health', ruleId: 'G2', message_en: 'High in fat', message_hi: 'वसा में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${fatPct}% CALORIES FROM TOTAL FAT (${nutrition.total_fat_g}g per 100g)`, headline_hi: `${fatPct}% कैलोरी कुल फैट से (${nutrition.total_fat_g}g प्रति 100g)`, actualValue: fatPct, thresholdValue: 15, unit: '%', isMax: true, evalDirection: 'above' });
     }
   }
   
@@ -118,7 +126,7 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
     // Convert to Salt in grams for UI
     const saltGrams = Number(((nutrition.sodium_mg * 2.5) / 1000).toFixed(2));
     const thresholdSaltGrams = 0.625;
-    flags.push({ type: 'general_health', ruleId: 'G3', message_en: 'High in salt', message_hi: 'नमक में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'salt', relevantIngredients: checkSynonyms(ingredients.raw_list, SALT_SYNONYMS), headline_en: `${saltGrams}g SALT PER 100g`, headline_hi: `${saltGrams}g नमक प्रति 100g`, actualValue: saltGrams, thresholdValue: thresholdSaltGrams, unit: 'g', isMax: true, evalDirection: 'above' });
+    flags.push({ type: 'general_health', ruleId: 'G3', message_en: 'High in salt', message_hi: 'नमक में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'salt', relevantIngredients: checkSynonyms(ingredients.raw_list, SALT_SYNONYMS), headline_en: `HIGH IN SALT (${saltGrams}g salt per 100g, converted from ${nutrition.sodium_mg}mg sodium)`, headline_hi: `नमक में उच्च (${saltGrams}g नमक प्रति 100g, ${nutrition.sodium_mg}mg सोडियम से परिवर्तित)`, actualValue: saltGrams, thresholdValue: thresholdSaltGrams, unit: 'g', isMax: true, evalDirection: 'above' });
   }
 
   if (nutrition.trans_fat_g !== null && nutrition.total_fat_g > 0) {
