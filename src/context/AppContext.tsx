@@ -68,7 +68,7 @@ interface AppContextType {
   extractionResult: ExtractionResult | null;
   setExtractionResult: (val: ExtractionResult | null) => void;
   pendingExtractionResult: ExtractionResult | null;
-  setPendingExtractionResult: (val: ExtractionResult | null) => void;
+  setPendingExtractionResult: React.Dispatch<React.SetStateAction<ExtractionResult | null>>;
   userFocus: UserFocus;
   setUserFocus: (focus: UserFocus) => void;
   userGender: UserGender;
