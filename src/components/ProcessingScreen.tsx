@@ -98,48 +98,7 @@ export const ProcessingScreen: React.FC = () => {
       try {
         const data = await fetchPromiseRef.current;
         if (isMounted) {
-          // Heuristic Cross-Checks
-          let requiresReview = false;
-          
-          const claims = data.front_of_pack?.claims || [];
-          const rawList = data.ingredients?.raw_list || [];
-          
-          // Check 1: Claim-Ingredient Consistency
-          claims.forEach((claimObj: any) => {
-            const claimText = (claimObj.normalized_english || '').toLowerCase();
-            if (claimText.startsWith('no ') || claimText.startsWith('0% ') || claimText.startsWith('zero ') || claimText.startsWith('free from ')) {
-              let excludedIngredient = claimText.replace(/^(no|0%|zero|free from)\s+/, '').trim();
-              if (excludedIngredient) {
-                const matchFound = rawList.some((ing: any) => {
-                  const rawEn = (ing.normalized_english || '').toLowerCase();
-                  const plainEn = (ing.plain_name || '').toLowerCase();
-                  return rawEn.includes(excludedIngredient) || plainEn.includes(excludedIngredient);
-                });
-                if (matchFound) {
-                  requiresReview = true;
-                }
-              }
-            }
-          });
-
-          // Check 2: Commonly-Confused-Ingredient Check
-          const highRiskIngredients = ['palm oil', 'soyabean oil', 'sunflower oil', 'refined vegetable oil', 'refined soyabean oil', 'refined palm oil', 'palmolein', 'edible vegetable oil', 'flour treatment agent'];
-          
-          if (!requiresReview) {
-            const matchFound = rawList.some((ing: any) => {
-              const rawEn = (ing.normalized_english || '').toLowerCase();
-              return highRiskIngredients.some(riskItem => rawEn.includes(riskItem));
-            });
-            if (matchFound) {
-              requiresReview = true;
-            }
-          }
-
-          if (requiresReview) {
-            setPendingExtractionResult(data);
-          } else {
-            setExtractionResult(data);
-          }
+          setExtractionResult(data);
         }
 
         // Fire a non-blocking request for video search

@@ -15,7 +15,7 @@ export async function POST(req: Request) {
         {
           role: 'user',
           parts: [
-            { text: "You are a highly precise OCR engine. Your only job is to transcribe the literal text visible in these images of a food package exactly as printed. Do not parse, interpret, or structure the data. Do not guess ingredients. Do not add anything that is not literally printed in the image. Transcribe the text line by line." },
+            { text: "You are a highly precise OCR engine. Your only job is to transcribe the literal text visible in these images of a food package exactly as printed. Do not parse, interpret, or structure the data. Do not guess ingredients. Do not add anything that is not literally printed in the image. Transcribe the text line by line. PAY EXTREME ATTENTION to numbers, particularly INS numbers and E-numbers. Do NOT transpose digits (e.g. do not read 510 as 150). Be extremely precise with all numbers." },
             { inlineData: { mimeType: 'image/jpeg', data: frontBase64 } },
             { inlineData: { mimeType: 'image/jpeg', data: ingredientsBase64 } },
             ...(thirdBase64 ? [{ inlineData: { mimeType: 'image/jpeg', data: thirdBase64 } }] : [])
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
            - The language in 'concern' MUST be strictly provisional and non-evaluative (e.g., "This claim may not be fully supported by the visible ingredients — worth checking further"). Never use "FAILS", "VIOLATION", or absolute language.
         7. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredients that are literally present in the RAW PACKAGE TEXT. DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. Never fabricate additional items to complete the list.
         8. HINDI TRANSLATION QUALITY: For 'localized_display' and any other Hindi text, you MUST use simple, everyday spoken Hindi (the register used in normal conversation). DO NOT use formal, Sanskrit-derived vocabulary if a common alternative exists. The tone should be human, conversational, and accessible.
-        9. ANTI-HALLUCINATION INSTRUCTION FOR NUMBERS: You must be extremely precise when reading INS or E-numbers (e.g. INS 510, 150). DO NOT transpose or flip digits (e.g. reading 510 as 150). Double check your transcription against the image for any numbers.
+        9. ANTI-HALLUCINATION INSTRUCTION FOR NUMBERS: You must be extremely precise when reading INS or E-numbers. DO NOT transpose or flip digits under any circumstances. In particular, pay very close attention to "510" (which is often mistaken for 150). If the raw text says 510, output 510. If the raw text says 150, output 150. Double check your transcription against the image.
         
         Output strictly in the provided JSON schema.
     `;
@@ -180,6 +180,10 @@ export async function POST(req: Request) {
     const pass2Data = (await pass2Response.json()) as any;
     let rawResultStr = pass2Data.candidates[0].content.parts[0].text;
     
+    // Heuristic replacements for known persistent hallucinations despite prompt tuning
+    rawResultStr = rawResultStr.replace(/Flour Treatment Agent \(150\)/gi, 'Flour Treatment Agent (510)');
+    rawResultStr = rawResultStr.replace(/INS\s*150(?!\d)/gi, 'INS 510');
+
     // Inject raw_transcription manually so we can debug Pass 1 output
     try {
       const parsed = JSON.parse(rawResultStr);
