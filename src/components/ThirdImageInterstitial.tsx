@@ -30,7 +30,10 @@ export const ThirdImageInterstitial: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <button 
             className="btn-primary" 
-            onClick={() => setThirdImageStatus('skipped')}
+            onClick={() => {
+              console.log('ThirdImageInterstitial: Tapped That is Everything');
+              setThirdImageStatus('skipped');
+            }}
             style={{ padding: '1rem', fontSize: '1.1rem' }}
           >
             {isEn ? "That's Everything" : "बस इतना ही"}
@@ -38,7 +41,10 @@ export const ThirdImageInterstitial: React.FC = () => {
           
           <button 
             className="btn-secondary" 
-            onClick={() => setThirdImageStatus('pending')}
+            onClick={() => {
+              console.log('ThirdImageInterstitial: Tapped Add Another Photo');
+              setThirdImageStatus('pending');
+            }}
             style={{ padding: '1rem', fontSize: '1.1rem', backgroundColor: 'transparent', border: '2px solid var(--color-primary)', color: 'var(--color-primary)' }}
           >
             {isEn ? "Add Another Photo" : "एक और फोटो जोड़ें"}

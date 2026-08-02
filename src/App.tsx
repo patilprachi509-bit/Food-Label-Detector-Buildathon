@@ -39,7 +39,7 @@ const BatchCaptureManager: React.FC = () => {
   }, [frontImage, ingredientsImage, thirdImage, thirdImageStatus, setBatchItems, setFrontImage, setIngredientsImage, setThirdImage, setThirdImageStatus, setIsCapturingBatchItem]);
 
   if (thirdImageStatus === 'pending') {
-    return <CameraCapture step={3} onCapture={() => {}} />;
+    return <CameraCapture step={3} onCapture={() => setThirdImageStatus('done')} />;
   }
 
   if (frontImage && ingredientsImage && thirdImageStatus === null) {
@@ -121,7 +121,7 @@ const AppContent: React.FC = () => {
 
   if (frontImage && ingredientsImage) {
     if (thirdImageStatus === 'pending') {
-      return <CameraCapture step={3} onCapture={() => {}} />;
+      return <CameraCapture step={3} onCapture={() => setThirdImageStatus('done')} />;
     }
     if (thirdImageStatus === null) {
       return <ThirdImageInterstitial />;

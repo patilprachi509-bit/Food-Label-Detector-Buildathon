@@ -40,6 +40,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture })
   }, []);
 
   const handleCaptureClick = () => {
+    console.log('CameraCapture: handleCaptureClick fired, step:', step, 'videoRef.current:', !!videoRef.current);
     if (videoRef.current) {
       // Step 1 (Front image) is sent to the backend compressed (max 800px, 0.6 quality).
       // Step 2 & 3 (Ingredients) is sent to the backend for Cloud Vision OCR. 1800px at 0.8 quality ensures it is sharp enough for tiny text while easily staying under Vercel's 4.5MB request limit.
