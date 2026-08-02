@@ -199,9 +199,49 @@ export const VerdictScreen: React.FC = () => {
           {(() => {
             const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
             if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) {
+              const g1Fired = flags.some(f => f.ruleId === 'G1');
+              const g2Fired = flags.some(f => f.ruleId === 'G2');
+              const g3Fired = flags.some(f => f.ruleId === 'G3');
+              const g4Fired = flags.some(f => f.ruleId === 'G4');
+              const exceededEn: string[] = [];
+              const exceededHi: string[] = [];
+              
+              if (g1Fired) { exceededEn.push('SUGAR'); exceededHi.push('चीनी'); }
+              if (g2Fired) { exceededEn.push('FAT'); exceededHi.push('वसा'); }
+              if (g3Fired) { exceededEn.push('SALT'); exceededHi.push('नमक'); }
+              if (g4Fired) { exceededEn.push('TRANS FAT'); exceededHi.push('ट्रांस फैट'); }
+
+              let headlineTextEn = 'NOT RECOMMENDED';
+              let headlineTextHi = 'अनुशंसित नहीं';
+              
+              if (exceededEn.length > 0) {
+                let joinedEn = '';
+                let joinedHi = '';
+                if (exceededEn.length === 1) {
+                  joinedEn = exceededEn[0];
+                  joinedHi = exceededHi[0];
+                } else if (exceededEn.length === 2) {
+                  joinedEn = exceededEn.join(' AND ');
+                  joinedHi = exceededHi.join(' और ');
+                } else {
+                  const lastEn = exceededEn.pop();
+                  joinedEn = exceededEn.join(', ') + ' AND ' + lastEn;
+                  const lastHi = exceededHi.pop();
+                  joinedHi = exceededHi.join(', ') + ' और ' + lastHi;
+                }
+                const isPluralEn = exceededEn.length > 0 || joinedEn.includes(' AND ');
+                const isPluralHi = exceededHi.length > 0 || joinedHi.includes(' और ');
+                
+                headlineTextEn = `${joinedEn} ${isPluralEn ? 'ARE' : 'IS'} TOO HIGH`;
+                headlineTextHi = `${joinedHi} बहुत अधिक ${isPluralHi ? 'हैं' : 'है'}`;
+              } else {
+                 headlineTextEn = 'NUTRITION WITHIN LIMITS, BUT CLAIMS MISLEADING';
+                 headlineTextHi = 'पोषण सीमा के भीतर है, लेकिन दावे भ्रामक हैं';
+              }
+
               return (
                 <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-fail)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap' }}>
-                  {isEn ? 'NOT RECOMMENDED' : 'अनुशंसित नहीं'}
+                  {isEn ? headlineTextEn : headlineTextHi}
                 </h2>
               );
             } else if (isMostlyFine) {

@@ -134,9 +134,11 @@ export const VerdictSummaryVisual: React.FC<Props> = ({ flags, extractionResult,
       </div>
 
       {/* Dynamic Sentence */}
-      <div style={{ fontSize: '1.05rem', fontWeight: 'bold', textAlign: 'center', opacity: 0.9, padding: '0 1rem', lineHeight: 1.4 }}>
-        {dynamicSentence}
-      </div>
+      {overallState !== 'NOT RECOMMENDED' && (
+        <div style={{ fontSize: '1.05rem', fontWeight: 'bold', textAlign: 'center', opacity: 0.9, padding: '0 1rem', lineHeight: 1.4 }}>
+          {dynamicSentence}
+        </div>
+      )}
 
     </div>
   );
