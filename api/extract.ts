@@ -202,7 +202,17 @@ export async function POST(req: Request) {
     const pass2Data = (await pass2Response.json()) as any;
     let rawResultStr = pass2Data.candidates[0].content.parts[0].text;
     
-    // Removed hardcoded regex per user instruction to avoid blind corruption
+    // Safely strip standard markdown code block formatting if Gemini includes it
+    rawResultStr = rawResultStr.trim();
+    if (rawResultStr.startsWith('```json')) {
+      rawResultStr = rawResultStr.substring(7);
+    } else if (rawResultStr.startsWith('```')) {
+      rawResultStr = rawResultStr.substring(3);
+    }
+    if (rawResultStr.endsWith('```')) {
+      rawResultStr = rawResultStr.substring(0, rawResultStr.length - 3);
+    }
+    rawResultStr = rawResultStr.trim();
 
     // Inject raw_transcription manually so we can debug Pass 1 output
     try {
@@ -210,7 +220,7 @@ export async function POST(req: Request) {
       parsed.raw_transcription = rawTranscription;
       rawResultStr = JSON.stringify(parsed);
     } catch (e) {
-      // fallback
+      console.error("Pass 2 JSON Parse Failed on string:", rawResultStr);
     }
 
     return new Response(rawResultStr, {
