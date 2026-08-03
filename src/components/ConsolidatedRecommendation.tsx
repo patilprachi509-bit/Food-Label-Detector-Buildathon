@@ -72,8 +72,8 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
         </h4>
         <p style={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'var(--color-text)', margin: '0 0 0.75rem 0', lineHeight: 1.3 }}>
           {isEn 
-            ? `The full ${containerEn} fits within your daily ${limitingNutrientEn} limit.`
-            : `पूरा ${containerHi} आपकी रोज़ की ${limitingNutrientHi} सीमा में फिट बैठता है।`}
+            ? `The full ${containerEn} keeps you within your daily ${limitingNutrientEn} limit.`
+            : `पूरा ${containerHi} आपकी रोज़ की ${limitingNutrientHi} सीमा में रखता है।`}
         </p>
         <p style={{ fontSize: '0.9rem', color: 'var(--color-fail)', fontWeight: 'bold', margin: '0 0 1rem 0' }}>
           {isEn 
@@ -159,8 +159,8 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
       </h4>
       <p style={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'var(--color-text)', margin: '0 0 0.75rem 0', lineHeight: 1.3 }}>
         {isEn 
-          ? `${amountStrEn} fits your daily ${limitingNutrientEn} limit.`
-          : `${amountStrHi} आपकी रोज़ की ${limitingNutrientHi} सीमा में फिट बैठता है।`}
+          ? `Having ${amountStrEn} keeps you within your daily ${limitingNutrientEn} limit.`
+          : `${amountStrHi} लेने से आप अपनी रोज़ की ${limitingNutrientHi} सीमा में रहते हैं।`}
       </p>
       
       {/* DECOUPLING LINE - Mandatory */}
