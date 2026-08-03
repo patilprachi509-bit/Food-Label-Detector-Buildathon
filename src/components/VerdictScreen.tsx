@@ -397,6 +397,58 @@ export const VerdictScreen: React.FC = () => {
             {hasSaved ? (isEn ? 'Saved!' : 'सहेजा गया!') : (isEn ? 'Save Scan' : 'स्कैन सहेजें')}
           </button>
         </div>
+
+        {/* Feedback Form */}
+        <div style={{ marginTop: '1rem', marginBottom: '3rem', padding: '2rem', backgroundColor: 'rgba(0,0,0,0.02)', borderRadius: '24px', border: '1px solid var(--color-divider)' }}>
+          <h4 style={{ letterSpacing: '1px', fontSize: '0.9rem', marginBottom: '1rem', textTransform: 'uppercase', textAlign: 'center' }}>
+            {isEn ? 'Send us your feedback' : 'हमें अपनी प्रतिक्रिया भेजें'}
+          </h4>
+          
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              console.log("Feedback Submitted:", formData.get('feedback'));
+              alert(isEn ? "Thank you for your feedback!" : "आपकी प्रतिक्रिया के लिए धन्यवाद!");
+              e.currentTarget.reset();
+            }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+          >
+            <textarea 
+              name="feedback"
+              placeholder={isEn ? "What did you think of these results? (Any bugs or issues?)" : "आपको यह परिणाम कैसा लगा? (क्या कोई समस्या है?)"}
+              required
+              rows={3}
+              style={{
+                width: '100%',
+                padding: '1rem',
+                borderRadius: '12px',
+                border: '1px solid var(--color-divider)',
+                backgroundColor: 'var(--color-bg)',
+                color: 'var(--color-text)',
+                fontFamily: 'inherit',
+                resize: 'vertical',
+                boxSizing: 'border-box'
+              }}
+            />
+            <button 
+              type="submit"
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.05)',
+                color: 'var(--color-text)',
+                border: '1px solid var(--color-divider)',
+                borderRadius: '50px',
+                padding: '0.75rem',
+                fontSize: '0.9rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              {isEn ? 'Submit Feedback' : 'प्रतिक्रिया सबमिट करें'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
