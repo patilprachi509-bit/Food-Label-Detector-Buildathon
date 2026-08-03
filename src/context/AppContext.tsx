@@ -121,25 +121,55 @@ interface AppContextType {
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
+function useSessionState<T>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [state, setState] = useState<T>(() => {
+    try {
+      const stored = sessionStorage.getItem(key);
+      return stored ? JSON.parse(stored) : initialValue;
+    } catch {
+      return initialValue;
+    }
+  });
+
+  const setPersistentState = (valOrFunc: T | ((prev: T) => T)) => {
+    setState((prev) => {
+      const newVal = typeof valOrFunc === 'function' ? (valOrFunc as Function)(prev) : valOrFunc;
+      try {
+        if (newVal === null) {
+          sessionStorage.removeItem(key);
+        } else {
+          sessionStorage.setItem(key, JSON.stringify(newVal));
+        }
+      } catch (e) {
+        console.warn(`Failed to save ${key} to sessionStorage (possibly quota exceeded)`, e);
+      }
+      return newVal;
+    });
+  };
+
+  return [state, setPersistentState as React.Dispatch<React.SetStateAction<T>>];
+}
+
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [userLanguage, setUserLanguageState] = useState<Language>(localStorage.getItem('user_language') as Language);
   const [userGender, setUserGenderState] = useState<UserGender>((localStorage.getItem('user_gender') as UserGender) || 'standard');
-  const [frontImage, setFrontImage] = useState<string | null>(null);
-  const [ingredientsImage, setIngredientsImage] = useState<string | null>(null);
-  const [thirdImage, setThirdImage] = useState<string | null>(null);
-  const [thirdImageStatus, setThirdImageStatus] = useState<ThirdImageStatus>(null);
-  const [extractionResult, setExtractionResult] = useState<ExtractionResult | null>(null);
-  const [pendingExtractionResult, setPendingExtractionResult] = useState<ExtractionResult | null>(null);
-  const [userFocus, setUserFocus] = useState<UserFocus>(null);
-  const [hasChosenResultType, setHasChosenResultType] = useState<ResultType>(null);
+  
+  const [frontImage, setFrontImage] = useSessionState<string | null>('active_frontImage', null);
+  const [ingredientsImage, setIngredientsImage] = useSessionState<string | null>('active_ingredientsImage', null);
+  const [thirdImage, setThirdImage] = useSessionState<string | null>('active_thirdImage', null);
+  const [thirdImageStatus, setThirdImageStatus] = useSessionState<ThirdImageStatus>('active_thirdImageStatus', null);
+  const [extractionResult, setExtractionResult] = useSessionState<ExtractionResult | null>('active_extractionResult', null);
+  const [pendingExtractionResult, setPendingExtractionResult] = useSessionState<ExtractionResult | null>('active_pendingExtractionResult', null);
+  const [userFocus, setUserFocus] = useSessionState<UserFocus>('active_userFocus', null);
+  const [hasChosenResultType, setHasChosenResultType] = useSessionState<ResultType>('active_hasChosenResultType', null);
 
   // Batch states
-  const [isBatchMode, setIsBatchMode] = useState(false);
-  const [batchItems, setBatchItems] = useState<BatchItem[]>([]);
-  const [isCapturingBatchItem, setIsCapturingBatchItem] = useState(false);
-  const [isBatchProcessing, setIsBatchProcessing] = useState(false);
-  const [isBatchFinished, setIsBatchFinished] = useState(false);
-  const [viewingBatchResultId, setViewingBatchResultId] = useState<string | null>(null);
+  const [isBatchMode, setIsBatchMode] = useSessionState('active_isBatchMode', false);
+  const [batchItems, setBatchItems] = useSessionState<BatchItem[]>('active_batchItems', []);
+  const [isCapturingBatchItem, setIsCapturingBatchItem] = useSessionState('active_isCapturingBatchItem', false);
+  const [isBatchProcessing, setIsBatchProcessing] = useSessionState('active_isBatchProcessing', false);
+  const [isBatchFinished, setIsBatchFinished] = useSessionState('active_isBatchFinished', false);
+  const [viewingBatchResultId, setViewingBatchResultId] = useSessionState<string | null>('active_viewingBatchResultId', null);
 
   const [savedScans, setSavedScans] = useState<SavedScan[]>(() => {
     try {
