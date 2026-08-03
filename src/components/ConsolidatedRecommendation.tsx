@@ -25,11 +25,8 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
     refWeight = packWeight;
   } else if (format === 'beverage') {
     refWeight = 200;
-  } else if (servingStr) {
-    const parsedMatch = servingStr.match(/(\d+(?:\.\d+)?)\s*(?:g|ml)/i);
-    if (parsedMatch && parsedMatch[1]) {
-      refWeight = parseFloat(parsedMatch[1]);
-    }
+  } else if (format === 'spoonable') {
+    refWeight = 15;
   }
 
   // STEP 1 - COMPUTATION
