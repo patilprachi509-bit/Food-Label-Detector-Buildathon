@@ -189,11 +189,12 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
 
     const hallucinated: string[] = [];
     checkVals.forEach(c => {
-      if (c.val !== null && c.val > 0) {
+      const val = c.val;
+      if (val !== null && val > 0) {
         // Find if any number in the raw OCR is within a tolerance of 2.0 (to account for minor rounding)
         // e.g. OCR has 442.3, AI outputs 442 -> diff is 0.3 < 2.0 (Pass)
         // AI outputs 1103 -> diff is 660.7 > 2.0 (Fail)
-        const isFound = rawNumbers.some(n => Math.abs(n - c.val) < 2.0);
+        const isFound = rawNumbers.some(n => Math.abs(n - val) < 2.0);
         if (!isFound) {
           hallucinated.push(c.name);
         }
