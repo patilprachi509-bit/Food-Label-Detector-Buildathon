@@ -54,7 +54,7 @@ export async function POST(req: Request) {
         """
 
         CRITICAL INSTRUCTIONS:
-        1. You MUST normalize all nutrition values to a strict per-100g basis. Do not output per-serving values. If the panel only lists per-serving, calculate the per-100g equivalent.
+        1. You MUST normalize all nutrition values to a strict per-100g basis. If the nutrition table has multiple columns (e.g., 'Per 100g' and 'Per Serve'), you MUST strictly extract the numerical values from the 'Per 100g' column and completely ignore the 'Per Serve' column values. If the panel ONLY lists per-serving, calculate the per-100g equivalent.
         2. To prevent floating point anomalies and non-deterministic behavior across executions:
            - You MUST aggressively round all kcal and mg values to the nearest whole number (e.g., 23.4 -> 23).
            - You MUST round all gram (g) values to exactly 1 decimal place (e.g., 3.46 -> 3.5).
