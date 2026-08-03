@@ -84,10 +84,10 @@ export const getDailyLimitInfo = (
       info.limitStrHi = "25-30 ग्राम/दिन सीमा (वयस्क संदर्भ, ICMR-NIN आहार संबंधी दिशानिर्देश 2024)";
     }
   } else if (flag.ruleId === 'G3') {
-    info.dailyLimitGrams = 0.625;
+    info.dailyLimitGrams = 5;
     info.nutrientPer100g = Number(((nutrition.sodium_mg * 2.5) / 1000).toFixed(2));
-    info.limitStrEn = "Under 0.625g/day limit (Adult reference, ICMR-NIN Dietary Guidelines 2024)";
-    info.limitStrHi = "0.625 ग्राम/दिन सीमा से कम (वयस्क संदर्भ, ICMR-NIN आहार संबंधी दिशानिर्देश 2024)";
+    info.limitStrEn = "Under 5g/day limit (Adult reference, ICMR-NIN Dietary Guidelines 2024)";
+    info.limitStrHi = "5 ग्राम/दिन सीमा से कम (वयस्क संदर्भ, ICMR-NIN आहार संबंधी दिशानिर्देश 2024)";
     info.householdMeasureEn = "(About 1 teaspoon)";
     info.householdMeasureHi = "(लगभग 1 चम्मच)";
     info.healthEn = "Association with high blood pressure risk.";
