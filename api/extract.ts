@@ -76,7 +76,7 @@ export async function POST(req: Request) {
         return new Response(`Vision API Error: ${errorText}`, { status: visionResponse.status });
       }
 
-      const visionData = await visionResponse.json();
+      const visionData = (await visionResponse.json()) as any;
       
       const texts = visionData.responses.map((r: any) => r.fullTextAnnotation?.text || '').filter(Boolean);
       rawTranscription = texts.join('\n\n--- IMAGE SEPARATOR ---\n\n');
