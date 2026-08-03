@@ -4,9 +4,11 @@ export const maxDuration = 60; // Force 60s timeout directly in the function met
 export async function POST(req: Request) {
 
   try {
+    const apiKey = process.env.GEMINI_API_KEY || '';
+    console.log('DEBUG_API_KEY_START:', apiKey.substring(0, 4) + '...' + apiKey.substring(apiKey.length - 4));
+
     const { frontBase64, ingredientsBase64, thirdBase64 } = (await req.json()) as any;
 
-    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return new Response('Server configuration error: missing API key', { status: 500 });
     }
@@ -199,6 +201,8 @@ export async function POST(req: Request) {
     });
 
   } catch (err: any) {
-    return new Response(err.message, { status: 500 });
+    console.error('RAW_ERROR_CATCH_BLOCK:', err.message, err.status, err.response?.data, err.stack);
+    const statusCode = err.status || err.response?.status || (err.message?.includes('429') ? 429 : 500);
+    return new Response(err.message || 'Unknown internal error', { status: statusCode });
   }
 }
