@@ -1,5 +1,4 @@
-export const runtime = 'nodejs';
-export const maxDuration = 60; // Force 60s timeout directly in the function metadata
+export const runtime = 'edge';
 
 export async function POST(req: Request) {
 
