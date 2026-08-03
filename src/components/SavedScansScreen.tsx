@@ -5,7 +5,7 @@ import { evaluateRules } from '../utils/ruleEngine';
 import type { Flag } from '../utils/ruleEngine';
 
 interface SavedScansScreenProps {
-  onSelectForCompare?: (scan: SavedScan) => void;
+  onSelectForCompare?: (scans: SavedScan[]) => void;
   onCloseCompare?: () => void;
 }
 
@@ -24,10 +24,22 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
   const isEn = userLanguage === 'en';
   const isCompareMode = !!onSelectForCompare;
   const [viewMode, setViewMode] = useState<'recent' | 'health'>('recent');
+  const [selectedForCompare, setSelectedForCompare] = useState<SavedScan[]>([]);
 
   const handleOpenScan = (scan: SavedScan) => {
     if (onSelectForCompare) {
-      onSelectForCompare(scan);
+      setSelectedForCompare(prev => {
+        const isSelected = prev.some(s => s.id === scan.id);
+        if (isSelected) {
+          return prev.filter(s => s.id !== scan.id);
+        } else {
+          if (prev.length >= 2) {
+            alert(isEn ? "You can only compare up to 3 products at a time (Current + 2 Saved)." : "आप एक बार में अधिकतम 3 उत्पादों की तुलना कर सकते हैं (वर्तमान + 2 सहेजे गए)।");
+            return prev;
+          }
+          return [...prev, scan];
+        }
+      });
     } else {
       setExtractionResult(scan.extractionResult);
       setUserFocus(scan.userFocus);
@@ -163,9 +175,26 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
                 return isEn ? "Unknown Product" : "अज्ञात उत्पाद";
               })()}
             </h4>
-            <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: badgeColor, backgroundColor: badgeBg, padding: '2px 8px', borderRadius: '12px', marginLeft: '0.5rem', whiteSpace: 'nowrap' }}>
-              {badgeText}
-            </span>
+            {!isCompareMode && (
+              <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: badgeColor, backgroundColor: badgeBg, padding: '2px 8px', borderRadius: '12px', marginLeft: '0.5rem', whiteSpace: 'nowrap' }}>
+                {badgeText}
+              </span>
+            )}
+            {isCompareMode && (
+              <div style={{ marginLeft: '0.5rem', display: 'flex', alignItems: 'center' }}>
+                <div style={{ 
+                  width: '24px', height: '24px', borderRadius: '50%', border: '2px solid var(--color-text)',
+                  backgroundColor: selectedForCompare.some(s => s.id === scan.id) ? 'var(--color-text)' : 'transparent',
+                  display: 'flex', justifyContent: 'center', alignItems: 'center', transition: 'background-color 0.2s'
+                }}>
+                  {selectedForCompare.some(s => s.id === scan.id) && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-bg)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
           <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.7 }}>
             {formattedDate} • {formattedTime}
@@ -319,6 +348,36 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
           </>
         )}
       </div>
+
+      {isCompareMode && (
+        <div style={{ padding: '1rem', borderTop: '1px solid var(--color-divider)', backgroundColor: 'var(--color-bg)', display: 'flex', justifyContent: 'center' }}>
+          <button 
+            onClick={() => onSelectForCompare && onSelectForCompare(selectedForCompare)}
+            disabled={selectedForCompare.length === 0}
+            style={{
+              backgroundColor: selectedForCompare.length > 0 ? 'var(--color-text)' : 'transparent',
+              color: selectedForCompare.length > 0 ? 'var(--color-bg)' : 'var(--color-text)',
+              border: selectedForCompare.length > 0 ? 'none' : '1px solid var(--color-divider)',
+              borderRadius: '50px',
+              padding: '1rem 2.5rem',
+              fontSize: '1.1rem',
+              fontWeight: 'bold',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              cursor: selectedForCompare.length > 0 ? 'pointer' : 'default',
+              opacity: selectedForCompare.length > 0 ? 1 : 0.5,
+              transition: 'all 0.2s',
+              width: '100%',
+              maxWidth: '400px'
+            }}
+          >
+            {isEn 
+              ? `COMPARE SELECTED (${selectedForCompare.length}/2)` 
+              : `चयनित की तुलना करें (${selectedForCompare.length}/2)`
+            }
+          </button>
+        </div>
+      )}
     </div>
   );
 };

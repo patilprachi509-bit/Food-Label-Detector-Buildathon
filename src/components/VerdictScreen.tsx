@@ -19,7 +19,7 @@ export const VerdictScreen: React.FC = () => {
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
   const [isPickingCompare, setIsPickingCompare] = useState(false);
-  const [compareAgainstScan, setCompareAgainstScan] = useState<SavedScan | null>(null);
+  const [compareAgainstScans, setCompareAgainstScans] = useState<SavedScan[] | null>(null);
 
   const flags = useMemo(() => {
     if (!extractionResult) return [];
@@ -114,12 +114,12 @@ export const VerdictScreen: React.FC = () => {
     }
   };
 
-  if (compareAgainstScan && extractionResult) {
+  if (compareAgainstScans && compareAgainstScans.length > 0 && extractionResult) {
     return (
       <CompareOverlay 
         currentScan={extractionResult} 
-        savedScan={compareAgainstScan} 
-        onClose={() => setCompareAgainstScan(null)} 
+        savedScans={compareAgainstScans} 
+        onClose={() => setCompareAgainstScans(null)} 
         isEn={isEn} 
       />
     );
@@ -128,8 +128,8 @@ export const VerdictScreen: React.FC = () => {
   if (isPickingCompare) {
     return (
       <SavedScansScreen 
-        onSelectForCompare={(scan) => {
-          setCompareAgainstScan(scan);
+        onSelectForCompare={(scans) => {
+          setCompareAgainstScans(scans);
           setIsPickingCompare(false);
         }} 
         onCloseCompare={() => setIsPickingCompare(false)} 
