@@ -12,6 +12,7 @@ interface Props {
 }
 
 export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionResult, isEn, userGender }) => {
+  // G4 (trans fat) is explicitly excluded from this card
   const gFlags = flags.filter(f => f.type === 'general_health' && f.ruleId !== 'G4');
   if (gFlags.length === 0) return null;
 
@@ -20,54 +21,31 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
   const servingStr = extractionResult.nutrition.serving_size;
 
   let refWeight = 100;
-  let isPack = false;
-  let isSpoon = false;
-
   if (format === 'solid_snack' && packWeight) {
     refWeight = packWeight;
-    isPack = true;
-  } else if (format === 'spoonable' || format === 'beverage') { // Added beverage based on context
-    // If spoonable or beverage and no serving size, default to a sensible ref or use the extracted one
-    const parsedMatch = servingStr?.match(/(\d+(?:\.\d+)?)\s*(?:g|ml)/i);
-    if (parsedMatch && parsedMatch[1]) {
-      refWeight = parseFloat(parsedMatch[1]);
-    } else {
-      refWeight = format === 'spoonable' ? 15 : 200; // default tbsp or small glass
-    }
-    if (format === 'spoonable') isSpoon = true;
-  } else {
-    // Try to parse servingStr
-    const parsedMatch = servingStr?.match(/(\d+(?:\.\d+)?)\s*g/i);
+  } else if (format === 'beverage') {
+    refWeight = 200;
+  } else if (servingStr) {
+    const parsedMatch = servingStr.match(/(\d+(?:\.\d+)?)\s*(?:g|ml)/i);
     if (parsedMatch && parsedMatch[1]) {
       refWeight = parseFloat(parsedMatch[1]);
     }
   }
 
-  console.log("=== PORTION CALCULATION DEBUG LOG ===");
-  console.log("RAW EXTRACTION VALUES:");
-  console.log("consumption_format:", format);
-  console.log("net_weight_g:", packWeight);
-  console.log("serving_size string:", servingStr);
-  console.log("DERIVED STATE:");
-  console.log("refWeight chosen:", refWeight);
-  console.log("isPack evaluated to:", isPack);
-  console.log("=====================================");
-
+  // STEP 1 - COMPUTATION
   let minTargetGrams = Infinity;
   let limitingNutrientEn = '';
   let limitingNutrientHi = '';
-  let limitingNutrientPer100g = 0;
-  let limitingDailyLimitGrams = 0;
 
   gFlags.forEach(f => {
+    // getDailyLimitInfo handles the sodium-to-salt conversion internally
     const limitInfo = getDailyLimitInfo(f, extractionResult, userGender);
     if (limitInfo && limitInfo.dailyLimitGrams > 0 && limitInfo.nutrientPer100g > 0) {
+      // safe_amount_g = (0.25 * daily_limit_g) / nutrient_value_per_100g * 100
       const targetGrams = (limitInfo.dailyLimitGrams * 0.25 / limitInfo.nutrientPer100g) * 100;
       
       if (targetGrams < minTargetGrams) {
         minTargetGrams = targetGrams;
-        limitingNutrientPer100g = limitInfo.nutrientPer100g;
-        limitingDailyLimitGrams = limitInfo.dailyLimitGrams;
         if (f.ruleId === 'G1') { limitingNutrientEn = 'sugar'; limitingNutrientHi = 'चीनी'; }
         else if (f.ruleId === 'G2') { limitingNutrientEn = 'fat/oil'; limitingNutrientHi = 'वसा/तेल'; }
         else if (f.ruleId === 'G3') { limitingNutrientEn = 'salt'; limitingNutrientHi = 'नमक'; }
@@ -77,93 +55,126 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
 
   if (minTargetGrams === Infinity) return null;
 
-  console.log("Limiting Nutrient Per 100g:", limitingNutrientPer100g);
-
-  const roundedTarget = Math.round(minTargetGrams);
-  const fraction = minTargetGrams / refWeight;
-  const percentage = (refWeight / 100 * limitingNutrientPer100g / limitingDailyLimitGrams) * 100;
-  const roundedPct = Math.round(percentage);
-
-  let primaryEn = "";
-  let primaryHi = "";
-
-  const getFractionTextEn = (frac: number) => {
-    if (Math.abs(frac - 0.5) <= 0.05) return "roughly half";
-    if (Math.abs(frac - 0.33) <= 0.05) return "roughly a third";
-    if (Math.abs(frac - 0.25) <= 0.05) return "roughly a quarter";
-    if (Math.abs(frac - 0.75) <= 0.05) return "roughly three-quarters";
-    return "";
-  };
-  const getFractionTextHi = (frac: number) => {
-    if (Math.abs(frac - 0.5) <= 0.05) return "लगभग आधा";
-    if (Math.abs(frac - 0.33) <= 0.05) return "लगभग एक तिहाई";
-    if (Math.abs(frac - 0.25) <= 0.05) return "लगभग एक चौथाई";
-    if (Math.abs(frac - 0.75) <= 0.05) return "लगभग तीन-चौथाई";
-    return "";
-  };
-
-  const isSmallTaste = roundedTarget < 15 && fraction < 0.2;
-  
-  if (fraction >= 1) {
-    if (isPack && packWeight) {
-      primaryEn = `Even the full pack (${packWeight}g) stays within a quarter of your daily ${limitingNutrientEn} budget — still worth pairing with lighter choices for your daily balance.`;
-      primaryHi = `यहां तक कि पूरा पैक (${packWeight}g) आपके रोज़ के ${limitingNutrientHi} बजट के एक चौथाई के भीतर रहता है — फिर भी दिन का संतुलन बनाए रखने के लिए बाकी खान-पान को थोड़ा हल्का रखना बेहतर है।`;
-    } else {
-      primaryEn = `Even a full serving (${refWeight}g) stays within a quarter of your daily ${limitingNutrientEn} budget — still worth pairing with lighter choices for your daily balance.`;
-      primaryHi = `यहां तक कि एक पूरी सर्विंग (${refWeight}g) आपके रोज़ के ${limitingNutrientHi} बजट के एक चौथाई के भीतर रहती है — फिर भी दिन का संतुलन बनाए रखने के लिए बाकी खान-पान को थोड़ा हल्का रखना बेहतर है।`;
-    }
-  } else if (isSmallTaste) {
-    primaryEn = `To leave room for your daily balance, keep this to just a small taste (about ${roundedTarget}g).`;
-    primaryHi = `दिन का संतुलन बनाए रखने के लिए, इसे बस एक छोटे से स्वाद (लगभग ${roundedTarget}g) तक ही लेना ठीक रहेगा।`;
-  } else {
-    const fracTextEn = getFractionTextEn(fraction);
-    const fracTextHi = getFractionTextHi(fraction);
+  // STEP 2 - OUT-OF-RANGE CASE
+  if (minTargetGrams >= refWeight) {
+    const isPack = format === 'solid_snack' && packWeight && refWeight === packWeight;
+    const isGlass = format === 'beverage' && refWeight === 200;
     
-    if (isPack) {
-      primaryEn = `To leave room for your daily balance, keep this to about ${roundedTarget}g of the pack${fracTextEn ? ` (${fracTextEn})` : ''}.`;
-      primaryHi = `दिन का संतुलन बनाए रखने के लिए, इस पैक का लगभग ${roundedTarget}g${fracTextHi ? ` (${fracTextHi})` : ''} लेना ठीक रहेगा।`;
-    } else if (isSpoon) {
-      let spoonTextEn = `${roundedTarget}g`;
-      let spoonTextHi = `${roundedTarget}g`;
-      if (Math.abs(roundedTarget - 5) <= 1.5) { spoonTextEn = `1 teaspoon (${roundedTarget}g)`; spoonTextHi = `1 चम्मच (${roundedTarget}g)`; }
-      else if (Math.abs(roundedTarget - 10) <= 2) { spoonTextEn = `2 teaspoons (${roundedTarget}g)`; spoonTextHi = `2 चम्मच (${roundedTarget}g)`; }
-      else if (Math.abs(roundedTarget - 15) <= 2) { spoonTextEn = `1 tablespoon (${roundedTarget}g)`; spoonTextHi = `1 बड़ा चम्मच (${roundedTarget}g)`; }
-      
-      primaryEn = `To leave room for your daily balance, keep this to about ${spoonTextEn}.`;
-      primaryHi = `दिन का संतुलन बनाए रखने के लिए, लगभग ${spoonTextHi} लेना ठीक रहेगा।`;
+    let containerEn = 'serving';
+    let containerHi = 'सर्विंग';
+    if (isPack) { containerEn = 'pack'; containerHi = 'पैक'; }
+    else if (isGlass) { containerEn = 'glass'; containerHi = 'गिलास'; }
+    
+    return (
+      <div style={{ backgroundColor: 'var(--color-bg)', borderRadius: '24px', padding: '2rem', marginBottom: '2rem', border: '1px solid var(--color-fail)', boxShadow: '0 8px 24px rgba(233,116,81,0.1)' }}>
+        <h4 style={{ textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '1px', marginBottom: '0.75rem', fontWeight: 'bold', color: 'var(--color-fail)' }}>
+          {isEn ? 'Suggested Portion' : 'सुझाया गया हिस्सा'}
+        </h4>
+        <p style={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'var(--color-text)', margin: '0 0 0.75rem 0', lineHeight: 1.3 }}>
+          {isEn 
+            ? `The full ${containerEn} fits within your daily ${limitingNutrientEn} limit.`
+            : `पूरा ${containerHi} आपकी रोज़ की ${limitingNutrientHi} सीमा में फिट बैठता है।`}
+        </p>
+        <p style={{ fontSize: '0.9rem', color: 'var(--color-fail)', fontWeight: 'bold', margin: '0 0 1rem 0' }}>
+          {isEn 
+            ? `This product is still flagged as high in ${limitingNutrientEn}.`
+            : `यह उत्पाद अब भी ${limitingNutrientHi} में अधिक के रूप में चिह्नित है।`}
+        </p>
+        <div style={{ borderTop: '1px solid var(--color-divider)', paddingTop: '0.25rem' }}>
+          <Citation 
+            shortLabel="ICMR-NIN"
+            textEn={`Based on ${limitingNutrientEn} (Adult reference, ICMR-NIN)`}
+            textHi={`आधार: ${limitingNutrientHi} (वयस्क संदर्भ, ICMR-NIN)`}
+            isEn={isEn}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // STEP 3 - ROUNDING AND FORMATTING
+  let amountStrEn = "";
+  let amountStrHi = "";
+
+  if (format === 'spoonable') {
+    // Snap to nearest 5g or 15g
+    const dist5 = Math.abs(minTargetGrams - Math.round(minTargetGrams / 5) * 5);
+    const dist15 = Math.abs(minTargetGrams - Math.round(minTargetGrams / 15) * 15);
+    
+    if (dist15 <= dist5) {
+      const snapped = Math.max(15, Math.round(minTargetGrams / 15) * 15);
+      const tbsps = snapped / 15;
+      amountStrEn = `${tbsps} tablespoon${tbsps > 1 ? 's' : ''} (${snapped}g)`;
+      amountStrHi = `${tbsps} बड़ा चम्मच (${snapped}g)`;
     } else {
-      primaryEn = `To leave room for your daily balance, keep this to about ${roundedTarget}g of this product.`;
-      primaryHi = `दिन का संतुलन बनाए रखने के लिए, इस उत्पाद का लगभग ${roundedTarget}g लेना ठीक रहेगा।`;
+      const snapped = Math.max(5, Math.round(minTargetGrams / 5) * 5);
+      const tsps = snapped / 5;
+      amountStrEn = `${tsps} teaspoon${tsps > 1 ? 's' : ''} (${snapped}g)`;
+      amountStrHi = `${tsps} चम्मच (${snapped}g)`;
     }
-  }
-
-  let secondaryEn = "";
-  let secondaryHi = "";
-  if (isPack) {
-    secondaryEn = `The full pack alone would use ${roundedPct}% of your daily ${limitingNutrientEn} limit.`;
-    secondaryHi = `अकेले पूरा पैक आपकी हर दिन की ${limitingNutrientHi} सीमा का ${roundedPct}% ले लेगा।`;
+  } else if (format === 'solid_snack' && packWeight) {
+    const snapped = Math.max(10, Math.round(minTargetGrams / 10) * 10);
+    const fraction = minTargetGrams / packWeight;
+    
+    // Check ±10% tolerance for fractions
+    if (Math.abs(fraction - 0.5) <= 0.1) {
+      amountStrEn = `${snapped}g (about half a pack)`;
+      amountStrHi = `${snapped}g (लगभग आधा पैक)`;
+    } else if (Math.abs(fraction - 0.33) <= 0.1) {
+      amountStrEn = `${snapped}g (about a third of a pack)`;
+      amountStrHi = `${snapped}g (लगभग पैक का एक तिहाई)`;
+    } else if (Math.abs(fraction - 0.25) <= 0.1) {
+      amountStrEn = `${snapped}g (about a quarter pack)`;
+      amountStrHi = `${snapped}g (लगभग पैक का एक चौथाई)`;
+    } else {
+      amountStrEn = `${snapped}g`;
+      amountStrHi = `${snapped}g`;
+    }
+  } else if (format === 'beverage') {
+    const snapped = Math.max(25, Math.round(minTargetGrams / 25) * 25);
+    const fraction = minTargetGrams / 200;
+    
+    if (Math.abs(fraction - 0.5) <= 0.1) {
+      amountStrEn = `${snapped}ml (about half a glass)`;
+      amountStrHi = `${snapped}ml (लगभग आधा गिलास)`;
+    } else if (Math.abs(fraction - 0.25) <= 0.1) {
+      amountStrEn = `${snapped}ml (about a quarter glass)`;
+      amountStrHi = `${snapped}ml (लगभग एक चौथाई गिलास)`;
+    } else {
+      amountStrEn = `${snapped}ml`;
+      amountStrHi = `${snapped}ml`;
+    }
   } else {
-    secondaryEn = `A full serving alone would use ${roundedPct}% of your daily ${limitingNutrientEn} limit.`;
-    secondaryHi = `अकेले एक पूरी सर्विंग आपकी हर दिन की ${limitingNutrientHi} सीमा का ${roundedPct}% ले लेगी।`;
+    // fallback
+    const snapped = Math.round(minTargetGrams);
+    amountStrEn = `${snapped}g`;
+    amountStrHi = `${snapped}g`;
   }
 
+  // STEP 4 - COPY (Present tense, computed fact)
   return (
     <div style={{ backgroundColor: 'var(--color-bg)', borderRadius: '24px', padding: '2rem', marginBottom: '2rem', border: '1px solid var(--color-fail)', boxShadow: '0 8px 24px rgba(233,116,81,0.1)' }}>
       <h4 style={{ textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '1px', marginBottom: '0.75rem', fontWeight: 'bold', color: 'var(--color-fail)' }}>
         {isEn ? 'Suggested Portion' : 'सुझाया गया हिस्सा'}
       </h4>
       <p style={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'var(--color-text)', margin: '0 0 0.75rem 0', lineHeight: 1.3 }}>
-        {isEn ? primaryEn : primaryHi}
+        {isEn 
+          ? `${amountStrEn} fits your daily ${limitingNutrientEn} limit.`
+          : `${amountStrHi} आपकी रोज़ की ${limitingNutrientHi} सीमा में फिट बैठता है।`}
       </p>
+      
+      {/* DECOUPLING LINE - Mandatory */}
       <p style={{ fontSize: '0.9rem', color: 'var(--color-fail)', fontWeight: 'bold', margin: '0 0 1rem 0' }}>
-        {isEn ? secondaryEn : secondaryHi}
+        {isEn 
+          ? `This product is still flagged as high in ${limitingNutrientEn}.`
+          : `यह उत्पाद अब भी ${limitingNutrientHi} में अधिक के रूप में चिह्नित है।`}
       </p>
       
       <div style={{ borderTop: '1px solid var(--color-divider)', paddingTop: '0.25rem' }}>
         <Citation 
           shortLabel="ICMR-NIN"
-          textEn={`Source: Adult reference, ICMR-NIN Dietary Guidelines 2024`}
-          textHi={`स्रोत: वयस्क संदर्भ, ICMR-NIN आहार दिशानिर्देश 2024`}
+          textEn={`Based on ${limitingNutrientEn} (Adult reference, ICMR-NIN)`}
+          textHi={`आधार: ${limitingNutrientHi} (वयस्क संदर्भ, ICMR-NIN)`}
           isEn={isEn}
         />
       </div>

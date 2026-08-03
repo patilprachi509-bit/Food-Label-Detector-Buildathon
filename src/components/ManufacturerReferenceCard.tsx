@@ -23,7 +23,21 @@ export const ManufacturerReferenceCard: React.FC<Props> = ({ servingSizeG, servi
     return null;
   }
 
-  const entries = perServeRda ? Object.entries(perServeRda) : [];
+  const entries = perServeRda 
+    ? Object.entries(perServeRda).filter(([_, val]) => val !== null && val !== undefined)
+    : [];
+
+  const getLabel = (key: string, isEn: boolean) => {
+    if (isEn) return key.replace('_', ' ');
+    const hindiMap: Record<string, string> = {
+      'added_sugar': 'अतिरिक्त चीनी',
+      'energy': 'ऊर्जा',
+      'fat': 'वसा',
+      'sodium': 'सोडियम',
+      'sugar': 'चीनी'
+    };
+    return hindiMap[key] || key.replace('_', ' ');
+  };
 
   return (
     <div style={{ backgroundColor: 'var(--color-bg)', borderRadius: '24px', padding: '1.5rem', marginBottom: '2rem', border: '1px dashed var(--color-divider)' }}>
@@ -41,7 +55,7 @@ export const ManufacturerReferenceCard: React.FC<Props> = ({ servingSizeG, servi
       {entries.length > 0 && (
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
           {entries.map(([key, val]) => (
-            <RdaItem key={key} label={key.replace('_', ' ')} value={val} />
+            <RdaItem key={key} label={getLabel(key, isEn)} value={val} />
           ))}
         </div>
       )}
