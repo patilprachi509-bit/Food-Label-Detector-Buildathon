@@ -18,7 +18,6 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
 
   const packWeight = extractionResult.front_of_pack?.net_weight_g;
   const format = extractionResult.front_of_pack?.consumption_format || 'other';
-  const servingStr = extractionResult.nutrition.serving_size;
 
   let refWeight = 100;
   if (format === 'solid_snack' && packWeight) {
