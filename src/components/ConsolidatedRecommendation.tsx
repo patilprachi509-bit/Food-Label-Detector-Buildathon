@@ -116,7 +116,7 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
     }
   } else {
     primaryEn = `Even a full ${containerWithWeightEn} stays safely under a quarter (25%) of your daily ${limitingNutrientEn} limit.`;
-    primaryHi = `पूरा ${containerWithWeightHi} लेने पर भी, यह आपकी दिन भर की ${limitingNutrientHi} लिमिट के 25% (एक चौथाई) के अंदर ही रहता है।`;
+    primaryHi = `एक पूरा ${containerWithWeightHi} आपकी हर दिन की ${limitingNutrientHi} सीमा के एक चौथाई के भीतर रहता है।`;
   }
 
   const secondaryEn = `A full ${containerWithWeightEn} alone takes up ${truePercentage}% of your daily ${limitingNutrientEn} limit.`;
