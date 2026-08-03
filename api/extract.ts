@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       }
     };
 
-    const pass1Response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+    const pass1Response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(pass1Payload)
@@ -38,6 +38,7 @@ export async function POST(req: Request) {
 
     if (!pass1Response.ok) {
       const errorText = await pass1Response.text();
+      console.error(`Gemini API Error (Pass 1) [Status: ${pass1Response.status}]:`, errorText);
       return new Response(`Gemini API Error (Pass 1): ${errorText}`, { status: pass1Response.status });
     }
 
@@ -170,7 +171,7 @@ export async function POST(req: Request) {
         }
       }
     };
-    const pass2Response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+    const pass2Response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -178,6 +179,7 @@ export async function POST(req: Request) {
 
     if (!pass2Response.ok) {
       const errorText = await pass2Response.text();
+      console.error(`Gemini API Error (Pass 2) [Status: ${pass2Response.status}]:`, errorText);
       return new Response(`Gemini API Error (Pass 2): ${errorText}`, { status: pass2Response.status });
     }
 
