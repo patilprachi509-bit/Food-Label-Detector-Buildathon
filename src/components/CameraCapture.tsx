@@ -121,8 +121,8 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
   const titleEn = step === 1 ? 'SCAN THE FRONT OF THE PACK' : (step === 2 ? 'NOW SCAN THE INGREDIENTS & NUTRITION PANEL.' : 'NOW SCAN THE REST OF THE PANEL.');
   const titleHi = step === 1 ? 'पैक के सामने का हिस्सा स्कैन करें' : (step === 2 ? 'अब सामग्री और पोषण पैनल को स्कैन करें।' : 'अब बाकी पैनल को स्कैन करें।');
   
-  const subtextEn = step === 1 ? 'Make sure the claim or product name is visible.' : (step === 2 ? 'Fit the whole panel in frame if you can.' : 'Capture the rest of the panel if needed, or skip if you already got everything.');
-  const subtextHi = step === 1 ? 'सुनिश्चित करें कि उत्पाद का नाम दिखाई दे रहा है।' : (step === 2 ? 'यदि आप कर सकते हैं तो पूरे पैनल को फ्रेम में फिट करें।' : 'यदि आवश्यकता हो तो बाकी का हिस्सा कैप्चर करें, या यदि आपको सब कुछ मिल गया है तो स्किप करें।');
+  const subtextEn = step === 1 ? 'Make sure the claim or product name is visible.' : (step === 2 ? 'Fit the whole panel in frame if you can.' : 'Capture the rest of the panel if needed, or tap Done if you already got everything.');
+  const subtextHi = step === 1 ? 'सुनिश्चित करें कि उत्पाद का नाम दिखाई दे रहा है।' : (step === 2 ? 'यदि आप कर सकते हैं तो पूरे पैनल को फ्रेम में फिट करें।' : 'यदि आवश्यकता हो तो बाकी का हिस्सा कैप्चर करें, या यदि आपको सब कुछ मिल गया है तो हो गया पर टैप करें।');
 
   return (
     <div style={{ 
@@ -302,7 +302,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
                   transition: 'opacity 0.2s'
                 }}
               >
-                {isEn ? 'Skip' : 'स्किप करें'}
+                {isEn ? 'Done - Analyze Now' : 'हो गया - विश्लेषण करें'}
               </button>
             </div>
           )}
