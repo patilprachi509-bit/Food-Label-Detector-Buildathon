@@ -121,34 +121,7 @@ interface AppContextType {
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
-function useSessionState<T>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
-  const [state, setState] = useState<T>(() => {
-    try {
-      const stored = sessionStorage.getItem(key);
-      return stored ? JSON.parse(stored) : initialValue;
-    } catch {
-      return initialValue;
-    }
-  });
 
-  const setPersistentState = (valOrFunc: T | ((prev: T) => T)) => {
-    setState((prev) => {
-      const newVal = typeof valOrFunc === 'function' ? (valOrFunc as Function)(prev) : valOrFunc;
-      try {
-        if (newVal === null) {
-          sessionStorage.removeItem(key);
-        } else {
-          sessionStorage.setItem(key, JSON.stringify(newVal));
-        }
-      } catch (e) {
-        console.warn(`Failed to save ${key} to sessionStorage (possibly quota exceeded)`, e);
-      }
-      return newVal;
-    });
-  };
-
-  return [state, setPersistentState as React.Dispatch<React.SetStateAction<T>>];
-}
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [userLanguage, setUserLanguageState] = useState<Language>(localStorage.getItem('user_language') as Language);
