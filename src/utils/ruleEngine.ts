@@ -174,6 +174,46 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
     });
   }
 
+  // PROV_NUMBERS: Anti-hallucination backstop
+  if (result.raw_transcription) {
+    const rawNumbers = (result.raw_transcription.match(/\d+(?:\.\d+)?/g) || []).map(Number);
+    const checkVals = [
+      { name: 'Energy', val: nutrition.energy_kcal },
+      { name: 'Total Sugar', val: nutrition.total_sugar_g },
+      { name: 'Added Sugar', val: nutrition.added_sugar_g },
+      { name: 'Total Fat', val: nutrition.total_fat_g },
+      { name: 'Saturated Fat', val: nutrition.saturated_fat_g },
+      { name: 'Sodium', val: nutrition.sodium_mg },
+      { name: 'Protein', val: nutrition.protein_g }
+    ];
+
+    const hallucinated: string[] = [];
+    checkVals.forEach(c => {
+      if (c.val !== null && c.val > 0) {
+        // Find if any number in the raw OCR is within a tolerance of 2.0 (to account for minor rounding)
+        // e.g. OCR has 442.3, AI outputs 442 -> diff is 0.3 < 2.0 (Pass)
+        // AI outputs 1103 -> diff is 660.7 > 2.0 (Fail)
+        const isFound = rawNumbers.some(n => Math.abs(n - c.val) < 2.0);
+        if (!isFound) {
+          hallucinated.push(c.name);
+        }
+      }
+    });
+
+    if (hallucinated.length > 0) {
+      flags.push({
+        type: 'needs_verification',
+        ruleId: 'PROV_NUMBERS',
+        message_en: `AI Confidence Guardrail: Extracted numbers for ${hallucinated.join(', ')} do not perfectly match the scanned text. The AI may have substituted generic product data instead of reading the label. Please manually verify the nutrition panel.`,
+        message_hi: `AI सुरक्षा सीमा: ${hallucinated.join(', ')} के लिए निकाले गए नंबर स्कैन किए गए टेक्स्ट से पूरी तरह मेल नहीं खाते हैं। कृपया पोषण पैनल को मैन्युअल रूप से सत्यापित करें।`,
+        source: 'Anti-Hallucination Guardrail',
+        relevantIngredients: [],
+        headline_en: 'VERIFY NUTRITION NUMBERS',
+        headline_hi: 'पोषण नंबरों की पुष्टि करें'
+      });
+    }
+  }
+
   // Sort: Personalization > Claim Contradiction > General Health > Needs Verification > Informational
   flags.sort((a, b) => {
     // 1. Personalization check
