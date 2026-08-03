@@ -73,7 +73,9 @@ export async function POST(req: Request) {
            - The language in 'concern' MUST be strictly provisional and non-evaluative (e.g., "This claim may not be fully supported by the visible ingredients — worth checking further"). Never use "FAILS", "VIOLATION", or absolute language.
         7. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredients that are literally present in the RAW PACKAGE TEXT. DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. Never fabricate additional items to complete the list.
         8. HINDI TRANSLATION QUALITY: For 'localized_display' and any other Hindi text, you MUST use simple, everyday spoken Hindi (the register used in normal conversation). DO NOT use formal, Sanskrit-derived vocabulary if a common alternative exists. The tone should be human, conversational, and accessible.
-        9. ANTI-HALLUCINATION INSTRUCTION FOR NUMBERS: You must be extremely precise when reading INS or E-numbers. DO NOT transpose or flip digits under any circumstances. In particular, pay very close attention to "510" (which is often mistaken for 150). If the raw text says 510, output 510. If the raw text says 150, output 150. Double check your transcription against the image.
+        9. ANTI-HALLUCINATION INSTRUCTION FOR NUMBERS: You must be extremely precise when reading INS or E-numbers. DO NOT transpose or flip digits under any circumstances. In particular, pay very close attention to "510" (which is often mistaken for 150). If the raw text says 510, output 510. If the raw text says 150, output 150. DO NOT swap values between different nutrients (e.g., do not put Total Sugar into added_sugar_g).
+        10. SALT VS SODIUM STRICT RULE: If the label lists 'Salt', DO NOT extract it directly as 'sodium_mg'. 'sodium_mg' MUST strictly be the Sodium value. If Sodium is not listed, but Salt is listed in grams, calculate sodium as (Salt in grams * 1000) / 2.5. But if Sodium is explicitly printed, extract exactly that printed Sodium value.
+        11. MANUFACTURER PORTION INFO: If the package prints a 'Know Your Portion' or similar reference section with an explicit manufacturer serving size, servings per pack, and %RDA/GDA values, extract them into 'manufacturer_serving_size_g', 'manufacturer_servings_per_pack', and 'manufacturer_per_serve_rda'. For 'manufacturer_per_serve_rda', strictly use only these keys if they appear: 'energy', 'sugar', 'added_sugar', 'fat', 'sodium'. Set these fields to null if not printed.
         
         Output strictly in the provided JSON schema.
     `;
@@ -159,7 +161,20 @@ export async function POST(req: Request) {
                 total_sugar_g: { type: "NUMBER" },
                 added_sugar_g: { type: "NUMBER", nullable: true },
                 sodium_mg: { type: "NUMBER" },
-                protein_g: { type: "NUMBER" }
+                protein_g: { type: "NUMBER" },
+                manufacturer_serving_size_g: { type: "NUMBER", nullable: true },
+                manufacturer_servings_per_pack: { type: "NUMBER", nullable: true },
+                manufacturer_per_serve_rda: {
+                  type: "OBJECT",
+                  nullable: true,
+                  properties: {
+                    energy: { type: "NUMBER", nullable: true },
+                    sugar: { type: "NUMBER", nullable: true },
+                    added_sugar: { type: "NUMBER", nullable: true },
+                    fat: { type: "NUMBER", nullable: true },
+                    sodium: { type: "NUMBER", nullable: true }
+                  }
+                }
               }
             },
             extraction_confidence: {

@@ -11,6 +11,7 @@ import { AIInsightCard } from './AIInsightCard';
 
 import { VerdictSummaryVisual } from './VerdictSummaryVisual';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
+import { ManufacturerReferenceCard } from './ManufacturerReferenceCard';
 
 export const VerdictScreen: React.FC = () => {
   const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType } = useAppContext();
@@ -326,6 +327,16 @@ export const VerdictScreen: React.FC = () => {
             extractionResult={extractionResult} 
             isEn={isEn} 
             userGender={userGender} 
+          />
+        )}
+
+        {/* MANUFACTURER REFERENCE */}
+        {extractionResult && (
+          <ManufacturerReferenceCard 
+            servingSizeG={extractionResult.nutrition.manufacturer_serving_size_g ?? null}
+            servingsPerPack={extractionResult.nutrition.manufacturer_servings_per_pack ?? null}
+            perServeRda={extractionResult.nutrition.manufacturer_per_serve_rda ?? null}
+            isEn={isEn}
           />
         )}
 

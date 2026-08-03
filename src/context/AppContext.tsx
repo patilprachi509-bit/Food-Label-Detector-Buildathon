@@ -33,7 +33,10 @@ export interface ExtractionResult {
     serving_size: string, energy_kcal: number, total_fat_g: number,
     saturated_fat_g: number, trans_fat_g: number | null, 
     total_sugar_g: number, added_sugar_g: number | null,
-    sodium_mg: number, protein_g: number 
+    sodium_mg: number, protein_g: number,
+    manufacturer_serving_size_g?: number | null,
+    manufacturer_servings_per_pack?: number | null,
+    manufacturer_per_serve_rda?: Record<string, number> | null
   };
   extraction_confidence: ExtractionConfidence;
   raw_transcription?: string;
