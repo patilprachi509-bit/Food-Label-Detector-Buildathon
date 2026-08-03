@@ -23,7 +23,7 @@ import { LowConfidenceScreen } from './PlaceholderScreens';
 export const ProcessingScreen: React.FC = () => {
   const { 
     userLanguage, frontImage, ingredientsImage, thirdImage, 
-    setExtractionResult, setPendingExtractionResult
+    setExtractionResult, setPendingExtractionResult, resetApp
   } = useAppContext();
   const [error, setError] = useState<string | null>(null);
   const [loadingStep, setLoadingStep] = useState(0);
@@ -181,7 +181,7 @@ export const ProcessingScreen: React.FC = () => {
           <p style={{ wordBreak: 'break-word', opacity: 0.8, lineHeight: 1.5, maxWidth: '400px' }}>
             {displayError}
           </p>
-          <button className="btn-primary" onClick={() => window.location.reload()} style={{ marginTop: '2rem', width: '100%' }}>
+          <button className="btn-primary" onClick={resetApp} style={{ marginTop: '2rem', width: '100%' }}>
             {isEn ? 'Restart' : 'रीस्टार्ट'}
           </button>
         </div>
