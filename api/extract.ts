@@ -1,10 +1,14 @@
+import { GoogleAuth } from 'google-auth-library';
+
 export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 export async function POST(req: Request) {
 
   try {
+    const t0 = performance.now();
     const apiKey = process.env.GEMINI_API_KEY || '';
+    const serviceAccountBase64 = process.env.VISION_SERVICE_ACCOUNT_BASE64;
     console.log('DEBUG_API_KEY_START:', apiKey.substring(0, 4) + '...' + apiKey.substring(apiKey.length - 4));
 
     const { frontBase64, ingredientsBase64, thirdBase64 } = (await req.json()) as any;
@@ -12,38 +16,78 @@ export async function POST(req: Request) {
     if (!apiKey) {
       return new Response('Server configuration error: missing API key', { status: 500 });
     }
-
-    const pass1Payload = {
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            { text: "You are a highly precise OCR engine. Your only job is to transcribe the literal text visible in these images of a food package exactly as printed. Do not parse, interpret, or structure the data. Do not guess ingredients. Do not add anything that is not literally printed in the image. Transcribe the text line by line. PAY EXTREME ATTENTION to numbers, particularly INS numbers and E-numbers. Do NOT transpose digits (e.g. do not read 510 as 150). Be extremely precise with all numbers." },
-            { inlineData: { mimeType: 'image/jpeg', data: frontBase64 } },
-            { inlineData: { mimeType: 'image/jpeg', data: ingredientsBase64 } },
-            ...(thirdBase64 ? [{ inlineData: { mimeType: 'image/jpeg', data: thirdBase64 } }] : [])
-          ]
-        }
-      ],
-      generationConfig: {
-        temperature: 0
-      }
-    };
-
-    const pass1Response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(pass1Payload)
-    });
-
-    if (!pass1Response.ok) {
-      const errorText = await pass1Response.text();
-      console.error(`Gemini API Error (Pass 1) [Status: ${pass1Response.status}]:`, errorText);
-      return new Response(`Gemini API Error (Pass 1): ${errorText}`, { status: pass1Response.status });
+    
+    if (!serviceAccountBase64) {
+      console.error("VISION_SERVICE_ACCOUNT_BASE64 is missing");
+      return new Response('Server configuration error: missing Vision API credentials', { status: 500 });
     }
 
-    const pass1Data = (await pass1Response.json()) as any;
-    const rawTranscription = pass1Data.candidates[0].content.parts[0].text;
+    let rawTranscription = "";
+
+    try {
+      const credentialsJSON = Buffer.from(serviceAccountBase64, 'base64').toString('utf-8');
+      const credentials = JSON.parse(credentialsJSON);
+
+      const auth = new GoogleAuth({
+        credentials,
+        scopes: ['https://www.googleapis.com/auth/cloud-platform']
+      });
+
+      const client = await auth.getClient();
+      const accessToken = await client.getAccessToken();
+
+      if (!accessToken.token) {
+        throw new Error("Failed to retrieve access token");
+      }
+
+      // Build Cloud Vision request payload
+      const requests = [];
+      if (frontBase64) {
+        requests.push({
+          image: { content: frontBase64 },
+          features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
+        });
+      }
+      if (ingredientsBase64) {
+        requests.push({
+          image: { content: ingredientsBase64 },
+          features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
+        });
+      }
+      if (thirdBase64) {
+        requests.push({
+          image: { content: thirdBase64 },
+          features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
+        });
+      }
+
+      const visionResponse = await fetch(`https://vision.googleapis.com/v1/images:annotate`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ requests })
+      });
+
+      if (!visionResponse.ok) {
+        const errorText = await visionResponse.text();
+        console.error(`Vision API Error [Status: ${visionResponse.status}]:`, errorText);
+        return new Response(`Vision API Error: ${errorText}`, { status: visionResponse.status });
+      }
+
+      const visionData = await visionResponse.json();
+      
+      const texts = visionData.responses.map((r: any) => r.fullTextAnnotation?.text || '').filter(Boolean);
+      rawTranscription = texts.join('\n\n--- IMAGE SEPARATOR ---\n\n');
+      
+    } catch (err: any) {
+      console.error("Cloud Vision execution failed:", err);
+      return new Response(`Cloud Vision execution failed: ${err.message}`, { status: 500 });
+    }
+    
+    const t1 = performance.now();
+    console.log(`Cloud Vision Pass 1 took ${Math.round(t1 - t0)}ms`);
 
     const promptText = `
         Extract the product information and nutrition panel data from the following raw text transcription of a food package.
@@ -218,7 +262,14 @@ export async function POST(req: Request) {
     try {
       const parsed = JSON.parse(rawResultStr);
       parsed.raw_transcription = rawTranscription;
+      const t3 = performance.now();
+      parsed.timing = {
+        cloud_vision_ms: Math.round(t1 - t0),
+        gemini_pass2_ms: Math.round(t3 - t1),
+        total_ms: Math.round(t3 - t0)
+      };
       rawResultStr = JSON.stringify(parsed);
+      console.log(`Gemini Pass 2 took ${Math.round(t3 - t1)}ms. Total: ${Math.round(t3 - t0)}ms`);
     } catch (e) {
       console.error("Pass 2 JSON Parse Failed on string:", rawResultStr);
     }

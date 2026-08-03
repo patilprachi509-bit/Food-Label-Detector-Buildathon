@@ -18,6 +18,8 @@ interface CacheEntry {
   timestamp: number;
 }
 
+import { LowConfidenceScreen } from './PlaceholderScreens';
+
 export const ProcessingScreen: React.FC = () => {
   const { 
     userLanguage, frontImage, ingredientsImage, thirdImage, 
@@ -130,7 +132,7 @@ export const ProcessingScreen: React.FC = () => {
         }
       } catch (err: any) {
         if (isMounted) {
-          console.error("Gemini Extraction Error:", err);
+          console.error("Extraction Error:", err);
           setError(err.message || 'Failed to read label');
         }
       }
@@ -165,27 +167,29 @@ export const ProcessingScreen: React.FC = () => {
   const messages = isEn ? enMessages : hiMessages;
   const currentMessage = messages[loadingStep % messages.length];
 
-  let displayError = error;
-  if (error && (error.includes('429') || error.includes('Quota') || error.includes('RESOURCE_EXHAUSTED'))) {
-    displayError = isEn 
-      ? "Our servers are a bit overwhelmed right now (API rate limit exceeded). Please wait about 30 seconds and tap Restart!"
-      : "हमारे सर्वर अभी थोड़े व्यस्त हैं (API दर सीमा पार हो गई)। कृपया लगभग 30 सेकंड प्रतीक्षा करें और रीस्टार्ट पर टैप करें!";
-  }
-
   if (error) {
-    return (
-      <div className="screen-container" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', textAlign: 'center' }}>
-        <h2 className="text-fail" style={{ marginBottom: '1rem', fontSize: '2rem' }}>
-          {isEn ? 'Error' : 'त्रुटि'}
-        </h2>
-        <p style={{ wordBreak: 'break-word', opacity: 0.8, lineHeight: 1.5, maxWidth: '400px' }}>
-          {displayError}
-        </p>
-        <button className="btn-primary" onClick={() => window.location.reload()} style={{ marginTop: '2rem', width: '100%' }}>
-          {isEn ? 'Restart' : 'रीस्टार्ट'}
-        </button>
-      </div>
-    );
+    if (error.includes('429') || error.includes('Quota') || error.includes('RESOURCE_EXHAUSTED')) {
+      const displayError = isEn 
+        ? "Our servers are a bit overwhelmed right now (API rate limit exceeded). Please wait about 30 seconds and tap Restart!"
+        : "हमारे सर्वर अभी थोड़े व्यस्त हैं (API दर सीमा पार हो गई)। कृपया लगभग 30 सेकंड प्रतीक्षा करें और रीस्टार्ट पर टैप करें!";
+      
+      return (
+        <div className="screen-container" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', textAlign: 'center' }}>
+          <h2 className="text-fail" style={{ marginBottom: '1rem', fontSize: '2rem' }}>
+            {isEn ? 'Error' : 'त्रुटि'}
+          </h2>
+          <p style={{ wordBreak: 'break-word', opacity: 0.8, lineHeight: 1.5, maxWidth: '400px' }}>
+            {displayError}
+          </p>
+          <button className="btn-primary" onClick={() => window.location.reload()} style={{ marginTop: '2rem', width: '100%' }}>
+            {isEn ? 'Restart' : 'रीस्टार्ट'}
+          </button>
+        </div>
+      );
+    }
+    
+    // For 500 errors (like Cloud Vision failing, or unparseable text), show the expected Low Confidence screen instead of a stack trace.
+    return <LowConfidenceScreen />;
   }
 
   return (
