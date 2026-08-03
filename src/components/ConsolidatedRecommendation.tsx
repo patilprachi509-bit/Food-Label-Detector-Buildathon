@@ -25,6 +25,7 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
   let containerHi = 'सर्विंग';
   let verbEn = 'eat';
   let verbHi = 'खाएं';
+  let weightUnit = 'g';
 
   if (format === 'solid_snack' && packWeight) {
     refWeight = packWeight;
@@ -37,16 +38,21 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
     containerHi = 'गिलास';
     verbEn = 'drink';
     verbHi = 'पिएं';
+    weightUnit = 'ml';
   } else if (format === 'spoonable') {
     refWeight = 15;
     containerEn = 'tablespoon';
     containerHi = 'बड़ा चम्मच';
   } else if (extractedServingStr) {
-    const match = extractedServingStr.match(/(\d+(?:\.\d+)?)\s*(?:g|ml)/i);
+    const match = extractedServingStr.match(/(\d+(?:\.\d+)?)\s*(g|ml)/i);
     if (match && match[1]) {
       refWeight = parseFloat(match[1]);
+      if (match[2].toLowerCase() === 'ml') weightUnit = 'ml';
     }
   }
+
+  const containerWithWeightEn = `${containerEn} (${refWeight}${weightUnit})`;
+  const containerWithWeightHi = `${containerHi} (${refWeight}${weightUnit})`;
 
   let minTargetGrams = Infinity;
   let limitingNutrientEn = '';
@@ -63,7 +69,7 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
         limitingDailyLimitGrams = limitInfo.dailyLimitGrams;
         limitingNutrientPer100g = limitInfo.nutrientPer100g;
         if (f.ruleId === 'G1') { limitingNutrientEn = 'sugar'; limitingNutrientHi = 'चीनी'; }
-        else if (f.ruleId === 'G2') { limitingNutrientEn = 'fat/oil'; limitingNutrientHi = 'वसा/तेल'; }
+        else if (f.ruleId === 'G2') { limitingNutrientEn = 'fat/oil'; limitingNutrientHi = 'फैट/तेल'; }
         else if (f.ruleId === 'G3') { limitingNutrientEn = 'salt'; limitingNutrientHi = 'नमक'; }
       }
     }
@@ -91,30 +97,30 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
     
     if (fraction <= 0.1) {
       const daysWorth = (truePercentage / 100).toFixed(1);
-      primaryEn = `A full ${containerEn} uses about ${daysWorth} days' worth of your daily ${limitingNutrientEn} budget, in one sitting.`;
-      primaryHi = `एक पूरा ${containerHi} एक ही बार में आपके लगभग ${daysWorth} दिनों के ${limitingNutrientHi} बजट का उपयोग करता है।`;
+      primaryEn = `A full ${containerWithWeightEn} contains about ${daysWorth} days' worth of your daily ${limitingNutrientEn} limit, all in one sitting!`;
+      primaryHi = `सिर्फ एक पूरे ${containerWithWeightHi} में आपके ${daysWorth} दिनों के बराबर ${limitingNutrientHi} है, वह भी एक ही बार में!`;
     } else {
       const containerWordEn = isPack ? 'pack' : 'product';
       const containerWordHi = isPack ? 'पैक' : 'उत्पाद';
       
-      let enText = `To stay within your daily balance, ${verbEn} about ${targetRounded}g of this ${containerWordEn}`;
+      let enText = `To stay balanced, ${verbEn} only about ${targetRounded}${weightUnit} of this ${containerWordEn}`;
       if (fractionStrEn) enText += ` (${fractionStrEn})`;
       enText += ".";
       
-      let hiText = `दिन का संतुलन बनाए रखने के लिए, इस ${containerWordHi} का लगभग ${targetRounded}g`;
+      let hiText = `संतुलन बनाए रखने के लिए, इस ${containerWordHi} का सिर्फ ${targetRounded}${weightUnit}`;
       if (fractionStrHi) hiText += ` (${fractionStrHi})`;
-      hiText += ` ${verbHi}।`;
+      hiText += ` ही ${verbHi}।`;
       
       primaryEn = enText;
       primaryHi = hiText;
     }
   } else {
-    primaryEn = `Even the full ${containerEn} stays within a quarter of your daily ${limitingNutrientEn} budget.`;
-    primaryHi = `यहां तक कि पूरा ${containerHi} आपके रोज़ के ${limitingNutrientHi} बजट के एक चौथाई के भीतर रहता है।`;
+    primaryEn = `Even a full ${containerWithWeightEn} stays safely under a quarter (25%) of your daily ${limitingNutrientEn} limit.`;
+    primaryHi = `पूरा ${containerWithWeightHi} लेने पर भी, यह आपकी दिन भर की ${limitingNutrientHi} लिमिट के 25% (एक चौथाई) के अंदर ही रहता है।`;
   }
 
-  const secondaryEn = `A full ${containerEn} alone would use ${truePercentage}% of your daily ${limitingNutrientEn} limit.`;
-  const secondaryHi = `अकेले एक पूरा ${containerHi} आपकी हर दिन की ${limitingNutrientHi} सीमा का ${truePercentage}% ले लेगा।`;
+  const secondaryEn = `A full ${containerWithWeightEn} alone takes up ${truePercentage}% of your daily ${limitingNutrientEn} limit.`;
+  const secondaryHi = `अकेले एक पूरा ${containerWithWeightHi} आपकी दिन भर की ${limitingNutrientHi} लिमिट का ${truePercentage}% हिस्सा ले लेगा।`;
 
   return (
     <div style={{ backgroundColor: 'var(--color-bg)', borderRadius: '24px', padding: '2rem', marginBottom: '2rem', border: '1px solid var(--color-fail)', boxShadow: '0 8px 24px rgba(233,116,81,0.1)' }}>
