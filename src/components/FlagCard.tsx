@@ -185,25 +185,33 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
                         const nameHi = nHi ? ` ${nHi}` : '';
                         const isAbove = flag.actualValue! > flag.thresholdValue!;
                         
+                        const actualStrEn = flag.actualGrams !== undefined && flag.unit === '%' 
+                          ? `${flag.actualValue}${flag.unit} (${flag.actualGrams}g)` 
+                          : `${flag.actualValue}${flag.unit}`;
+                          
+                        const actualStrHi = flag.actualGrams !== undefined && flag.unit === '%' 
+                          ? `${flag.actualValue}${flag.unit} (${flag.actualGrams}g)` 
+                          : `${flag.actualValue}${flag.unit}`;
+                        
                         if (isEn) {
                           if (flag.isMax) {
                             return isAbove 
-                              ? `This product contains ${flag.actualValue}${flag.unit}${nameEn}, which is above the recommended limit of ${flag.thresholdValue}${flag.unit}.`
-                              : `This product contains ${flag.actualValue}${flag.unit}${nameEn}, which is within the recommended limit of ${flag.thresholdValue}${flag.unit}.`;
+                              ? `This product contains ${actualStrEn}${nameEn}, which is above the recommended limit of ${flag.thresholdValue}${flag.unit}.`
+                              : `This product contains ${actualStrEn}${nameEn}, which is within the recommended limit of ${flag.thresholdValue}${flag.unit}.`;
                           } else {
                              return isAbove
-                              ? `This product contains ${flag.actualValue}${flag.unit}${nameEn}, which meets the recommended minimum of ${flag.thresholdValue}${flag.unit}.`
-                              : `This product contains ${flag.actualValue}${flag.unit}${nameEn}, which is below the recommended minimum of ${flag.thresholdValue}${flag.unit}.`;
+                              ? `This product contains ${actualStrEn}${nameEn}, which meets the recommended minimum of ${flag.thresholdValue}${flag.unit}.`
+                              : `This product contains ${actualStrEn}${nameEn}, which is below the recommended minimum of ${flag.thresholdValue}${flag.unit}.`;
                           }
                         } else {
                           if (flag.isMax) {
                             return isAbove
-                              ? `इस उत्पाद में ${flag.actualValue}${flag.unit}${nameHi} है, जो ${flag.thresholdValue}${flag.unit} की अनुशंसित सीमा से अधिक है।`
-                              : `इस उत्पाद में ${flag.actualValue}${flag.unit}${nameHi} है, जो ${flag.thresholdValue}${flag.unit} की अनुशंसित सीमा के भीतर है।`;
+                              ? `इस उत्पाद में ${actualStrHi}${nameHi} है, जो ${flag.thresholdValue}${flag.unit} की अनुशंसित सीमा से अधिक है।`
+                              : `इस उत्पाद में ${actualStrHi}${nameHi} है, जो ${flag.thresholdValue}${flag.unit} की अनुशंसित सीमा के भीतर है।`;
                           } else {
                              return isAbove
-                              ? `इस उत्पाद में ${flag.actualValue}${flag.unit}${nameHi} है, जो ${flag.thresholdValue}${flag.unit} की अनुशंसित न्यूनतम मात्रा को पूरा करता है।`
-                              : `इस उत्पाद में ${flag.actualValue}${flag.unit}${nameHi} है, जो ${flag.thresholdValue}${flag.unit} की अनुशंसित न्यूनतम मात्रा से कम है।`;
+                              ? `इस उत्पाद में ${actualStrHi}${nameHi} है, जो ${flag.thresholdValue}${flag.unit} की अनुशंसित न्यूनतम मात्रा को पूरा करता है।`
+                              : `इस उत्पाद में ${actualStrHi}${nameHi} है, जो ${flag.thresholdValue}${flag.unit} की अनुशंसित न्यूनतम मात्रा से कम है।`;
                           }
                         }
                       })()}

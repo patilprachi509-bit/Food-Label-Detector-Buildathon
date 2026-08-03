@@ -18,6 +18,7 @@ export interface Flag {
   unit?: string;
   isMax?: boolean;
   evalDirection?: 'above' | 'below';
+  actualGrams?: number;
 }
 
 // Fuzzy match for ingredients
@@ -107,18 +108,18 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
     if (nutrition.added_sugar_g !== null) {
       const addedSugarPct = Math.round(((nutrition.added_sugar_g * 4) / nutrition.energy_kcal) * 100);
       if (addedSugarPct > 10) {
-        flags.push({ type: 'general_health', ruleId: 'G1', message_en: 'High in added sugar', message_hi: 'अतिरिक्त चीनी में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${addedSugarPct}% CALORIES FROM ADDED SUGAR (${nutrition.added_sugar_g}g per 100g)`, headline_hi: `${addedSugarPct}% कैलोरी अतिरिक्त चीनी से (${nutrition.added_sugar_g}g प्रति 100g)`, actualValue: addedSugarPct, thresholdValue: 10, unit: '%', isMax: true, evalDirection: 'above' });
+        flags.push({ type: 'general_health', ruleId: 'G1', message_en: 'High in added sugar', message_hi: 'अतिरिक्त चीनी में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${addedSugarPct}% CALORIES FROM ADDED SUGAR (${nutrition.added_sugar_g}g per 100g)`, headline_hi: `${addedSugarPct}% कैलोरी अतिरिक्त चीनी से (${nutrition.added_sugar_g}g प्रति 100g)`, actualValue: addedSugarPct, thresholdValue: 10, unit: '%', isMax: true, evalDirection: 'above', actualGrams: nutrition.added_sugar_g });
       }
     } else {
       const totalSugarPct = Math.round(((nutrition.total_sugar_g * 4) / nutrition.energy_kcal) * 100);
       if (totalSugarPct > 10) {
-        flags.push({ type: 'needs_verification', ruleId: 'G1', message_en: "Total sugar is high, but this panel doesn't separately declare added sugar — the ICMR-NIN threshold applies specifically to added sugar, so this can't be confirmed.", message_hi: 'कुल चीनी अधिक है, लेकिन यह पैनल अतिरिक्त चीनी की अलग से घोषणा नहीं करता है — ICMR-NIN सीमा विशेष रूप से अतिरिक्त चीनी पर लागू होती है, इसलिए इसकी पुष्टि नहीं की जा सकती है।', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${totalSugarPct}% CALORIES FROM TOTAL SUGAR (${nutrition.total_sugar_g}g per 100g)`, headline_hi: `${totalSugarPct}% कैलोरी कुल चीनी से (${nutrition.total_sugar_g}g प्रति 100g)`, actualValue: totalSugarPct, thresholdValue: 10, unit: '%', isMax: true, evalDirection: 'above' });
+        flags.push({ type: 'needs_verification', ruleId: 'G1', message_en: "Total sugar is high, but this panel doesn't separately declare added sugar — the ICMR-NIN threshold applies specifically to added sugar, so this can't be confirmed.", message_hi: 'कुल चीनी अधिक है, लेकिन यह पैनल अतिरिक्त चीनी की अलग से घोषणा नहीं करता है — ICMR-NIN सीमा विशेष रूप से अतिरिक्त चीनी पर लागू होती है, इसलिए इसकी पुष्टि नहीं की जा सकती है।', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'sugar', relevantIngredients: checkSynonyms(ingredients.raw_list, SUGAR_SYNONYMS), headline_en: `${totalSugarPct}% CALORIES FROM TOTAL SUGAR (${nutrition.total_sugar_g}g per 100g)`, headline_hi: `${totalSugarPct}% कैलोरी कुल चीनी से (${nutrition.total_sugar_g}g प्रति 100g)`, actualValue: totalSugarPct, thresholdValue: 10, unit: '%', isMax: true, evalDirection: 'above', actualGrams: nutrition.total_sugar_g });
       }
     }
 
     const fatPct = Math.round(((nutrition.total_fat_g * 9) / nutrition.energy_kcal) * 100);
     if (fatPct > 15) {
-      flags.push({ type: 'general_health', ruleId: 'G2', message_en: 'High in fat', message_hi: 'वसा में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${fatPct}% CALORIES FROM TOTAL FAT (${nutrition.total_fat_g}g per 100g)`, headline_hi: `${fatPct}% कैलोरी कुल फैट से (${nutrition.total_fat_g}g प्रति 100g)`, actualValue: fatPct, thresholdValue: 15, unit: '%', isMax: true, evalDirection: 'above' });
+      flags.push({ type: 'general_health', ruleId: 'G2', message_en: 'High in fat', message_hi: 'वसा में उच्च', source: 'Adult reference, ICMR-NIN Dietary Guidelines 2024', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${fatPct}% CALORIES FROM TOTAL FAT (${nutrition.total_fat_g}g per 100g)`, headline_hi: `${fatPct}% कैलोरी कुल फैट से (${nutrition.total_fat_g}g प्रति 100g)`, actualValue: fatPct, thresholdValue: 15, unit: '%', isMax: true, evalDirection: 'above', actualGrams: nutrition.total_fat_g });
     }
   }
   
@@ -132,7 +133,7 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
   if (nutrition.trans_fat_g !== null && nutrition.total_fat_g > 0) {
     const transPct = Math.round((nutrition.trans_fat_g / nutrition.total_fat_g) * 100);
     if (transPct > 2) {
-      flags.push({ type: 'general_health', ruleId: 'G4', message_en: 'Exceeds trans fat limit', message_hi: 'ट्रांस फैट सीमा से अधिक', source: 'FSSAI Prohibition and Restriction on Sales, 2nd Amendment Regs, 2021', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${transPct}% OF FAT IS TRANS FAT`, headline_hi: `कुल फैट का ${transPct}% ट्रांस फैट है`, actualValue: transPct, thresholdValue: 2, unit: '%', isMax: true, evalDirection: 'above' });
+      flags.push({ type: 'general_health', ruleId: 'G4', message_en: 'Exceeds trans fat limit', message_hi: 'ट्रांस फैट सीमा से अधिक', source: 'FSSAI Prohibition and Restriction on Sales, 2nd Amendment Regs, 2021', nutrientFocus: 'fat', relevantIngredients: checkSynonyms(ingredients.raw_list, FAT_SYNONYMS), headline_en: `${transPct}% OF FAT IS TRANS FAT`, headline_hi: `कुल फैट का ${transPct}% ट्रांस फैट है`, actualValue: transPct, thresholdValue: 2, unit: '%', isMax: true, evalDirection: 'above', actualGrams: nutrition.trans_fat_g });
     }
   }
 
