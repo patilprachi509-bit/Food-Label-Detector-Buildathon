@@ -99,6 +99,11 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
           <h3 className="headline-en" style={{ fontSize: '2rem', lineHeight: 1.1, marginTop: flag.claim ? '1rem' : 0, margin: 0, wordBreak: 'break-word' }}>
             {isEn ? (flag.headline_en || flag.message_en) : (flag.headline_hi || flag.message_hi)}
           </h3>
+          {(isEn ? flag.headline_en : flag.headline_hi) && (
+            <p style={{ fontSize: '1rem', marginTop: '0.75rem', marginBottom: 0, opacity: 0.9, lineHeight: 1.4 }}>
+              {isEn ? flag.message_en : flag.message_hi}
+            </p>
+          )}
           {isGeneralHealth && flag.relevantIngredients && flag.relevantIngredients.length > 0 && (
             <div style={{ fontSize: '0.85rem', opacity: 0.7, marginTop: '0.4rem', fontStyle: 'italic' }}>
               — {isEn ? 'from:' : 'से:'} {flag.relevantIngredients.map(ing => isEn ? ing.normalized_english : (ing.localized_display || ing.normalized_english)).join(', ')}
