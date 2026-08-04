@@ -1,8 +1,9 @@
 import React from 'react';
 import { useAppContext } from '../context/AppContext';
+import { DemoPreviewCard } from './DemoPreviewCard';
 
 export const HomeScreen: React.FC = () => {
-  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsScanning, setIsHowItWorksOpen, setIsBatchMode } = useAppContext();
+  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsScanning, setIsHowItWorksOpen, setIsBatchMode, isDemoDismissed, savedScans } = useAppContext();
   const isEn = userLanguage === 'en';
 
   const toggleLanguage = () => {
@@ -45,6 +46,8 @@ export const HomeScreen: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {!isDemoDismissed && savedScans.length === 0 && <DemoPreviewCard />}
 
       {/* Hero Content */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center' }}>

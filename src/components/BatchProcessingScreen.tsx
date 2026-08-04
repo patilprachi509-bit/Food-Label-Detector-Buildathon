@@ -35,12 +35,23 @@ export const BatchProcessingScreen: React.FC = () => {
         }
 
         try {
-          if (!item.frontImage || !item.ingredientsImage) throw new Error("Missing image");
+          // A batch item must either have curvedImages or (frontImage + ingredientsImage)
+          if (!((item as any).curvedImages?.length > 0) && (!item.frontImage || !item.ingredientsImage)) throw new Error("Missing image");
           
-          const frontBase64 = item.frontImage.split(',')[1];
-          const ingredientsBase64 = item.ingredientsImage.split(',')[1];
-          const thirdBase64 = item.thirdImage ? item.thirdImage.split(',')[1] : null;
-          const hashStr = await generateHash(frontBase64 + ingredientsBase64 + (thirdBase64 || ''));
+          let hashStr = "";
+          let payload: any = {};
+
+          if ((item as any).curvedImages?.length > 0) {
+            const curvedImagesBase64 = (item as any).curvedImages.map((img: string) => img.split(',')[1]);
+            payload = { curvedImagesBase64 };
+            hashStr = await generateHash(curvedImagesBase64.join(''));
+          } else {
+            const frontBase64 = item.frontImage!.split(',')[1];
+            const ingredientsBase64 = item.ingredientsImage!.split(',')[1];
+            const thirdBase64 = item.thirdImage ? item.thirdImage.split(',')[1] : null;
+            payload = { frontBase64, ingredientsBase64, thirdBase64 };
+            hashStr = await generateHash(frontBase64 + ingredientsBase64 + (thirdBase64 || ''));
+          }
           
           let data = null;
           try {
@@ -58,7 +69,7 @@ export const BatchProcessingScreen: React.FC = () => {
             const fetchPromise = fetch('/api/extract', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ frontBase64, ingredientsBase64, thirdBase64 })
+              body: JSON.stringify(payload)
             });
 
             const timeoutPromise = new Promise<Response>((_, reject) => {

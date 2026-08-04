@@ -77,6 +77,10 @@ interface AppContextType {
   setThirdImage: (img: string | null) => void;
   thirdImageStatus: ThirdImageStatus;
   setThirdImageStatus: (status: ThirdImageStatus) => void;
+  curvedImages: string[];
+  setCurvedImages: (imgs: string[]) => void;
+  isCurvedCaptureDone: boolean;
+  setIsCurvedCaptureDone: (val: boolean) => void;
   extractionResult: ExtractionResult | null;
   setExtractionResult: (val: ExtractionResult | null) => void;
   pendingExtractionResult: ExtractionResult | null;
@@ -120,6 +124,8 @@ interface AppContextType {
   viewingBatchResultId: string | null;
   setViewingBatchResultId: (id: string | null) => void;
   clearBatchMode: () => void;
+  isDemoDismissed: boolean;
+  setIsDemoDismissed: (val: boolean) => void;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -163,6 +169,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [frontImage, setFrontImage] = useSessionState<string | null>('ss_frontImage', null);
   const [ingredientsImage, setIngredientsImage] = useSessionState<string | null>('ss_ingredientsImage', null);
   const [thirdImage, setThirdImage] = useSessionState<string | null>('ss_thirdImage', null);
+  const [curvedImages, setCurvedImages] = useSessionState<string[]>('ss_curvedImages', []);
+  const [isCurvedCaptureDone, setIsCurvedCaptureDone] = useSessionState<boolean>('ss_isCurvedCaptureDone', false);
   const [thirdImageStatus, setThirdImageStatus] = useSessionState<ThirdImageStatus>('ss_thirdImageStatus', null);
   const [extractionResult, setExtractionResult] = useSessionState<ExtractionResult | null>('ss_extractionResult', null);
   const [pendingExtractionResult, setPendingExtractionResult] = useSessionState<ExtractionResult | null>('ss_pendingExtractionResult', null);
@@ -203,6 +211,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setUserGenderState(gender);
   };
 
+  const [isDemoDismissed, setIsDemoDismissed] = useSessionState<boolean>('ss_isDemoDismissed', false);
+
   const clearBatchMode = () => {
     setIsBatchMode(false);
     setBatchItems([]);
@@ -213,6 +223,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setFrontImage(null);
     setIngredientsImage(null);
     setThirdImage(null);
+    setCurvedImages([]);
+    setIsCurvedCaptureDone(false);
     setThirdImageStatus(null);
     setExtractionResult(null);
   };
@@ -221,6 +233,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setFrontImage(null);
     setIngredientsImage(null);
     setThirdImage(null);
+    setCurvedImages([]);
+    setIsCurvedCaptureDone(false);
     setThirdImageStatus(null);
     setExtractionResult(null);
     setUserFocus(null);
@@ -231,6 +245,35 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setIsScanning(false);
     setHasChosenResultType(null);
     clearBatchMode();
+  };
+
+  const submitImages = async () => {
+    if (curvedImages.length === 0 && (!frontImage || !ingredientsImage)) return;
+    
+    setIsScanning(true);
+
+    try {
+      const payload: any = {};
+      if (curvedImages.length > 0) {
+        payload.curvedImagesBase64 = curvedImages.map(img => img.split(',')[1]);
+      } else {
+        if (frontImage) payload.frontBase64 = frontImage.split(',')[1];
+        if (ingredientsImage) payload.ingredientsBase64 = ingredientsImage.split(',')[1];
+        if (thirdImage) payload.thirdBase64 = thirdImage.split(',')[1];
+      }
+
+      const res = await fetch('/api/extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      setExtractionResult(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsScanning(false);
+    }
   };
 
   const saveScan = () => {
@@ -272,6 +315,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       frontImage, setFrontImage,
       ingredientsImage, setIngredientsImage,
       thirdImage, setThirdImage,
+      curvedImages, setCurvedImages,
+      isCurvedCaptureDone, setIsCurvedCaptureDone,
       thirdImageStatus, setThirdImageStatus,
       extractionResult,
       setExtractionResult,
@@ -283,7 +328,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       isHowItWorksOpen, setIsHowItWorksOpen,
       isIngredientsOpen, setIsIngredientsOpen,
       viewingSavedScanId, setViewingSavedScanId,
-      isScanning, setIsScanning, resetApp,
+      isScanning, setIsScanning, submitImages, resetApp,
       hasChosenResultType, setHasChosenResultType,
       isBatchMode, setIsBatchMode,
       batchItems, setBatchItems,
@@ -291,7 +336,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       isBatchProcessing, setIsBatchProcessing,
       isBatchFinished, setIsBatchFinished,
       viewingBatchResultId, setViewingBatchResultId,
-      clearBatchMode
+      clearBatchMode,
+      isDemoDismissed, setIsDemoDismissed
     }}>
       {children}
     </AppContext.Provider>

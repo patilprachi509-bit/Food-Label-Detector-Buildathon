@@ -49,7 +49,8 @@ const AppContent: React.FC = () => {
   const { 
     userLanguage, frontImage, ingredientsImage, thirdImageStatus, setThirdImageStatus, extractionResult, pendingExtractionResult, userFocus, 
     isHistoryOpen, isHowItWorksOpen, viewingSavedScanId, isScanning, hasChosenResultType,
-    isBatchMode, isCapturingBatchItem, isBatchProcessing, isBatchFinished, viewingBatchResultId
+    isBatchMode, isCapturingBatchItem, isBatchProcessing, isBatchFinished, viewingBatchResultId,
+    isCurvedCaptureDone
   } = useAppContext();
 
   if (!userLanguage) {
@@ -84,7 +85,8 @@ const AppContent: React.FC = () => {
     return <BatchQueueScreen />;
   }
 
-  if (!isScanning && !isHistoryOpen && !viewingSavedScanId && !extractionResult && !pendingExtractionResult && !frontImage) {
+  // Allow passing through to CameraCapture if we have curvedImages but are not done
+  if (!isScanning && !isHistoryOpen && !viewingSavedScanId && !extractionResult && !pendingExtractionResult && !frontImage && !isCurvedCaptureDone) {
     return <HomeScreen />;
   }
 
@@ -114,8 +116,8 @@ const AppContent: React.FC = () => {
     return <VerdictScreen />;
   }
 
-  if (frontImage && ingredientsImage) {
-    if (thirdImageStatus === 'pending' || thirdImageStatus === null) {
+  if (isCurvedCaptureDone || (frontImage && ingredientsImage)) {
+    if (!isCurvedCaptureDone && (thirdImageStatus === 'pending' || thirdImageStatus === null)) {
       return <CameraCapture step={3} onCapture={() => setThirdImageStatus('done')} onSkip={() => setThirdImageStatus('skipped')} />;
     }
     return <ProcessingScreen />;

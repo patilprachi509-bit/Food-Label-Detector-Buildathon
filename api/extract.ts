@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     const serviceAccountBase64 = process.env.VISION_SERVICE_ACCOUNT_BASE64;
     console.log('DEBUG_API_KEY_START:', apiKey.substring(0, 4) + '...' + apiKey.substring(apiKey.length - 4));
 
-    const { frontBase64, ingredientsBase64, thirdBase64 } = (await req.json()) as any;
+    const { frontBase64, ingredientsBase64, thirdBase64, curvedImagesBase64 } = (await req.json()) as any;
 
     if (!apiKey) {
       return new Response('Server configuration error: missing API key', { status: 500 });
@@ -42,23 +42,32 @@ export async function POST(req: Request) {
 
       // Build Cloud Vision request payload
       const requests = [];
-      if (frontBase64) {
-        requests.push({
-          image: { content: frontBase64 },
-          features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
+      if (curvedImagesBase64 && Array.isArray(curvedImagesBase64) && curvedImagesBase64.length > 0) {
+        curvedImagesBase64.forEach(img => {
+          requests.push({
+            image: { content: img },
+            features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
+          });
         });
-      }
-      if (ingredientsBase64) {
-        requests.push({
-          image: { content: ingredientsBase64 },
-          features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
-        });
-      }
-      if (thirdBase64) {
-        requests.push({
-          image: { content: thirdBase64 },
-          features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
-        });
+      } else {
+        if (frontBase64) {
+          requests.push({
+            image: { content: frontBase64 },
+            features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
+          });
+        }
+        if (ingredientsBase64) {
+          requests.push({
+            image: { content: ingredientsBase64 },
+            features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
+          });
+        }
+        if (thirdBase64) {
+          requests.push({
+            image: { content: thirdBase64 },
+            features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
+          });
+        }
       }
 
       const visionResponse = await fetch(`https://vision.googleapis.com/v1/images:annotate`, {
@@ -216,6 +225,7 @@ export async function POST(req: Request) {
         13. EXTREME ANTI-HALLUCINATION FOR NUTRITION: NEVER use prior knowledge, standard reference databases (like USDA), or generic nutritional profiles for the recognized product category to fill in the nutrition values. You MUST act strictly as a dumb parser of the literal RAW PACKAGE TEXT. If a number is not explicitly printed on the package, you MUST NOT output it.
         14. MANUFACTURER ADVISORY TEXT: Look for explicit advisory or warning text printed by the manufacturer (e.g., 'Not recommended for children', 'Consult a physician before use', 'Do not exceed [X] per day', 'High caffeine content'). Extract these exactly as printed into the 'manufacturer_advisories' array (in English and translated to Hindi). Do NOT include marketing claims or general usage instructions here.
         15. CELEBRITY ENDORSEMENT DETECTION: Evaluate the raw text to determine if it indicates a celebrity/influencer endorsement (e.g., the text explicitly names a well-known personality, or uses phrases like "Brand Ambassador"). Set 'has_celebrity_endorsement' to true if such text is present. If the imagery might have a face but there is no explicit identifying text, you MUST set it to false (you only process text). HARD CONSTRAINT: You must NEVER output or extract the actual name of the celebrity anywhere in the JSON response for this feature.
+        16. OVERLAPPING FRAMES DEDUPLICATION: If you see the exact same ingredient or nutrition value repeating across different segments of the raw text (which is likely due to overlapping camera captures of a curved bottle), you MUST treat it as the same item. Do NOT create duplicate entries in the 'ingredients.raw_list' or sum duplicate nutrition values. Merge them intelligently.
 
         Output strictly in the provided JSON schema.
     `;

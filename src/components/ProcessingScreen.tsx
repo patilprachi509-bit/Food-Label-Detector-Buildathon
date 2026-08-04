@@ -22,8 +22,8 @@ import { LowConfidenceScreen } from './PlaceholderScreens';
 
 export const ProcessingScreen: React.FC = () => {
   const { 
-    userLanguage, frontImage, ingredientsImage, thirdImage, 
-    setFrontImage, setIngredientsImage, setThirdImage,
+    userLanguage, frontImage, ingredientsImage, thirdImage, curvedImages,
+    setFrontImage, setIngredientsImage, setThirdImage, setCurvedImages,
     setExtractionResult, setPendingExtractionResult, resetApp
   } = useAppContext();
   const [error, setError] = useState<string | null>(null);
@@ -39,16 +39,26 @@ export const ProcessingScreen: React.FC = () => {
     }, 2500);
 
     const processImages = async () => {
-      if (!frontImage || !ingredientsImage) return;
+      if (curvedImages.length === 0 && (!frontImage || !ingredientsImage)) return;
 
       if (!fetchPromiseRef.current) {
-        // Strip data:image/jpeg;base64, prefix
-        const frontBase64 = frontImage.split(',')[1];
-        const ingredientsBase64 = ingredientsImage.split(',')[1];
-        const thirdBase64 = thirdImage ? thirdImage.split(',')[1] : null;
         
         fetchPromiseRef.current = (async () => {
-          const hashStr = await generateHash(frontBase64 + ingredientsBase64 + (thirdBase64 || ''));
+          let hashStr = "";
+          let payload: any = {};
+          
+          if (curvedImages.length > 0) {
+            const curvedImagesBase64 = curvedImages.map(img => img.split(',')[1]);
+            payload = { curvedImagesBase64 };
+            hashStr = await generateHash(curvedImagesBase64.join(''));
+          } else {
+            // Strip data:image/jpeg;base64, prefix
+            const frontBase64 = frontImage!.split(',')[1];
+            const ingredientsBase64 = ingredientsImage!.split(',')[1];
+            const thirdBase64 = thirdImage ? thirdImage.split(',')[1] : null;
+            payload = { frontBase64, ingredientsBase64, thirdBase64 };
+            hashStr = await generateHash(frontBase64 + ingredientsBase64 + (thirdBase64 || ''));
+          }
           
           try {
             const cacheStr = localStorage.getItem(CACHE_KEY);
@@ -64,11 +74,7 @@ export const ProcessingScreen: React.FC = () => {
           const response = await fetch('/api/extract', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              frontBase64,
-              ingredientsBase64,
-              thirdBase64
-            })
+            body: JSON.stringify(payload)
           });
 
           if (!response.ok) {
