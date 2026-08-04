@@ -214,7 +214,8 @@ export async function POST(req: Request) {
         11. SALT VS SODIUM STRICT RULE: If the label lists 'Salt', DO NOT extract it directly as 'sodium_mg'. 'sodium_mg' MUST strictly be the Sodium value. If Sodium is not listed, but Salt is listed in grams, calculate sodium as (Salt in grams * 1000) / 2.5. But if Sodium is explicitly printed, extract exactly that printed Sodium value.
         12. MANUFACTURER PORTION INFO: If the package prints a 'Know Your Portion' or similar reference section with an explicit manufacturer serving size, servings per pack, and %RDA/GDA values, extract them into 'manufacturer_serving_size_g', 'manufacturer_servings_per_pack', and 'manufacturer_per_serve_rda'. For 'manufacturer_per_serve_rda', strictly use only these keys if they appear: 'energy', 'sugar', 'added_sugar', 'fat', 'sodium'. Set these fields to null if not printed.
         13. EXTREME ANTI-HALLUCINATION FOR NUTRITION: NEVER use prior knowledge, standard reference databases (like USDA), or generic nutritional profiles for the recognized product category to fill in the nutrition values. You MUST act strictly as a dumb parser of the literal RAW PACKAGE TEXT. If a number is not explicitly printed on the package, you MUST NOT output it.
-        
+        14. MANUFACTURER ADVISORY TEXT: Look for explicit advisory or warning text printed by the manufacturer (e.g., 'Not recommended for children', 'Consult a physician before use', 'Do not exceed [X] per day', 'High caffeine content'). Extract these exactly as printed into the 'manufacturer_advisories' array (in English and translated to Hindi). Do NOT include marketing claims or general usage instructions here.
+
         Output strictly in the provided JSON schema.
     `;
 
@@ -242,6 +243,17 @@ export async function POST(req: Request) {
         responseSchema: {
           type: "OBJECT",
           properties: {
+            manufacturer_advisories: {
+              type: "ARRAY",
+              nullable: true,
+              items: {
+                type: "OBJECT",
+                properties: {
+                  normalized_english: { type: "STRING" },
+                  localized_display: { type: "STRING" }
+                }
+              }
+            },
             front_of_pack: {
               type: "OBJECT",
               properties: {

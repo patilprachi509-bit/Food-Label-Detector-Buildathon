@@ -277,6 +277,50 @@ export const VerdictScreen: React.FC = () => {
           />
         )}
 
+        {/* Manufacturer Advisories */}
+        {extractionResult?.manufacturer_advisories && extractionResult.manufacturer_advisories.length > 0 && (
+          <div style={{
+            backgroundColor: 'rgba(255, 193, 7, 0.12)',
+            border: '2px dashed #FFB300',
+            borderRadius: '12px',
+            padding: '1.25rem',
+            marginBottom: '1.5rem',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+          }}>
+            <h4 style={{ 
+              color: '#B78103', 
+              fontSize: '0.8rem', 
+              textTransform: 'uppercase', 
+              letterSpacing: '1px', 
+              margin: '0 0 0.75rem 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              {isEn ? 'As printed on the pack:' : 'पैक पर छपा हुआ:'}
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {extractionResult.manufacturer_advisories.map((adv: any, idx: number) => (
+                <p key={idx} style={{ 
+                  margin: 0, 
+                  color: 'var(--color-text)', 
+                  fontSize: '0.95rem',
+                  fontStyle: 'italic',
+                  lineHeight: 1.4,
+                  fontWeight: 500
+                }}>
+                  "{isEn ? adv.normalized_english : (adv.localized_display || adv.normalized_english)}"
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+
         {flags.some(f => f.type === 'claim_contradiction' || f.type === 'general_health') && (
           <p className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.7rem', opacity: 0.6, fontStyle: 'italic', marginTop: '0.75rem', marginBottom: '1.5rem', textAlign: 'center', lineHeight: 1.3, padding: '0 1rem' }}>
             {isEn 
