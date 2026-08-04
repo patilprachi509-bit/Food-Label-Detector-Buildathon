@@ -209,8 +209,27 @@ export const ProcessingScreen: React.FC = () => {
       color: 'var(--color-text)',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '2rem'
+      padding: '2rem',
+      position: 'relative'
     }}>
+      <button 
+        onClick={resetApp}
+        style={{ 
+          position: 'absolute',
+          top: '1.5rem',
+          left: '1.5rem',
+          background: 'none', 
+          border: 'none', 
+          cursor: 'pointer', 
+          padding: '0.5rem', 
+          color: 'var(--color-text)' 
+        }}
+        aria-label="Back"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </button>
       <div className="loader"></div>
       <h2 className={`processing-text ${isEn ? 'headline-en' : 'headline-hi'}`} style={{ minHeight: '3rem', textAlign: 'center', transition: 'opacity 0.3s ease-in-out', fontWeight: 900 }}>
         {currentMessage}
