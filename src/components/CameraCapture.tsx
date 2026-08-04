@@ -44,8 +44,8 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
     console.log('CameraCapture: handleCaptureClick fired, step:', step, 'videoRef.current:', !!videoRef.current);
     if (videoRef.current) {
       // Step 1 (Front image) is sent to the backend compressed (max 800px, 0.6 quality).
-      // Step 2 & 3 (Ingredients) is sent to the backend for Cloud Vision OCR. 1800px at 0.8 quality ensures it is sharp enough for tiny text while easily staying under Vercel's 4.5MB request limit.
-      const MAX_WIDTH = step === 1 ? 800 : 1800;
+      // Step 2 & 3 (Ingredients) is sent to the backend for Cloud Vision OCR. 1600px at 0.8 quality ensures it is sharp enough for tiny text while optimizing payload size.
+      const MAX_WIDTH = step === 1 ? 800 : 1600;
       let width = videoRef.current.videoWidth;
       let height = videoRef.current.videoHeight;
 
@@ -85,7 +85,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
         const img = new Image();
         img.onload = () => {
           // Same dual-resolution logic for gallery uploads
-          const MAX_WIDTH = step === 1 ? 800 : 1800;
+          const MAX_WIDTH = step === 1 ? 800 : 1600;
           let width = img.width;
           let height = img.height;
           if (width > MAX_WIDTH) {
