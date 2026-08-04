@@ -98,12 +98,9 @@ export async function POST(req: Request) {
         """
 
         CRITICAL INSTRUCTIONS:
-        1. HIERARCHY OF TRUTH: The provided RAW PACKAGE TEXT is the absolute authoritative source for all literal values (numbers, ingredient names, claims). The attached images are provided for spatial/table-layout understanding ONLY. You MUST NEVER use the images to override, supplement, or "correct" any value that differs from the RAW PACKAGE TEXT.
+        1. HIERARCHY OF TRUTH & OCR CORRECTION: The provided RAW PACKAGE TEXT is your primary source, but Cloud Vision OCR often makes typos (e.g., missing commas, dropped decimals, merging columns). You MUST cross-reference the text with the attached images. If the text differs from the image due to an obvious OCR error, you MUST correct it using the image (e.g., if OCR says "45%" but the image says "24.5%", extract 24.5%).
         2. You MUST normalize all nutrition values to a strict per-100g basis. If the nutrition table has multiple columns (e.g., 'Per 100g' and 'Per Serve'), you MUST strictly extract the numerical values from the 'Per 100g' column and completely ignore the 'Per Serve' column values. If the panel ONLY lists per-serving, calculate the per-100g equivalent.
-        3. To prevent floating point anomalies and non-deterministic behavior across executions:
-           - You MUST aggressively round all kcal and mg values to the nearest whole number (e.g., 23.4 -> 23).
-           - You MUST round all gram (g) values to exactly 1 decimal place (e.g., 3.46 -> 3.5).
-           - Do not attempt to reverse-engineer sub-decimal precision from percentages. Stick strictly to the printed values with these rounding rules applied.
+        3. Do NOT arbitrarily round numbers. Extract the exact numbers printed on the label, including decimals (e.g., if it says 442.3mg, output 442.3).
         4. 'trans_fat_g' and 'added_sugar_g' are nullable. If they are not explicitly printed on the panel, you MUST return null, do NOT default to 0 and do not assume added sugar equals total sugar. Only extract 'added_sugar_g' if the label separately declares "Added Sugars".
         5. For 'claims' and 'raw_list' items, output an object with 'normalized_english' (always English) and 'localized_display' (always translate to Hindi).
         6. For every ingredient in 'raw_list', you MUST populate 'plain_name' alongside the raw name using this logic:
