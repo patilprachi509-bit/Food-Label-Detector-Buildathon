@@ -78,8 +78,100 @@ export async function POST(req: Request) {
 
       const visionData = (await visionResponse.json()) as any;
       
-      const texts = visionData.responses.map((r: any) => r.fullTextAnnotation?.text || '').filter(Boolean);
-      rawTranscription = texts.join('\n\n--- IMAGE SEPARATOR ---\n\n');
+      // Parse Cloud Vision blocks dynamically based on spatial geometry
+      const allTextPages: string[] = [];
+      
+      for (const res of visionData.responses) {
+        if (!res.fullTextAnnotation) continue;
+        
+        const words: any[] = [];
+        res.fullTextAnnotation.pages.forEach((page: any) => {
+          page.blocks?.forEach((block: any) => {
+            block.paragraphs?.forEach((para: any) => {
+              para.words?.forEach((word: any) => {
+                const text = word.symbols.map((s: any) => s.text).join('');
+                const xs = word.boundingBox.vertices.map((v: any) => v.x || 0);
+                const ys = word.boundingBox.vertices.map((v: any) => v.y || 0);
+                const minX = Math.min(...xs);
+                const maxX = Math.max(...xs);
+                const minY = Math.min(...ys);
+                const maxY = Math.max(...ys);
+                words.push({
+                  text,
+                  minX, maxX, minY, maxY,
+                  centerY: (minY + maxY) / 2,
+                  height: maxY - minY,
+                  width: maxX - minX
+                });
+              });
+            });
+          });
+        });
+
+        if (words.length === 0) continue;
+
+        // Dynamic thresholds
+        // 1. Calculate median word height to define row tolerance
+        words.sort((a, b) => a.height - b.height);
+        const medianHeight = words[Math.floor(words.length / 2)].height;
+        const rowTolerance = medianHeight * 0.5; // Words within half a letter's height are on the same line
+
+        // 2. Calculate average character width to define column gaps
+        let totalChars = 0;
+        let totalWidth = 0;
+        words.forEach(w => {
+          totalChars += w.text.length;
+          totalWidth += w.width;
+        });
+        const avgCharWidth = totalChars > 0 ? (totalWidth / totalChars) : 10;
+        const colGapTolerance = avgCharWidth * 2.5; // Gap larger than 2.5 chars is a table column separator
+
+        // Group into rows
+        words.sort((a, b) => a.centerY - b.centerY);
+        const lines: any[][] = [];
+        let currentLine: any[] = [];
+        let currentY = -1;
+
+        words.forEach(w => {
+          if (currentLine.length === 0) {
+            currentLine.push(w);
+            currentY = w.centerY;
+          } else {
+            if (Math.abs(w.centerY - currentY) <= rowTolerance) {
+              currentLine.push(w);
+              // Update running average Y of the line
+              currentY = currentLine.reduce((sum, cw) => sum + cw.centerY, 0) / currentLine.length;
+            } else {
+              lines.push(currentLine);
+              currentLine = [w];
+              currentY = w.centerY;
+            }
+          }
+        });
+        if (currentLine.length > 0) lines.push(currentLine);
+
+        // Sort each row by X and insert gaps
+        const pageText = lines.map(line => {
+          line.sort((a, b) => a.minX - b.minX);
+          let lineStr = '';
+          for (let i = 0; i < line.length; i++) {
+            lineStr += line[i].text;
+            if (i < line.length - 1) {
+              const gap = line[i + 1].minX - line[i].maxX;
+              if (gap > colGapTolerance) {
+                lineStr += ' | '; // Use a pipe symbol to clearly denote a table column separator to the LLM
+              } else {
+                lineStr += ' ';
+              }
+            }
+          }
+          return lineStr;
+        }).join('\n');
+
+        allTextPages.push(pageText);
+      }
+      
+      rawTranscription = allTextPages.join('\n\n--- IMAGE SEPARATOR ---\n\n');
       
     } catch (err: any) {
       console.error("Cloud Vision execution failed:", err);
@@ -98,7 +190,7 @@ export async function POST(req: Request) {
         """
 
         CRITICAL INSTRUCTIONS:
-        1. HIERARCHY OF TRUTH & OCR CORRECTION: The provided RAW PACKAGE TEXT is your primary source, but Cloud Vision OCR often makes typos (e.g., missing commas, dropped decimals, merging columns). You MUST cross-reference the text with the attached images. If the text differs from the image due to an obvious OCR error, you MUST correct it using the image (e.g., if OCR says "45%" but the image says "24.5%", extract 24.5%).
+        1. HIERARCHY OF TRUTH: The provided RAW PACKAGE TEXT is the absolute authoritative source for all literal values (numbers, ingredient names, claims). You MUST NEVER override, supplement, or "correct" any value based on outside knowledge. If the text says 45%, you output 45%. You are parsing the text exactly as provided.
         2. You MUST normalize all nutrition values to a strict per-100g basis. If the nutrition table has multiple columns (e.g., 'Per 100g' and 'Per Serve'), you MUST strictly extract the numerical values from the 'Per 100g' column and completely ignore the 'Per Serve' column values. If the panel ONLY lists per-serving, calculate the per-100g equivalent.
         3. Do NOT arbitrarily round numbers. Extract the exact numbers printed on the label, including decimals (e.g., if it says 442.3mg, output 442.3).
         4. 'trans_fat_g' and 'added_sugar_g' are nullable. If they are not explicitly printed on the panel, you MUST return null, do NOT default to 0 and do not assume added sugar equals total sugar. Only extract 'added_sugar_g' if the label separately declares "Added Sugars".
@@ -137,10 +229,7 @@ export async function POST(req: Request) {
         {
           role: 'user',
           parts: [
-            { text: promptText },
-            ...(frontBase64 ? [{ inlineData: { mimeType: "image/jpeg", data: frontBase64 } }] : []),
-            ...(ingredientsBase64 ? [{ inlineData: { mimeType: "image/jpeg", data: ingredientsBase64 } }] : []),
-            ...(thirdBase64 ? [{ inlineData: { mimeType: "image/jpeg", data: thirdBase64 } }] : [])
+            { text: promptText }
           ]
         }
       ],
