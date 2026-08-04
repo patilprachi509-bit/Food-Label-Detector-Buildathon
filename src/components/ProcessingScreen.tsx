@@ -134,6 +134,10 @@ export const ProcessingScreen: React.FC = () => {
         if (isMounted) {
           console.error("Extraction Error:", err);
           setError(err.message || 'Failed to read label');
+          // Clear active images from session so a browser refresh on the error screen routes back to Home
+          setFrontImage(null);
+          setIngredientsImage(null);
+          setThirdImage(null);
         }
       }
     };

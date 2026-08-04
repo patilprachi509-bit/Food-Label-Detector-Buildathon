@@ -123,18 +123,48 @@ export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 
 
+function useSessionState<T>(key: string, initialValue: T) {
+  const [state, setState] = useState<T>(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const stored = sessionStorage.getItem(key);
+        return stored ? JSON.parse(stored) : initialValue;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return initialValue;
+  });
+
+  const setWithSession = (value: T | ((val: T) => T)) => {
+    setState(prev => {
+      const next = typeof value === 'function' ? (value as Function)(prev) : value;
+      if (typeof window !== 'undefined') {
+        if (next === null) {
+          sessionStorage.removeItem(key);
+        } else {
+          sessionStorage.setItem(key, JSON.stringify(next));
+        }
+      }
+      return next;
+    });
+  };
+
+  return [state, setWithSession] as const;
+}
+
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [userLanguage, setUserLanguageState] = useState<Language>(localStorage.getItem('user_language') as Language);
   const [userGender, setUserGenderState] = useState<UserGender>((localStorage.getItem('user_gender') as UserGender) || 'standard');
   
-  const [frontImage, setFrontImage] = useState<string | null>(null);
-  const [ingredientsImage, setIngredientsImage] = useState<string | null>(null);
-  const [thirdImage, setThirdImage] = useState<string | null>(null);
-  const [thirdImageStatus, setThirdImageStatus] = useState<ThirdImageStatus>(null);
-  const [extractionResult, setExtractionResult] = useState<ExtractionResult | null>(null);
-  const [pendingExtractionResult, setPendingExtractionResult] = useState<ExtractionResult | null>(null);
-  const [userFocus, setUserFocus] = useState<UserFocus>(null);
-  const [hasChosenResultType, setHasChosenResultType] = useState<ResultType>(null);
+  const [frontImage, setFrontImage] = useSessionState<string | null>('ss_frontImage', null);
+  const [ingredientsImage, setIngredientsImage] = useSessionState<string | null>('ss_ingredientsImage', null);
+  const [thirdImage, setThirdImage] = useSessionState<string | null>('ss_thirdImage', null);
+  const [thirdImageStatus, setThirdImageStatus] = useSessionState<ThirdImageStatus>('ss_thirdImageStatus', null);
+  const [extractionResult, setExtractionResult] = useSessionState<ExtractionResult | null>('ss_extractionResult', null);
+  const [pendingExtractionResult, setPendingExtractionResult] = useSessionState<ExtractionResult | null>('ss_pendingExtractionResult', null);
+  const [userFocus, setUserFocus] = useSessionState<UserFocus>('ss_userFocus', null);
+  const [hasChosenResultType, setHasChosenResultType] = useSessionState<ResultType>('ss_hasChosenResultType', null);
 
   // Batch states
   const [isBatchMode, setIsBatchMode] = useState(false);
