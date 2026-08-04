@@ -12,6 +12,7 @@ import { AIInsightCard } from './AIInsightCard';
 import { VerdictSummaryVisual } from './VerdictSummaryVisual';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
 import { ManufacturerReferenceCard } from './ManufacturerReferenceCard';
+import { AlsoOnThisLabel } from './AlsoOnThisLabel';
 
 export const VerdictScreen: React.FC = () => {
   const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType } = useAppContext();
@@ -389,6 +390,8 @@ export const VerdictScreen: React.FC = () => {
             <FlagCard flag={flag} />
           </div>
         ))}
+
+        {extractionResult && <AlsoOnThisLabel extractionResult={extractionResult} isEn={isEn} />}
 
 
 

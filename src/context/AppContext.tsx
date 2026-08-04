@@ -35,6 +35,7 @@ export interface ExtractionResult {
     saturated_fat_g: number, trans_fat_g: number | null, 
     total_sugar_g: number, added_sugar_g: number | null,
     sodium_mg: number, protein_g: number,
+    fiber_g?: number | null,
     manufacturer_serving_size_g?: number | null,
     manufacturer_servings_per_pack?: number | null,
     manufacturer_per_serve_rda?: Record<string, number> | null

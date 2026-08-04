@@ -321,6 +321,7 @@ export async function POST(req: Request) {
                 added_sugar_g: { type: "NUMBER", nullable: true },
                 sodium_mg: { type: "NUMBER" },
                 protein_g: { type: "NUMBER" },
+                fiber_g: { type: "NUMBER", nullable: true },
                 manufacturer_serving_size_g: { type: "NUMBER", nullable: true },
                 manufacturer_servings_per_pack: { type: "NUMBER", nullable: true },
                 manufacturer_per_serve_rda: {
