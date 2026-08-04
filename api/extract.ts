@@ -139,7 +139,10 @@ export async function POST(req: Request) {
         {
           role: 'user',
           parts: [
-            { text: promptText }
+            { text: promptText },
+            ...(frontBase64 ? [{ inlineData: { mimeType: "image/jpeg", data: frontBase64 } }] : []),
+            ...(ingredientsBase64 ? [{ inlineData: { mimeType: "image/jpeg", data: ingredientsBase64 } }] : []),
+            ...(thirdBase64 ? [{ inlineData: { mimeType: "image/jpeg", data: thirdBase64 } }] : [])
           ]
         }
       ],
