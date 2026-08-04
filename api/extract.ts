@@ -231,16 +231,35 @@ export async function POST(req: Request) {
         }
       }
     };
-    const pass2Response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    let pass2Response: Response | null = null;
+    let attempt = 0;
+    const delays = [2000, 5000]; // 2s for first retry, 5s for second
 
-    if (!pass2Response.ok) {
-      const errorText = await pass2Response.text();
-      console.error(`Gemini API Error (Pass 2) [Status: ${pass2Response.status}]:`, errorText);
-      return new Response(`Gemini API Error (Pass 2): ${errorText}`, { status: pass2Response.status });
+    for (attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) {
+        console.log(`Retrying Gemini API (Pass 2) due to ${pass2Response?.status}... waiting ${delays[attempt - 1]}ms (Attempt ${attempt + 1}/3)`);
+        await new Promise(resolve => setTimeout(resolve, delays[attempt - 1]));
+      }
+
+      pass2Response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (pass2Response.ok) {
+        break; // Success
+      }
+
+      if (pass2Response.status !== 429 && pass2Response.status !== 504) {
+        break; // Don't retry other errors (e.g. 400, 403)
+      }
+    }
+
+    if (!pass2Response || !pass2Response.ok) {
+      const errorText = pass2Response ? await pass2Response.text() : 'Unknown error';
+      console.error(`Gemini API Error (Pass 2) [Status: ${pass2Response?.status}]:`, errorText);
+      return new Response(`Gemini API Error (Pass 2): ${errorText}`, { status: pass2Response?.status || 500 });
     }
 
     const pass2Data = (await pass2Response.json()) as any;
