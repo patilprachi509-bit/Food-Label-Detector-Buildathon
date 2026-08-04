@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAppContext } from '../context/AppContext';
 import { IngredientPill } from './IngredientPill';
+import { COMMON_INGREDIENTS_HINDI } from '../utils/hindiDictionary';
 
 export const IngredientsScreen: React.FC = () => {
   const { userLanguage, extractionResult, setHasChosenResultType, resetApp } = useAppContext();
@@ -35,11 +36,15 @@ export const IngredientsScreen: React.FC = () => {
       <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {extractionResult.ingredients.raw_list.map((ing, idx) => {
-            const rawName = isEn ? ing.normalized_english : (ing.localized_display || ing.normalized_english);
+            let rawName = ing.normalized_english;
+            if (!isEn) {
+              rawName = ing.localized_display || COMMON_INGREDIENTS_HINDI[ing.normalized_english.toLowerCase()] || ing.normalized_english;
+            }
+            
             const plainName = ing.plain_name || '';
             const rawClean = ing.normalized_english?.trim().toLowerCase() || '';
             const plainClean = plainName.trim().toLowerCase();
-            const descStr = ing.description ? (isEn ? ing.description.normalized_english : ing.description.localized_display) : '';
+            const descStr = ing.description ? (isEn ? ing.description.normalized_english : (ing.description.localized_display || ing.description.normalized_english)) : '';
             const isExpandable = Boolean((plainClean && plainClean !== rawClean) || descStr);
 
             return (

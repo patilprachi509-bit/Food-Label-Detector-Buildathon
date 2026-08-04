@@ -194,13 +194,14 @@ export async function POST(req: Request) {
         2. You MUST normalize all nutrition values to a strict per-100g basis. If the nutrition table has multiple columns (e.g., 'Per 100g' and 'Per Serve'), you MUST strictly extract the numerical values from the 'Per 100g' column and completely ignore the 'Per Serve' column values. If the panel ONLY lists per-serving, calculate the per-100g equivalent.
         3. Do NOT arbitrarily round numbers. Extract the exact numbers printed on the label, including decimals (e.g., if it says 442.3mg, output 442.3).
         4. 'trans_fat_g' and 'added_sugar_g' are nullable. If they are not explicitly printed on the panel, you MUST return null, do NOT default to 0 and do not assume added sugar equals total sugar. Only extract 'added_sugar_g' if the label separately declares "Added Sugars".
-        5. For 'claims' and 'raw_list' items, output an object with 'normalized_english' (always English) and 'localized_display' (always translate to Hindi).
+        5. For 'claims' and 'raw_list' items, output an object with 'normalized_english' (always English) and 'localized_display' (Hindi).
         6. For every ingredient in 'raw_list', you MUST populate 'plain_name' alongside the raw name using this logic:
            - First, check this static dictionary of common terms: sodium -> salt, ascorbic acid -> Vitamin C, tocopherol -> Vitamin E. Also decode INS/E-numbers (e.g. INS 211).
            - If it is not in the dictionary but is a highly scientific or chemical term, generate a strictly definitional, categorical name for what it is (e.g., "Preservative", "Emulsifier", "Sweetener", "Colorant", "Antioxidant").
-           - If the term is already plain language (e.g., "Sugar", "Milk", "Wheat Flour"), set plain_name to exactly equal the raw name unchanged.
+           - If the term is already plain language (e.g., "Sugar", "Milk", "Wheat Flour", "Water"), set plain_name to exactly equal the raw name unchanged.
            - HARD CONSTRAINT: The generated plain_name MUST be strictly categorical. It must NEVER be evaluative or imply health impacts (e.g., output "Preservative", never "Harmful Preservative").
-           - You MUST also provide a 'description' object for every ingredient. This description must be a simple, 1-sentence explanation of what the ingredient is and its common purpose, in simple, everyday language (provided in both English and Hindi).
+           - DICTIONARY OFFLOAD RULE: If the ingredient is a common/plain language term (i.e. plain_name equals the raw name), you MUST set BOTH 'localized_display' and 'description' to null. We handle translation of common items locally on the client.
+           - ONLY if the ingredient is a complex chemical, INS number, or unfamiliar term, you MUST provide the 'localized_display' Hindi translation AND a 1-sentence 'description' of what it is and its purpose (in English/Hindi).
         7. AI INSIGHT FOR UNVERIFIED CLAIMS: For any claim in front_of_pack.claims that does NOT clearly map to standard deterministic rules (like sugar limits, whole wheat definitions, cholesterol/trans fat limits), you must reason over the ingredients.raw_list and nutrition data to assess if the claim appears plausible or potentially contradicted.
            - Return these insights in the 'unverified_claim_notes' array.
            - Set 'concern' to a short note ONLY IF something looks inconsistent. If the claim is plausible or you have no evidence against it, set 'concern' to null.
@@ -275,15 +276,24 @@ export async function POST(req: Request) {
                     type: "OBJECT",
                     properties: {
                       normalized_english: { type: "STRING" },
-                      localized_display: { type: "STRING" },
+                      localized_display: { type: "STRING", nullable: true },
                       plain_name: { type: "STRING" },
-                      description: translatableStringSchema
-                    }
+                      description: {
+                        type: "OBJECT",
+                        nullable: true,
+                        properties: {
+                          normalized_english: { type: "STRING" },
+                          localized_display: { type: "STRING", nullable: true }
+                        }
+                      }
+                    },
+                    required: ["normalized_english", "plain_name"]
                   }
                 },
                 order_index: { type: "BOOLEAN" },
                 detected_language: { type: "STRING" }
-              }
+              },
+              required: ["raw_list"]
             },
             nutrition: {
               type: "OBJECT",
