@@ -17,6 +17,7 @@ export interface TranslatableString {
 export interface ExtractionResult {
   manufacturer_advisories?: TranslatableString[];
   front_of_pack: { 
+    has_celebrity_endorsement: boolean;
     claims: TranslatableString[], 
     unverified_claim_notes?: { claim: TranslatableString, concern: TranslatableString | null }[],
     brand_name: string, 

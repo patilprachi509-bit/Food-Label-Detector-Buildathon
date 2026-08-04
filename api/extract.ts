@@ -215,6 +215,7 @@ export async function POST(req: Request) {
         12. MANUFACTURER PORTION INFO: If the package prints a 'Know Your Portion' or similar reference section with an explicit manufacturer serving size, servings per pack, and %RDA/GDA values, extract them into 'manufacturer_serving_size_g', 'manufacturer_servings_per_pack', and 'manufacturer_per_serve_rda'. For 'manufacturer_per_serve_rda', strictly use only these keys if they appear: 'energy', 'sugar', 'added_sugar', 'fat', 'sodium'. Set these fields to null if not printed.
         13. EXTREME ANTI-HALLUCINATION FOR NUTRITION: NEVER use prior knowledge, standard reference databases (like USDA), or generic nutritional profiles for the recognized product category to fill in the nutrition values. You MUST act strictly as a dumb parser of the literal RAW PACKAGE TEXT. If a number is not explicitly printed on the package, you MUST NOT output it.
         14. MANUFACTURER ADVISORY TEXT: Look for explicit advisory or warning text printed by the manufacturer (e.g., 'Not recommended for children', 'Consult a physician before use', 'Do not exceed [X] per day', 'High caffeine content'). Extract these exactly as printed into the 'manufacturer_advisories' array (in English and translated to Hindi). Do NOT include marketing claims or general usage instructions here.
+        15. CELEBRITY ENDORSEMENT DETECTION: Evaluate the raw text to determine if it indicates a celebrity/influencer endorsement (e.g., the text explicitly names a well-known personality, or uses phrases like "Brand Ambassador"). Set 'has_celebrity_endorsement' to true if such text is present. If the imagery might have a face but there is no explicit identifying text, you MUST set it to false (you only process text). HARD CONSTRAINT: You must NEVER output or extract the actual name of the celebrity anywhere in the JSON response for this feature.
 
         Output strictly in the provided JSON schema.
     `;
@@ -257,6 +258,7 @@ export async function POST(req: Request) {
             front_of_pack: {
               type: "OBJECT",
               properties: {
+                has_celebrity_endorsement: { type: "BOOLEAN" },
                 claims: { type: "ARRAY", items: translatableStringSchema },
                 unverified_claim_notes: {
                   type: "ARRAY",

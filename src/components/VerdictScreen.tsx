@@ -334,6 +334,55 @@ export const VerdictScreen: React.FC = () => {
           <AIInsightCard key={`insight-${idx}`} insight={insight} isEn={isEn} />
         ))}
 
+        {extractionResult?.front_of_pack?.has_celebrity_endorsement && (
+          <div style={{
+            backgroundColor: 'var(--color-bg)',
+            border: '1px solid var(--color-verify)',
+            borderRadius: '12px',
+            padding: '1.25rem',
+            marginBottom: '1.5rem',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: '4px',
+              backgroundColor: 'var(--color-verify)'
+            }} />
+            <h4 style={{ 
+              color: 'var(--color-verify)', 
+              fontSize: '0.8rem', 
+              textTransform: 'uppercase', 
+              letterSpacing: '1px', 
+              margin: '0 0 0.5rem 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              {isEn ? 'Celebrity Endorsement' : 'सेलिब्रिटी विज्ञापन'}
+            </h4>
+            <p className={isEn ? 'body-en' : 'body-hi'} style={{ 
+              margin: 0, 
+              color: 'var(--color-text)', 
+              fontSize: '0.9rem',
+              lineHeight: 1.4,
+              opacity: 0.9
+            }}>
+              {isEn 
+                ? "Famous faces on packaging are almost always paid advertising — not proof the person actually uses this product." 
+                : "पैकेजिंग पर प्रसिद्ध चेहरे लगभग हमेशा सशुल्क विज्ञापन होते हैं — इस बात का प्रमाण नहीं कि वह व्यक्ति वास्तव में इस उत्पाद का उपयोग करता है।"}
+            </p>
+          </div>
+        )}
+
         {/* GENDER TOGGLE */}
         {flags.some(f => f.type === 'general_health') && (
           <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
