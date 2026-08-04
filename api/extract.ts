@@ -196,12 +196,14 @@ export async function POST(req: Request) {
         4. 'trans_fat_g' and 'added_sugar_g' are nullable. If they are not explicitly printed on the panel, you MUST return null, do NOT default to 0 and do not assume added sugar equals total sugar. Only extract 'added_sugar_g' if the label separately declares "Added Sugars".
         5. For 'claims' and 'raw_list' items, output an object with 'normalized_english' (always English) and 'localized_display' (Hindi).
         6. For every ingredient in 'raw_list', you MUST populate 'plain_name' alongside the raw name using this logic:
-           - First, check this static dictionary of common terms: sodium -> salt, ascorbic acid -> Vitamin C, tocopherol -> Vitamin E. Also decode INS/E-numbers (e.g. INS 211).
-           - If it is not in the dictionary but is a highly scientific or chemical term, generate a strictly definitional, categorical name for what it is (e.g., "Preservative", "Emulsifier", "Sweetener", "Colorant", "Antioxidant").
+           - First, check this static dictionary of common terms: sodium -> salt, ascorbic acid -> Vitamin C, tocopherol -> Vitamin E.
+           - For INS/E-numbers, you MUST decode them and format 'plain_name' exactly as '[Number] — [Chemical Name] ([Category])' (e.g., "INS 202 — Potassium Sorbate (Preservative)"). Use official Codex/FSSAI chemical names and categories.
+           - If it is not in the dictionary and not an INS number, but is a highly scientific or chemical term, generate a strictly definitional, categorical name (e.g., "Preservative").
            - If the term is already plain language (e.g., "Sugar", "Milk", "Wheat Flour", "Water"), set plain_name to exactly equal the raw name unchanged.
-           - HARD CONSTRAINT: The generated plain_name MUST be strictly categorical. It must NEVER be evaluative or imply health impacts (e.g., output "Preservative", never "Harmful Preservative").
+           - HARD CONSTRAINT: The generated plain_name MUST be strictly categorical or structural. It must NEVER be evaluative or imply health impacts (e.g., output "Preservative", never "Harmful Preservative").
            - DICTIONARY OFFLOAD RULE: If the ingredient is a common/plain language term (i.e. plain_name equals the raw name), you MUST set BOTH 'localized_display' and 'description' to null. We handle translation of common items locally on the client.
-           - ONLY if the ingredient is a complex chemical, INS number, or unfamiliar term, you MUST provide the 'localized_display' Hindi translation AND a 1-sentence 'description' of what it is and its purpose (in English/Hindi).
+           - ONLY if the ingredient is a complex chemical, INS number, or unfamiliar term, you MUST provide the 'localized_display' Hindi translation AND a 1-sentence 'description'.
+           - ADDITIVE DESCRIPTION CONSTRAINT: For additives and INS numbers, the 1-sentence 'description' MUST be framed strictly around its technical function in the food (e.g. "used to prevent mold and yeast growth in acidic foods"). It MUST NOT imply a benefit or risk to the person eating it, and it MUST NOT include usage limits or health consequences.
         7. AI INSIGHT FOR UNVERIFIED CLAIMS: For any claim in front_of_pack.claims that does NOT clearly map to standard deterministic rules (like sugar limits, whole wheat definitions, cholesterol/trans fat limits), you must reason over the ingredients.raw_list and nutrition data to assess if the claim appears plausible or potentially contradicted.
            - Return these insights in the 'unverified_claim_notes' array.
            - Set 'concern' to a short note ONLY IF something looks inconsistent. If the claim is plausible or you have no evidence against it, set 'concern' to null.
