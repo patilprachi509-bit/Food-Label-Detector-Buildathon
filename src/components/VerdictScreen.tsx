@@ -10,6 +10,7 @@ import { SavedScansScreen } from './SavedScansScreen';
 import { AIInsightCard } from './AIInsightCard';
 
 import { VerdictSummaryVisual } from './VerdictSummaryVisual';
+import { XRayVisualizer } from './XRayVisualizer';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
 import { ManufacturerReferenceCard } from './ManufacturerReferenceCard';
 import { AlsoOnThisLabel } from './AlsoOnThisLabel';
@@ -270,6 +271,11 @@ export const VerdictScreen: React.FC = () => {
             }
           })()}
         </div>
+
+        {/* X-Ray Visualizer (Directly after heading) */}
+        {extractionResult && (
+          <XRayVisualizer data={extractionResult} />
+        )}
 
         {/* Verdict Summary Visual */}
         {extractionResult && (
