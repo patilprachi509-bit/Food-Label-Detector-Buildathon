@@ -1,4 +1,5 @@
 import type { ExtractionResult, TranslatableString } from '../context/AppContext';
+import { checkAnimalOrigin } from './animalIngredients';
 
 export type FlagType = 'claim_contradiction' | 'general_health' | 'needs_verification' | 'informational';
 
@@ -145,6 +146,42 @@ export const evaluateRules = (result: ExtractionResult, userFocus: string | null
   // Informational (Maida)
   if (ingredients.raw_list.some(ing => ing.normalized_english.toLowerCase().includes('maida') || ing.normalized_english.toLowerCase().includes('refined wheat flour'))) {
     flags.push({ type: 'informational', ruleId: 'INFO1', message_en: 'Contains Refined Wheat Flour (Maida). Low in fiber and high GI.', message_hi: 'मैदा शामिल है। फाइबर कम और GI उच्च।', source: 'General Nutrition Context', relevantIngredients: checkSynonyms(ingredients.raw_list, ['maida', 'refined wheat flour']) });
+  }
+
+  // R13: Veg/Non-Veg Contradiction
+  if (result.front_of_pack?.declared_dietary_type === 'vegetarian') {
+    const animalIngredients = ingredients.raw_list.map(ing => ({
+      ingredient: ing,
+      origin: checkAnimalOrigin(ing.normalized_english, ing.plain_name || ing.normalized_english)
+    })).filter(x => x.origin !== 'none');
+
+    for (const match of animalIngredients) {
+      if (match.origin === 'definitive') {
+        flags.push({
+          type: 'claim_contradiction',
+          ruleId: 'R13',
+          claim: { normalized_english: 'Vegetarian', localized_display: 'शाकाहारी' },
+          message_en: `This product is labeled vegetarian, but the ingredient list includes ${match.ingredient.plain_name || match.ingredient.normalized_english}, which is typically derived from animals.`,
+          message_hi: `यह उत्पाद शाकाहारी घोषित है, लेकिन इसमें ${match.ingredient.localized_display || match.ingredient.plain_name || match.ingredient.normalized_english} शामिल है, जो आमतौर पर जानवरों से प्राप्त होता है।`,
+          headline_en: `VEGETARIAN CLAIM CONTRADICTION`,
+          headline_hi: `शाकाहारी दावे का खंडन`,
+          source: 'FSSAI Packaging and Labeling Regulations, 2011',
+          relevantIngredients: [match.ingredient]
+        });
+      } else if (match.origin === 'ambiguous') {
+        flags.push({
+          type: 'needs_verification',
+          ruleId: 'R13_PROV',
+          claim: { normalized_english: 'Vegetarian', localized_display: 'शाकाहारी' },
+          message_en: `This product is labeled vegetarian, but includes ${match.ingredient.plain_name || match.ingredient.normalized_english}, which can be either plant or animal-derived and is not specified on the label.`,
+          message_hi: `यह उत्पाद शाकाहारी घोषित है, लेकिन इसमें ${match.ingredient.localized_display || match.ingredient.plain_name || match.ingredient.normalized_english} शामिल है, जो पौधे या जानवर दोनों से प्राप्त हो सकता है और लेबल पर स्पष्ट नहीं है।`,
+          headline_en: `AMBIGUOUS INGREDIENT ORIGIN`,
+          headline_hi: `संदिग्ध सामग्री स्रोत`,
+          source: 'General regulatory transparency standards',
+          relevantIngredients: [match.ingredient]
+        });
+      }
+    }
   }
 
   // Provisional Guardrails

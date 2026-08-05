@@ -24,10 +24,11 @@ export interface ExtractionResult {
     product_name: string, 
     net_weight_g?: number, 
     video_id?: string | null,
-    consumption_format?: 'solid_snack' | 'spoonable' | 'beverage' | 'other'
+    consumption_format?: 'solid_snack' | 'spoonable' | 'beverage' | 'other',
+    declared_dietary_type?: 'vegetarian' | 'non-vegetarian' | null
   };
   ingredients: { 
-    raw_list: (TranslatableString & { description?: TranslatableString })[], 
+    raw_list: (TranslatableString & { description?: TranslatableString, plain_name?: string })[], 
     order_index: boolean, 
     detected_language: string 
   };

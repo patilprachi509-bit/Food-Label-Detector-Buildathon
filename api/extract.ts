@@ -290,6 +290,11 @@ export async function POST(req: Request) {
                 consumption_format: { 
                   type: "STRING", 
                   enum: ["solid_snack", "spoonable", "beverage", "other"]
+                },
+                declared_dietary_type: {
+                  type: "STRING",
+                  enum: ["vegetarian", "non-vegetarian"],
+                  nullable: true
                 }
               }
             },
