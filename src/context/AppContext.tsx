@@ -108,6 +108,7 @@ interface AppContextType {
   setViewingSavedScanId: (id: string | null) => void;
   isScanning: boolean;
   setIsScanning: (scanning: boolean) => void;
+  submitImages: () => Promise<void>;
   resetApp: () => void;
   
   // Batch Scanning
