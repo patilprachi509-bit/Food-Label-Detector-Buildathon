@@ -3,7 +3,7 @@ import { useAppContext } from '../context/AppContext';
 import { DemoPreviewCard } from './DemoPreviewCard';
 
 export const HomeScreen: React.FC = () => {
-  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsScanning, setIsHowItWorksOpen, setIsBatchMode, isDemoDismissed, savedScans } = useAppContext();
+  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsHowItWorksOpen, setIsAwarenessOpen, isDemoDismissed, savedScans, setIsScanning, setIsBatchMode } = useAppContext();
   const isEn = userLanguage === 'en';
 
   const toggleLanguage = () => {
@@ -35,6 +35,18 @@ export const HomeScreen: React.FC = () => {
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           
+          <button 
+            onClick={() => setIsAwarenessOpen(true)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: 'var(--color-text)' }}
+            aria-label="Awareness"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </button>
+
           <button 
             onClick={() => setIsHistoryOpen(true)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: 'var(--color-text)' }}

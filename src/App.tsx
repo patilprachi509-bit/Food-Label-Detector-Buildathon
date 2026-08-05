@@ -12,6 +12,7 @@ import { HomeScreen } from './components/HomeScreen';
 import { HowItWorksScreen } from './components/HowItWorksScreen';
 import { IngredientsScreen } from './components/IngredientsScreen';
 import { ResultChoiceScreen } from './components/ResultChoiceScreen';
+import { AwarenessScreen } from './components/AwarenessScreen';
 
 import { BatchQueueScreen } from './components/BatchQueueScreen';
 import { BatchProcessingScreen } from './components/BatchProcessingScreen';
@@ -48,7 +49,7 @@ const BatchCaptureManager: React.FC = () => {
 const AppContent: React.FC = () => {
   const { 
     userLanguage, frontImage, ingredientsImage, thirdImageStatus, setThirdImageStatus, extractionResult, pendingExtractionResult, userFocus, 
-    isHistoryOpen, isHowItWorksOpen, viewingSavedScanId, isScanning, hasChosenResultType,
+    isHistoryOpen, isHowItWorksOpen, isAwarenessOpen, viewingSavedScanId, isScanning, hasChosenResultType,
     isBatchMode, isCapturingBatchItem, isBatchProcessing, isBatchFinished, viewingBatchResultId,
     isCurvedCaptureDone
   } = useAppContext();
@@ -59,6 +60,10 @@ const AppContent: React.FC = () => {
 
   if (isHowItWorksOpen) {
     return <HowItWorksScreen />;
+  }
+
+  if (isAwarenessOpen) {
+    return <AwarenessScreen />;
   }
 
   if (isBatchMode) {

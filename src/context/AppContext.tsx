@@ -102,6 +102,8 @@ interface AppContextType {
   setIsHistoryOpen: (open: boolean) => void;
   isHowItWorksOpen: boolean;
   setIsHowItWorksOpen: (open: boolean) => void;
+  isAwarenessOpen: boolean;
+  setIsAwarenessOpen: (open: boolean) => void;
   isIngredientsOpen: boolean;
   setIsIngredientsOpen: (open: boolean) => void;
   viewingSavedScanId: string | null;
@@ -196,6 +198,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
+  const [isAwarenessOpen, setIsAwarenessOpen] = useState(false);
   const [isIngredientsOpen, setIsIngredientsOpen] = useState(false);
   const [viewingSavedScanId, setViewingSavedScanId] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -327,6 +330,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       savedScans, saveScan, saveMultipleScans, deleteScan, clearScans,
       isHistoryOpen, setIsHistoryOpen,
       isHowItWorksOpen, setIsHowItWorksOpen,
+      isAwarenessOpen, setIsAwarenessOpen,
       isIngredientsOpen, setIsIngredientsOpen,
       viewingSavedScanId, setViewingSavedScanId,
       isScanning, setIsScanning, submitImages, resetApp,

@@ -16,7 +16,7 @@ import { AlsoOnThisLabel } from './AlsoOnThisLabel';
 import { DynamicSeverityCallout } from './DynamicSeverityCallout';
 
 export const VerdictScreen: React.FC = () => {
-  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType } = useAppContext();
+  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType, setIsAwarenessOpen } = useAppContext();
   const isEn = userLanguage === 'en';
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
@@ -27,6 +27,15 @@ export const VerdictScreen: React.FC = () => {
     if (!extractionResult) return [];
     return evaluateRules(extractionResult, userFocus);
   }, [extractionResult, userFocus]);
+
+  const overallState = useMemo(() => {
+    const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
+    if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) return 'NOT RECOMMENDED';
+    if (isMostlyFine) return 'MOSTLY FINE';
+    if (flags.some(f => f.type === 'needs_verification')) return 'VERIFICATION NEEDED';
+    if (flags.length > 0) return 'MINOR ISSUES';
+    return 'GOOD CHOICE';
+  }, [flags]);
 
   const aiInsights = useMemo(() => {
     if (!extractionResult?.front_of_pack?.unverified_claim_notes) return [];
@@ -269,27 +278,13 @@ export const VerdictScreen: React.FC = () => {
               flags={flags}
               extractionResult={extractionResult}
               isEn={isEn}
-              overallState={(() => {
-                const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
-                if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) return 'NOT RECOMMENDED';
-                if (isMostlyFine) return 'MOSTLY FINE';
-                if (flags.some(f => f.type === 'needs_verification')) return 'VERIFICATION NEEDED';
-                if (flags.length > 0) return 'MINOR ISSUES';
-                return 'GOOD CHOICE';
-              })()}
+              overallState={overallState}
             />
             <DynamicSeverityCallout
               flags={flags}
               extractionResult={extractionResult}
               isEn={isEn}
-              overallState={(() => {
-                const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
-                if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) return 'NOT RECOMMENDED';
-                if (isMostlyFine) return 'MOSTLY FINE';
-                if (flags.some(f => f.type === 'needs_verification')) return 'VERIFICATION NEEDED';
-                if (flags.length > 0) return 'MINOR ISSUES';
-                return 'GOOD CHOICE';
-              })()}
+              overallState={overallState}
             />
           </>
         )}
@@ -457,6 +452,27 @@ export const VerdictScreen: React.FC = () => {
         ))}
 
         {extractionResult && <AlsoOnThisLabel extractionResult={extractionResult} isEn={isEn} />}
+
+        {/* Awareness Link */}
+        {(overallState === 'NOT RECOMMENDED' || overallState === 'MOSTLY FINE') && (
+          <div style={{ textAlign: 'center', marginTop: '2rem', marginBottom: '1rem' }}>
+            <button 
+              onClick={() => setIsAwarenessOpen(true)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--color-text)',
+                opacity: 0.6,
+                textDecoration: 'underline',
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                fontFamily: 'inherit'
+              }}
+            >
+              {isEn ? 'Did You Know?' : 'क्या आप जानते हैं?'}
+            </button>
+          </div>
+        )}
 
 
 
