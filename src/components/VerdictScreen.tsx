@@ -309,11 +309,11 @@ export const VerdictScreen: React.FC = () => {
               {extractionResult.manufacturer_advisories.map((adv: any, idx: number) => (
                 <p key={idx} style={{ 
                   margin: 0, 
-                  color: 'var(--color-text)', 
-                  fontSize: '0.95rem',
+                  color: '#78350F', 
+                  fontSize: '1.15rem',
                   fontStyle: 'italic',
                   lineHeight: 1.4,
-                  fontWeight: 500
+                  fontWeight: 800
                 }}>
                   "{isEn ? adv.normalized_english : (adv.localized_display || adv.normalized_english)}"
                 </p>

@@ -178,9 +178,9 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
       }}>
         {cameraError ? (
           <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'rgba(0,0,0,0.8)', color: 'white', borderRadius: '12px', pointerEvents: 'auto' }}>
-            <h3>Camera Error</h3>
+            <h3>{isEn ? 'Camera Error' : 'कैमरा त्रुटि'}</h3>
             <p>{cameraError}</p>
-            <p style={{ fontSize: '0.8rem', marginTop: '1rem' }}>Ensure you are using HTTPS and have granted camera permissions.</p>
+            <p style={{ fontSize: '0.8rem', marginTop: '1rem' }}>{isEn ? 'Ensure you are using HTTPS and have granted camera permissions.' : 'सुनिश्चित करें कि आप HTTPS का उपयोग कर रहे हैं और कैमरा अनुमति दी है।'}</p>
           </div>
         ) : null}
       </div>

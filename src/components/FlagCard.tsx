@@ -69,7 +69,7 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
       {/* Tier 1: Always Visible */}
       {flag.claim && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <p style={{ fontSize: '0.8rem', letterSpacing: '1px', opacity: 0.7, textTransform: 'uppercase' }}>THE CLAIM</p>
+          <p style={{ fontSize: '0.8rem', letterSpacing: '1px', opacity: 0.7, textTransform: 'uppercase' }}>{isEn ? 'THE CLAIM' : 'दावा'}</p>
           <h2 className="headline-en" style={{ 
             fontSize: '3rem', 
             lineHeight: 1, 
