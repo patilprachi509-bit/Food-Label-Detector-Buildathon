@@ -28,7 +28,13 @@ export interface ExtractionResult {
     declared_dietary_type?: 'vegetarian' | 'non-vegetarian' | null
   };
   ingredients: { 
-    raw_list: (TranslatableString & { description?: TranslatableString, plain_name?: string })[], 
+    raw_list: (TranslatableString & { 
+      description?: TranslatableString; 
+      plain_name?: string;
+      percentage?: number | null;
+      reasons_added?: TranslatableString[];
+      icon?: 'tomato' | 'sugar' | 'onion' | 'salt' | 'garlic' | 'chemical' | 'shield' | 'spices' | 'leaf' | 'grain' | 'default';
+    })[], 
     order_index: boolean, 
     detected_language: string 
   };

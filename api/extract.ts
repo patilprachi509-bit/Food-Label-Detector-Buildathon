@@ -218,6 +218,7 @@ export async function POST(req: Request) {
            - Set 'concern' to a short note ONLY IF something looks inconsistent. If the claim is plausible or you have no evidence against it, set 'concern' to null.
            - The language in 'concern' MUST be strictly provisional and non-evaluative (e.g., "This claim may not be fully supported by the visible ingredients — worth checking further"). Never use "FAILS", "VIOLATION", or absolute language.
         8. ANTI-HALLUCINATION INSTRUCTION FOR INGREDIENTS: You MUST ONLY extract ingredients that are literally present in the RAW PACKAGE TEXT. DO NOT infer, guess, or fill in typical/plausible ingredients for the product category under any circumstance. Never fabricate additional items to complete the list.
+        9. For each ingredient, identify its category icon from: tomato, sugar, onion, salt, garlic, chemical, shield, spices, leaf, grain, or default. Extract the numeric percentage if stated on the pack (e.g. Tomato Paste 45% -> 45). List 2-3 reasons why it is added to this product (e.g., "Adds sweetness").
         9. HINDI TRANSLATION QUALITY: For 'localized_display' and any other Hindi text, you MUST use simple, everyday spoken Hindi (the register used in normal conversation). DO NOT use formal, Sanskrit-derived vocabulary if a common alternative exists. The tone should be human, conversational, and accessible.
         10. ANTI-HALLUCINATION INSTRUCTION FOR NUMBERS: You must be extremely precise when reading INS or E-numbers. DO NOT transpose or flip digits under any circumstances. In particular, pay very close attention to "510" (which is often mistaken for 150). If the raw text says 510, output 510. If the raw text says 150, output 150. DO NOT swap values between different nutrients (e.g., do not put Total Sugar into added_sugar_g).
         11. SALT VS SODIUM STRICT RULE: If the label lists 'Salt', DO NOT extract it directly as 'sodium_mg'. 'sodium_mg' MUST strictly be the Sodium value. If Sodium is not listed, but Salt is listed in grams, calculate sodium as (Salt in grams * 1000) / 2.5. But if Sodium is explicitly printed, extract exactly that printed Sodium value.
@@ -316,6 +317,23 @@ export async function POST(req: Request) {
                           normalized_english: { type: "STRING" },
                           localized_display: { type: "STRING", nullable: true }
                         }
+                      },
+                      percentage: { type: "NUMBER", nullable: true },
+                      reasons_added: {
+                        type: "ARRAY",
+                        nullable: true,
+                        items: {
+                          type: "OBJECT",
+                          properties: {
+                            normalized_english: { type: "STRING" },
+                            localized_display: { type: "STRING", nullable: true }
+                          }
+                        }
+                      },
+                      icon: { 
+                        type: "STRING", 
+                        enum: ['tomato', 'sugar', 'onion', 'salt', 'garlic', 'chemical', 'shield', 'spices', 'leaf', 'grain', 'default'],
+                        nullable: true
                       }
                     },
                     required: ["normalized_english", "plain_name"]
