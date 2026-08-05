@@ -13,6 +13,7 @@ import { VerdictSummaryVisual } from './VerdictSummaryVisual';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
 import { ManufacturerReferenceCard } from './ManufacturerReferenceCard';
 import { AlsoOnThisLabel } from './AlsoOnThisLabel';
+import { DynamicSeverityCallout } from './DynamicSeverityCallout';
 
 export const VerdictScreen: React.FC = () => {
   const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType } = useAppContext();
@@ -263,19 +264,34 @@ export const VerdictScreen: React.FC = () => {
 
         {/* Verdict Summary Visual */}
         {extractionResult && (
-          <VerdictSummaryVisual 
-            flags={flags}
-            extractionResult={extractionResult}
-            isEn={isEn}
-            overallState={(() => {
-              const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
-              if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) return 'NOT RECOMMENDED';
-              if (isMostlyFine) return 'MOSTLY FINE';
-              if (flags.some(f => f.type === 'needs_verification')) return 'VERIFICATION NEEDED';
-              if (flags.length > 0) return 'MINOR ISSUES';
-              return 'GOOD CHOICE';
-            })()}
-          />
+          <>
+            <VerdictSummaryVisual 
+              flags={flags}
+              extractionResult={extractionResult}
+              isEn={isEn}
+              overallState={(() => {
+                const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
+                if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) return 'NOT RECOMMENDED';
+                if (isMostlyFine) return 'MOSTLY FINE';
+                if (flags.some(f => f.type === 'needs_verification')) return 'VERIFICATION NEEDED';
+                if (flags.length > 0) return 'MINOR ISSUES';
+                return 'GOOD CHOICE';
+              })()}
+            />
+            <DynamicSeverityCallout
+              flags={flags}
+              extractionResult={extractionResult}
+              isEn={isEn}
+              overallState={(() => {
+                const isMostlyFine = flags.length === 1 && ['G1', 'G2', 'G3'].includes(flags[0].ruleId);
+                if (flags.some(f => f.type === 'claim_contradiction' || (f.type === 'general_health' && !isMostlyFine))) return 'NOT RECOMMENDED';
+                if (isMostlyFine) return 'MOSTLY FINE';
+                if (flags.some(f => f.type === 'needs_verification')) return 'VERIFICATION NEEDED';
+                if (flags.length > 0) return 'MINOR ISSUES';
+                return 'GOOD CHOICE';
+              })()}
+            />
+          </>
         )}
 
         {/* Manufacturer Advisories */}
