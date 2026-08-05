@@ -123,6 +123,12 @@ export const AwarenessScreen: React.FC = () => {
               </div>
             </div>
           ))}
+
+          {/* Verification Date */}
+          <div style={{ textAlign: 'center', marginTop: '1rem', opacity: 0.6, fontSize: '0.85rem' }}>
+            {isEn ? 'Facts last verified: 5 August 2026' : 'तथ्यों की अंतिम जांच: 5 अगस्त 2026'}
+          </div>
+
         </div>
       </div>
     </div>
