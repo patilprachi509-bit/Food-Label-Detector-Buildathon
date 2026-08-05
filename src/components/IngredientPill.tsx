@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { IconShield, IconCandy, IconFlask, IconPalette, IconLeaf } from './Icons';
 import { Citation } from './Citation';
+import { isFSSAIAdditive } from '../utils/fssaiAdditives';
 
 interface IngredientPillProps {
   rawName: string;
@@ -14,7 +15,7 @@ interface IngredientPillProps {
 export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainName, isExpandable, isFaded, isEn, description }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
-  const isAdditiveCategory = /preservative|emulsifier|sweetener|colorant|antioxidant|stabilizer|acidity regulator|flavoring|thickener|humectant/i.test(plainName) || /INS|E\s?\d+/i.test(rawName);
+  const isAdditiveCategory = isFSSAIAdditive(rawName, plainName);
 
   let CategoryIcon = null;
   if (/preservative/i.test(plainName)) CategoryIcon = IconShield;
