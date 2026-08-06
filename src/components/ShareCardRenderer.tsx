@@ -80,14 +80,30 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
     }
   }
 
-  // Format Headline (Split words for two-tone color ONLY for mostly fine)
+  // Format Headline (Gradient)
   const renderHeadline = () => {
     const text = isEn ? headlineEn : headlineHi;
     if (isGradeA) {
-      return <span style={{ color: '#16402A' }}>{text}</span>;
+      return (
+        <span style={{ 
+          background: 'linear-gradient(90deg, #16402A 0%, #287a41 100%)', 
+          WebkitBackgroundClip: 'text', 
+          WebkitTextFillColor: 'transparent' 
+        }}>
+          {text}
+        </span>
+      );
     }
-    // If it's a fail or verification needed, make it entirely orange
-    return <span style={{ color: '#D64E29' }}>{text}</span>;
+    // If it's a fail or verification needed, make it entirely orange gradient
+    return (
+      <span style={{ 
+        background: 'linear-gradient(90deg, #D64E29 0%, #E67E22 100%)', 
+        WebkitBackgroundClip: 'text', 
+        WebkitTextFillColor: 'transparent' 
+      }}>
+        {text}
+      </span>
+    );
   };
 
   return (
@@ -148,7 +164,7 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
 
         {/* Product Name (Large) */}
         <div style={{ display: 'flex', flexDirection: 'column', marginTop: '10px', marginBottom: '20px', maxWidth: '85%' }}>
-          <h2 style={{ fontFamily: '"Kalam", cursive', fontSize: '90px', fontWeight: '700', margin: '0 0 10px 0', color: '#2A2622', lineHeight: '1.1' }}>
+          <h2 style={{ fontFamily: '"Playfair Display", "Noto Serif Devanagari", serif', fontSize: '90px', fontWeight: '700', margin: '0 0 10px 0', color: '#2A2622', lineHeight: '1.1' }}>
             {pName}
           </h2>
           <div style={{ height: '4px', width: '250px', backgroundColor: '#B08D57', opacity: 0.5 }}></div>
