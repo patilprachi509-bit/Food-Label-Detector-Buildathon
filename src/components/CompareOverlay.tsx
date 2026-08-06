@@ -39,11 +39,11 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
   // G1-G4 values
   const getValues = (res: ExtractionResult) => {
     const n = res.nutrition;
-    const hasEnergy = n.energy_kcal > 0;
-    const sugar = hasEnergy ? Math.round(((n.total_sugar_g * 4) / n.energy_kcal) * 100) : null;
-    const fat = hasEnergy ? Math.round(((n.total_fat_g * 9) / n.energy_kcal) * 100) : null;
-    const salt = Number(((n.sodium_mg * 2.5) / 1000).toFixed(2));
-    const transFat = (n.trans_fat_g !== null && n.total_fat_g > 0) ? Math.round((n.trans_fat_g / n.total_fat_g) * 100) : null;
+    const hasEnergy = typeof n.energy_kcal === 'number' && n.energy_kcal > 0;
+    const sugar = (hasEnergy && typeof n.total_sugar_g === 'number' && !isNaN(n.total_sugar_g)) ? Math.round(((n.total_sugar_g * 4) / n.energy_kcal) * 100) : null;
+    const fat = (hasEnergy && typeof n.total_fat_g === 'number' && !isNaN(n.total_fat_g)) ? Math.round(((n.total_fat_g * 9) / n.energy_kcal) * 100) : null;
+    const salt = (typeof n.sodium_mg === 'number' && !isNaN(n.sodium_mg)) ? Number(((n.sodium_mg * 2.5) / 1000).toFixed(2)) : null;
+    const transFat = (typeof n.trans_fat_g === 'number' && !isNaN(n.trans_fat_g) && typeof n.total_fat_g === 'number' && n.total_fat_g > 0) ? Math.round((n.trans_fat_g / n.total_fat_g) * 100) : null;
     return { sugar, fat, salt, transFat };
   };
 
@@ -69,7 +69,8 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
           {isEn ? labelEn : labelHi}
         </td>
         {allVals.map((val, idx) => {
-          const valStr = val === null ? (isEn ? "Not available" : "उपलब्ध नहीं") : `${val}${unit}`;
+          const isNaNVal = typeof val !== 'number' || isNaN(val);
+          const valStr = isNaNVal ? (isEn ? "Not available" : "उपलब्ध नहीं") : `${val}${unit}`;
           const isWorst = hasClearWorst && val === maxVal;
           return (
             <td key={idx} style={{ padding: '0.75rem', textAlign: 'center', backgroundColor: isWorst ? 'rgba(122, 46, 46, 0.1)' : 'transparent', fontWeight: isWorst ? 'bold' : 'normal', minWidth: '120px' }}>
@@ -99,8 +100,8 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
       <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', overflowX: 'auto', position: 'relative', zIndex: 1 }}>
         <table className="effect-elevated" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, backgroundColor: 'var(--color-bg)', borderRadius: '16px', overflow: 'hidden', border: 'none' }}>
           <thead>
-            <tr style={{ backgroundColor: 'var(--color-text)', color: 'var(--color-bg)' }}>
-              <th style={{ padding: '0.75rem', textAlign: 'left', minWidth: '120px', position: 'sticky', left: 0, backgroundColor: 'var(--color-text)', zIndex: 3 }}></th>
+            <tr style={{ backgroundColor: 'var(--color-pass)', color: 'white' }}>
+              <th style={{ padding: '0.75rem', textAlign: 'left', minWidth: '120px', position: 'sticky', left: 0, backgroundColor: 'var(--color-pass)', zIndex: 3, borderTopLeftRadius: '16px' }}></th>
               <th style={{ padding: '0.75rem', textAlign: 'center', minWidth: '120px' }}>{currentName}</th>
               {savedNames.map((name, idx) => (
                 <th key={idx} style={{ padding: '0.75rem', textAlign: 'center', minWidth: '120px' }}>{name}</th>

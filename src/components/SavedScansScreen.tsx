@@ -159,7 +159,7 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
     }
 
     return (
-      <div key={scan.id} style={{ display: 'flex', alignItems: 'center', backgroundColor: 'transparent', border: '1px solid var(--color-divider)', borderRadius: '8px', overflow: 'hidden', marginBottom: '0.75rem' }}>
+      <div key={scan.id} className="effect-elevated" style={{ display: 'flex', alignItems: 'center', backgroundColor: 'var(--color-bg)', border: 'none', borderRadius: '12px', overflow: 'hidden', marginBottom: '0.75rem' }}>
         <div 
           style={{ flex: 1, padding: '1rem', cursor: 'pointer' }}
           onClick={() => handleOpenScan(scan)}
@@ -271,7 +271,7 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
               <button
                 onClick={() => setViewMode('recent')}
                 style={{
-                  backgroundColor: viewMode === 'recent' ? 'var(--color-text)' : 'transparent',
+                  backgroundColor: viewMode === 'recent' ? 'var(--color-pass)' : 'transparent',
                   color: viewMode === 'recent' ? 'var(--color-bg)' : 'var(--color-text)',
                   border: 'none', borderRadius: '50px', padding: '0.5rem 1.5rem', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'
                 }}
@@ -281,7 +281,7 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
               <button
                 onClick={() => setViewMode('health')}
                 style={{
-                  backgroundColor: viewMode === 'health' ? 'var(--color-text)' : 'transparent',
+                  backgroundColor: viewMode === 'health' ? 'var(--color-pass)' : 'transparent',
                   color: viewMode === 'health' ? 'var(--color-bg)' : 'var(--color-text)',
                   border: 'none', borderRadius: '50px', padding: '0.5rem 1.5rem', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'
                 }}
@@ -350,13 +350,20 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
       </div>
 
       {isCompareMode && (
-        <div style={{ padding: '1rem', borderTop: '1px solid var(--color-divider)', backgroundColor: 'var(--color-bg)', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ 
+          padding: '1.2rem 1.5rem', 
+          display: 'flex', 
+          justifyContent: 'center', 
+          background: 'transparent',
+          zIndex: 10
+        }}>
           <button 
+            className="effect-gradient-glow"
             onClick={() => onSelectForCompare && onSelectForCompare(selectedForCompare)}
             disabled={selectedForCompare.length === 0}
             style={{
-              backgroundColor: selectedForCompare.length > 0 ? 'var(--color-text)' : 'transparent',
-              color: selectedForCompare.length > 0 ? 'var(--color-bg)' : 'var(--color-text)',
+              backgroundColor: selectedForCompare.length > 0 ? 'var(--color-pass)' : 'transparent',
+              color: selectedForCompare.length > 0 ? 'white' : 'var(--color-text)',
               border: selectedForCompare.length > 0 ? 'none' : '1px solid var(--color-divider)',
               borderRadius: '50px',
               padding: '1rem 2.5rem',
