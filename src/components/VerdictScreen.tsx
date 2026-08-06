@@ -326,7 +326,7 @@ export const VerdictScreen: React.FC = () => {
             let textHi = flag.claim?.localized_display || flag.claim?.normalized_english || flag.message_hi;
             
             return (
-              <p key={`insight-${idx}`} className={isEn ? "headline-en" : "headline-hi"} style={{ textAlign: 'center', fontSize: '1.1rem', color: flag.type === 'claim_contradiction' ? 'var(--color-fail)' : 'var(--color-text)', marginTop: '-0.5rem', marginBottom: '1.5rem', fontWeight: 700, opacity: flag.ruleId === 'INFO1' ? 0.7 : 1 }}>
+              <p key={`insight-${idx}`} className={isEn ? "headline-en" : "headline-hi"} style={{ textAlign: 'center', fontSize: '1.15rem', color: flag.type === 'claim_contradiction' ? 'var(--color-fail)' : flag.ruleId === 'INFO1' ? '#b45309' : 'var(--color-text)', marginTop: '-0.5rem', marginBottom: '1.5rem', fontWeight: 800 }}>
                 {flag.type === 'claim_contradiction' && (
                   <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--color-fail)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>
                     {isEn ? 'MISLEADING CLAIM:' : 'भ्रामक दावा:'}
