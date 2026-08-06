@@ -28,6 +28,15 @@ export const HomeScreen: React.FC = () => {
     setUserLanguage(isEn ? 'hi' : 'en');
   };
 
+  const scanningIngredients = [
+    ['Potato', 'Edible Vegetable Oil', 'Palmolein Oil', 'Iodised Salt', 'Sugar', 'Flavour Enhancer'],
+    ['Carbonated Water', 'Sugar', 'Caramel Color', 'Phosphoric Acid', 'Caffeine', 'Natural Flavours'],
+    ['Whole Grain Wheat', 'Sugar', 'Corn Syrup', 'Honey', 'Salt', 'Vitamins & Minerals'],
+    ['Milk Chocolate', 'Sugar', 'Cocoa Butter', 'Milk Powder', 'Soy Lecithin', 'Vanilla Extract'],
+    ['Pasteurized Milk', 'Sugar', 'Fruit Puree', 'Modified Starch', 'Pectin', 'Active Cultures'],
+    ['Tomato Concentrate', 'Distilled Vinegar', 'High Fructose Corn Syrup', 'Corn Syrup', 'Salt', 'Spices']
+  ];
+
   return (
     <div style={{ 
       display: 'flex', 
@@ -144,7 +153,7 @@ export const HomeScreen: React.FC = () => {
               }}>
                  <span style={{ color: '#ADFF2F', fontSize: '0.65rem', fontWeight: 'bold', letterSpacing: '1px' }}>INGREDIENTS</span>
                  <div style={{ width: '100%', height: '1px', backgroundColor: '#ADFF2F', marginBottom: '6px' }}></div>
-                 {['Potato', 'Edible Vegetable Oil', 'Palmolein Oil', 'Iodised Salt', 'Sugar', 'Flavour Enhancer'].map(i => (
+                 {scanningIngredients[activeImageIndex].map(i => (
                    <span key={i} style={{ color: '#ADFF2F', fontSize: '0.55rem', opacity: 0.9 }}>{i}</span>
                  ))}
               </div>
