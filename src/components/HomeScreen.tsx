@@ -105,59 +105,62 @@ export const HomeScreen: React.FC = () => {
         </p>
 
         {/* Animation Container (Keyed by activeImageIndex to force restart of CSS animations) */}
-        <div key={activeImageIndex} style={{ position: 'relative', width: '100%', maxWidth: '380px', height: '300px', margin: '0 auto 1.5rem auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div key={activeImageIndex} style={{ width: '100%', maxWidth: '360px', margin: '0 auto 1.5rem auto', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
           
-          {/* Base Chip Packet (Real Image) */}
-          <img 
-            src={images[activeImageIndex]} 
-            alt="Product" 
-            style={{
-              position: 'absolute', left: '20px', top: '10px', width: '160px', height: '260px',
-              objectFit: 'cover', borderRadius: '12px', boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
-            }}
-          />
-
-          {/* X-Ray Chip Packet */}
-          <div className="anim-xray" style={{
-            position: 'absolute', left: '20px', top: '10px', width: '160px', height: '260px',
-            borderRadius: '12px', overflow: 'hidden', border: '1px solid #ADFF2F',
-            boxShadow: '0 0 25px rgba(173, 255, 47, 0.4)'
-          }}>
+          {/* Left Side: Product Image & X-Ray */}
+          <div style={{ position: 'relative', width: '160px', height: '260px', flexShrink: 0 }}>
+            {/* Base Chip Packet (Real Image) */}
             <img 
               src={images[activeImageIndex]} 
-              alt="Product X-Ray" 
+              alt="Product" 
               style={{
-                width: '100%', height: '100%', objectFit: 'cover',
-                filter: 'brightness(0.25) sepia(1) hue-rotate(80deg) saturate(6)',
+                position: 'absolute', left: 0, top: 0, width: '100%', height: '100%',
+                objectFit: 'cover', borderRadius: '12px', boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
               }}
             />
-            <div style={{
-              position: 'absolute', inset: 0,
-              backgroundImage: 'linear-gradient(rgba(173,255,47,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(173,255,47,0.8) 1px, transparent 1px)',
-              backgroundSize: '15px 15px',
-              opacity: 0.3
-            }}></div>
-            <div style={{
-              position: 'absolute', top: '30px', left: '15px', right: '15px',
-              display: 'flex', flexDirection: 'column', gap: '4px'
+
+            {/* X-Ray Chip Packet */}
+            <div className="anim-xray" style={{
+              position: 'absolute', left: 0, top: 0, width: '100%', height: '100%',
+              borderRadius: '12px', overflow: 'hidden', border: '1px solid #ADFF2F',
+              boxShadow: '0 0 25px rgba(173, 255, 47, 0.4)'
             }}>
-               <span style={{ color: '#ADFF2F', fontSize: '0.65rem', fontWeight: 'bold', letterSpacing: '1px' }}>INGREDIENTS</span>
-               <div style={{ width: '100%', height: '1px', backgroundColor: '#ADFF2F', marginBottom: '6px' }}></div>
-               {['Potato', 'Edible Vegetable Oil', 'Palmolein Oil', 'Iodised Salt', 'Sugar', 'Flavour Enhancer'].map(i => (
-                 <span key={i} style={{ color: '#ADFF2F', fontSize: '0.55rem', opacity: 0.9 }}>{i}</span>
-               ))}
+              <img 
+                src={images[activeImageIndex]} 
+                alt="Product X-Ray" 
+                style={{
+                  width: '100%', height: '100%', objectFit: 'cover',
+                  filter: 'brightness(0.25) sepia(1) hue-rotate(80deg) saturate(6)',
+                }}
+              />
+              <div style={{
+                position: 'absolute', inset: 0,
+                backgroundImage: 'linear-gradient(rgba(173,255,47,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(173,255,47,0.8) 1px, transparent 1px)',
+                backgroundSize: '15px 15px',
+                opacity: 0.3
+              }}></div>
+              <div style={{
+                position: 'absolute', top: '30px', left: '15px', right: '15px',
+                display: 'flex', flexDirection: 'column', gap: '4px'
+              }}>
+                 <span style={{ color: '#ADFF2F', fontSize: '0.65rem', fontWeight: 'bold', letterSpacing: '1px' }}>INGREDIENTS</span>
+                 <div style={{ width: '100%', height: '1px', backgroundColor: '#ADFF2F', marginBottom: '6px' }}></div>
+                 {['Potato', 'Edible Vegetable Oil', 'Palmolein Oil', 'Iodised Salt', 'Sugar', 'Flavour Enhancer'].map(i => (
+                   <span key={i} style={{ color: '#ADFF2F', fontSize: '0.55rem', opacity: 0.9 }}>{i}</span>
+                 ))}
+              </div>
             </div>
+
+            {/* Scanner Line */}
+            <div className="anim-scanner" style={{
+              position: 'absolute', left: 0, top: '-10px', width: '3px', height: '280px',
+              backgroundColor: '#ADFF2F', boxShadow: '0 0 15px #ADFF2F, 0 0 30px #ADFF2F',
+              zIndex: 10
+            }}></div>
           </div>
 
-          {/* Scanner Line */}
-          <div className="anim-scanner" style={{
-            position: 'absolute', left: '20px', top: '0', width: '3px', height: '280px',
-            backgroundColor: '#ADFF2F', boxShadow: '0 0 15px #ADFF2F, 0 0 30px #ADFF2F',
-            zIndex: 10
-          }}></div>
-
-          {/* Staggered Pop-Up Cards */}
-          <div style={{ position: 'absolute', right: '0px', top: '10px', display: 'flex', flexDirection: 'column', gap: '8px', width: '170px' }}>
+          {/* Right Side: Staggered Pop-Up Cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '170px', flexShrink: 0 }}>
              
              {/* High Sugar */}
              <div className="anim-card delay-1">
