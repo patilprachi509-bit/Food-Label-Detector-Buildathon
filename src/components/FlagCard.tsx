@@ -19,8 +19,16 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
   const isGeneralHealth = flag.type === 'general_health';
 
   // Specific styles based on variant
+  let bgImage = "url('/verification-bg.png')";
+  if (flag.nutrientFocus === 'sugar') bgImage = "url('/sugar-bg.png')";
+  else if (flag.nutrientFocus === 'salt') bgImage = "url('/salt-bg.png')";
+  else if (flag.nutrientFocus === 'fat') bgImage = "url('/oil-bg.png')";
 
   const containerStyle: React.CSSProperties = {
+    backgroundColor: isNeedsVerification ? 'rgba(71, 85, 105, 0.05)' : 'var(--color-bg)',
+    backgroundImage: bgImage,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
     border: isNeedsVerification ? '1px solid var(--color-verify)' : '1px solid var(--color-divider)',
     borderRadius: '24px',
     padding: '2rem',

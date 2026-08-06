@@ -44,6 +44,10 @@ export const ManufacturerReferenceCard: React.FC<Props> = ({ servingSizeG, servi
     <div 
       className="effect-elevated"
       style={{ 
+        backgroundColor: 'var(--color-bg)', 
+        backgroundImage: "url('/onpacket-bg.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         borderRadius: '24px', 
         padding: '1.5rem', 
         marginBottom: '2rem', 
