@@ -79,28 +79,45 @@ export const HomeScreen: React.FC = () => {
         {/* Animation Container */}
         <div style={{ position: 'relative', width: '100%', maxWidth: '350px', height: '240px', margin: '0 auto 2rem auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           
-          {/* Base Chip Packet (Placeholder) */}
-          <div style={{
-            position: 'absolute', left: '20px', top: '20px', width: '130px', height: '200px',
-            backgroundColor: '#d8cbb6', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '10px'
-          }}>
-             <div style={{ width: '80%', height: '80px', backgroundColor: '#e8dcc8', borderRadius: '50%', marginBottom: '10px' }}></div>
-             <div style={{ width: '90%', height: '20px', backgroundColor: '#4a3b2c', borderRadius: '4px', marginBottom: '4px' }}></div>
-             <div style={{ width: '60%', height: '14px', backgroundColor: '#8b7a67', borderRadius: '4px' }}></div>
-          </div>
+          {/* Base Chip Packet (Real Image) */}
+          <img 
+            src="/chip_packet.jpg" 
+            alt="Chip Packet" 
+            style={{
+              position: 'absolute', left: '20px', top: '20px', width: '130px', height: '200px',
+              objectFit: 'cover', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+            }}
+          />
 
-          {/* X-Ray Chip Packet (Placeholder, clipped initially) */}
+          {/* X-Ray Chip Packet */}
           <div className="anim-xray" style={{
             position: 'absolute', left: '20px', top: '20px', width: '130px', height: '200px',
-            backgroundColor: '#1a3325', borderRadius: '8px', border: '1px solid #287a41',
-            display: 'flex', flexDirection: 'column', padding: '20px 10px',
+            borderRadius: '8px', overflow: 'hidden', border: '1px solid #287a41',
             boxShadow: '0 0 20px rgba(40, 122, 65, 0.3)'
           }}>
-             <div style={{ width: '100%', height: '2px', backgroundColor: '#287a41', marginBottom: '10px' }}></div>
-             {[1,2,3,4,5,6].map(i => (
-               <div key={i} style={{ width: `${60 + Math.random() * 40}%`, height: '4px', backgroundColor: '#39ff14', opacity: 0.5, borderRadius: '2px', marginBottom: '6px' }}></div>
-             ))}
+            <img 
+              src="/chip_packet.jpg" 
+              alt="Chip Packet X-Ray" 
+              style={{
+                width: '100%', height: '100%', objectFit: 'cover',
+                filter: 'brightness(0.3) sepia(1) hue-rotate(70deg) saturate(5)',
+              }}
+            />
+            <div style={{
+              position: 'absolute', inset: 0,
+              backgroundImage: 'linear-gradient(#287a41 1px, transparent 1px), linear-gradient(90deg, #287a41 1px, transparent 1px)',
+              backgroundSize: '10px 10px',
+              opacity: 0.5
+            }}></div>
+            <div style={{
+              position: 'absolute', top: '40px', left: '10px', right: '10px',
+              display: 'flex', flexDirection: 'column', gap: '6px'
+            }}>
+               <div style={{ width: '100%', height: '2px', backgroundColor: '#39ff14', marginBottom: '4px' }}></div>
+               {[1,2,3,4,5,6].map(i => (
+                 <div key={i} style={{ width: `${60 + Math.random() * 40}%`, height: '4px', backgroundColor: '#39ff14', opacity: 0.7, borderRadius: '2px' }}></div>
+               ))}
+            </div>
           </div>
 
           {/* Scanner Line */}
