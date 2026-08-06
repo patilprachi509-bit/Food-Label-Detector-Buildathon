@@ -104,6 +104,23 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 5px 15px -5px rgba(51, 71, 62, 0.5) !important;
 }
 
+.effect-gradient-accent {
+  position: relative;
+  background: linear-gradient(135deg, #ff7e5f, #feb47b) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 10px 25px -5px rgba(255, 126, 95, 0.5) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.effect-gradient-accent:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px -5px rgba(255, 126, 95, 0.6) !important;
+}
+.effect-gradient-accent:active {
+  transform: translateY(2px);
+  box-shadow: 0 5px 15px -5px rgba(255, 126, 95, 0.5) !important;
+}
+
 .effect-elevated {
   border: none !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 12px 24px -10px rgba(0, 0, 0, 0.25) !important;

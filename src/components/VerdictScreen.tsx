@@ -473,7 +473,7 @@ export const VerdictScreen: React.FC = () => {
           {/* Awareness Link */}
           {(overallState === 'NOT RECOMMENDED' || overallState === 'MOSTLY FINE') && (
             <button 
-              className="effect-gradient-glow"
+              className="effect-gradient-accent"
               onClick={() => setIsAwarenessOpen(true)}
               style={{
                 marginLeft: '0.5rem',
