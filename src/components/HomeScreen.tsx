@@ -7,6 +7,23 @@ export const HomeScreen: React.FC = () => {
   const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsAwarenessOpen, isDemoDismissed, savedScans, setIsScanning, setIsBatchMode } = useAppContext();
   const isEn = userLanguage === 'en';
 
+  const [activeImageIndex, setActiveImageIndex] = React.useState(0);
+  const images = [
+    '/chip_packet.jpg',
+    '/soda_can.jpg',
+    '/cereal_box.jpg',
+    '/chocolate_bar.jpg',
+    '/yogurt_cup.jpg',
+    '/ketchup_bottle.jpg'
+  ];
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveImageIndex((prev) => (prev + 1) % images.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   const toggleLanguage = () => {
     setUserLanguage(isEn ? 'hi' : 'en');
   };
@@ -81,8 +98,8 @@ export const HomeScreen: React.FC = () => {
           
           {/* Base Chip Packet (Real Image) */}
           <img 
-            src="/chip_packet.jpg" 
-            alt="Chip Packet" 
+            src={images[activeImageIndex]} 
+            alt="Product" 
             style={{
               position: 'absolute', left: '20px', top: '20px', width: '130px', height: '200px',
               objectFit: 'cover', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
@@ -96,8 +113,8 @@ export const HomeScreen: React.FC = () => {
             boxShadow: '0 0 20px rgba(40, 122, 65, 0.3)'
           }}>
             <img 
-              src="/chip_packet.jpg" 
-              alt="Chip Packet X-Ray" 
+              src={images[activeImageIndex]} 
+              alt="Product X-Ray" 
               style={{
                 width: '100%', height: '100%', objectFit: 'cover',
                 filter: 'brightness(0.3) sepia(1) hue-rotate(70deg) saturate(5)',
