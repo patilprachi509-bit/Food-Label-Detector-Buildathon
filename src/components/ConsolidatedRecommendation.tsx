@@ -123,7 +123,17 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
   const secondaryHi = `अकेले एक पूरा ${containerWithWeightHi} आपकी दिन भर की ${limitingNutrientHi} लिमिट का ${truePercentage}% हिस्सा ले लेगा।`;
 
   return (
-    <div style={{ backgroundColor: 'var(--color-bg)', borderRadius: '24px', padding: '2rem', marginBottom: '2rem', border: '1px solid var(--color-fail)', boxShadow: '0 8px 24px rgba(233,116,81,0.1)' }}>
+    <div style={{ 
+      backgroundColor: 'var(--color-bg)', 
+      backgroundImage: "url('/suggestion-bg.png')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      borderRadius: '24px', 
+      padding: '2rem', 
+      marginBottom: '2rem', 
+      border: '1px solid var(--color-fail)', 
+      boxShadow: '0 8px 24px rgba(233,116,81,0.1)' 
+    }}>
       <h4 style={{ textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '1px', marginBottom: '0.75rem', fontWeight: 'bold', color: 'var(--color-fail)' }}>
         {isEn ? 'Suggested Portion' : 'सुझाया गया हिस्सा'}
       </h4>

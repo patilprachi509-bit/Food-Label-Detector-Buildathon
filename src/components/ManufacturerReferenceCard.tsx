@@ -40,7 +40,16 @@ export const ManufacturerReferenceCard: React.FC<Props> = ({ servingSizeG, servi
   };
 
   return (
-    <div style={{ backgroundColor: 'var(--color-bg)', borderRadius: '24px', padding: '1.5rem', marginBottom: '2rem', border: '1px dashed var(--color-divider)' }}>
+    <div style={{ 
+      backgroundColor: 'var(--color-bg)', 
+      backgroundImage: "url('/onpacket-bg.png')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      borderRadius: '24px', 
+      padding: '1.5rem', 
+      marginBottom: '2rem', 
+      border: '1px dashed var(--color-divider)' 
+    }}>
       <h4 style={{ textTransform: 'uppercase', fontSize: '0.8rem', letterSpacing: '1px', marginBottom: '0.75rem', fontWeight: 'bold', color: 'var(--color-text)', opacity: 0.8 }}>
         {isEn ? 'Manufacturer\'s Reference' : 'निर्माता का संदर्भ'}
       </h4>
