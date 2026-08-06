@@ -7,7 +7,10 @@ export const DEFINITIVE_ANIMAL_INGREDIENTS = new Set([
   "carmine", "cochineal", "carminic acid", "e120", "ins 120",
   "shellac", "e904", "ins 904",
   "isinglass",
-  "bone char"
+  "bone char",
+  "egg", "eggs", "egg white", "egg whites", "egg yolk", "egg powder", "whole egg powder",
+  "albumin", "albumen",
+  "lysozyme", "e1105", "ins 1105"
 ]);
 
 export const AMBIGUOUS_ANIMAL_INGREDIENTS = new Set([
