@@ -83,7 +83,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* UI Effects */
 .effect-neumorphic {
-  background: #fcf9f2; /* Needs exact background match to look like extruded surface */
+  background: linear-gradient(135deg, #fff1f2 0%, #f0fdfa 50%, #f8fafc 100%) !important;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.08), -4px -4px 10px rgba(255, 255, 255, 0.9);
 }
 
