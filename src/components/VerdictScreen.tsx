@@ -142,16 +142,22 @@ export const VerdictScreen: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'var(--color-text)', backgroundImage: `url('/background.png')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-      <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} onShareClick={handleShareClick} onCompareClick={handleCompareClick} />
+      <Header 
+        onAudioClick={handleAudioClick} 
+        isAudioLoading={isAudioLoading} 
+        onShareClick={handleShareClick} 
+        onCompareClick={handleCompareClick}
+        onIngredientsClick={() => setHasChosenResultType('ingredients')}
+      />
       
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '1.5rem', zIndex: 1, position: 'relative' }}>
 
         {/* Overarching Verdict */}
         <div style={{ marginBottom: '1.5rem', textAlign: 'center', paddingTop: '0.5rem' }}>
           
-          {/* Header Row: Product Name & Info Icon */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', marginBottom: '0.5rem' }}>
-            <h1 style={{ fontSize: '1.2rem', fontWeight: 'normal', margin: 0, opacity: 0.8, lineHeight: 1.2, textAlign: 'left', flex: 1 }}>
+          {/* Header Row: Product Name */}
+          <div style={{ marginBottom: '0.5rem' }}>
+            <h1 style={{ fontSize: '1.2rem', fontWeight: 'normal', margin: 0, opacity: 0.8, lineHeight: 1.2, textAlign: 'center' }}>
               {(() => {
                 const brand = extractionResult?.front_of_pack?.brand_name?.trim();
                 const product = extractionResult?.front_of_pack?.product_name?.trim();
@@ -161,34 +167,6 @@ export const VerdictScreen: React.FC = () => {
                 return isEn ? "Unknown Product" : "अज्ञात उत्पाद";
               })()}
             </h1>
-            <button 
-              onClick={() => setHasChosenResultType('ingredients')}
-              style={{ 
-                background: 'var(--color-bg)', 
-                border: '1px solid var(--color-divider)', 
-                borderRadius: '50%', 
-                width: '36px', 
-                height: '36px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                cursor: 'pointer', 
-                color: 'var(--color-text)', 
-                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                flexShrink: 0,
-                marginTop: '-4px'
-              }}
-              title={isEn ? 'View full ingredient list' : 'पूरी सामग्री सूची देखें'}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="8" y1="6" x2="21" y2="6"></line>
-                <line x1="8" y1="12" x2="21" y2="12"></line>
-                <line x1="8" y1="18" x2="21" y2="18"></line>
-                <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                <line x1="3" y1="18" x2="3.01" y2="18"></line>
-              </svg>
-            </button>
           </div>
 
 

@@ -6,9 +6,10 @@ interface HeaderProps {
   isAudioLoading?: boolean;
   onShareClick?: () => void;
   onCompareClick?: () => void;
+  onIngredientsClick?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, onShareClick, onCompareClick }) => {
+export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, onShareClick, onCompareClick, onIngredientsClick }) => {
   const { viewingSavedScanId, setViewingSavedScanId, setIsHistoryOpen, userLanguage, resetApp, viewingBatchResultId, setViewingBatchResultId, setExtractionResult } = useAppContext();
   const isEn = userLanguage === 'en';
   
@@ -80,6 +81,22 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
       
       {/* Actions (Right) */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', alignItems: 'center' }}>
+        {onIngredientsClick && (
+          <button 
+            onClick={onIngredientsClick} 
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+            aria-label="Ingredients"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+          </button>
+        )}
         {!isSavedView && onCompareClick && (
           <button 
             onClick={onCompareClick} 
