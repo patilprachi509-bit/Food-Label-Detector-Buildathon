@@ -131,3 +131,50 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-6px);
   box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.45), 0 20px 30px -10px rgba(0, 0, 0, 0.3) !important;
 }
+
+/* HomeScreen Scanning Animation Sequence */
+
+/* 1. Scanner Line Sweep (Left to Right) */
+@keyframes scannerSweep {
+  0% { transform: translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(200px); opacity: 0; }
+}
+
+/* 2. X-Ray Reveal (Matches scanner sweep, left to right reveal) */
+@keyframes xrayReveal {
+  0% { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+
+/* 3. Pop Up Card */
+@keyframes popUpCard {
+  0% { opacity: 0; transform: translateY(10px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Utility Classes for Animation */
+.anim-scanner {
+  animation: scannerSweep 2s ease-in-out forwards;
+  animation-delay: 1s; /* Start after 1s */
+  opacity: 0;
+}
+
+.anim-xray {
+  animation: xrayReveal 2s ease-in-out forwards;
+  animation-delay: 1s; /* Match scanner */
+  clip-path: inset(0 100% 0 0);
+}
+
+.anim-card {
+  opacity: 0;
+  animation: popUpCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Staggered Delays for 4 cards + verdict */
+.delay-1 { animation-delay: 2.8s; }
+.delay-2 { animation-delay: 3.1s; }
+.delay-3 { animation-delay: 3.4s; }
+.delay-4 { animation-delay: 3.7s; }
+.delay-verdict { animation-delay: 4.2s; }

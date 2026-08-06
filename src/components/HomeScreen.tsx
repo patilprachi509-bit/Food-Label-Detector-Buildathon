@@ -1,9 +1,10 @@
 import React from 'react';
 import { useAppContext } from '../context/AppContext';
 import { DemoPreviewCard } from './DemoPreviewCard';
+import { IconShield, IconDroplet, IconFlask, IconSugarCube, IconSaltShaker } from './Icons';
 
 export const HomeScreen: React.FC = () => {
-  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsHowItWorksOpen, setIsAwarenessOpen, isDemoDismissed, savedScans, setIsScanning, setIsBatchMode } = useAppContext();
+  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsAwarenessOpen, isDemoDismissed, savedScans, setIsScanning, setIsBatchMode } = useAppContext();
   const isEn = userLanguage === 'en';
 
   const toggleLanguage = () => {
@@ -24,7 +25,10 @@ export const HomeScreen: React.FC = () => {
     }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 1.5rem', marginTop: '2rem' }}>
-        <h1 className="headline-en" style={{ fontSize: '1.2rem', margin: 0, letterSpacing: '2px', fontWeight: 'bold' }}>LABEL TRUTH</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <img src="/logo.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
+          <h1 className="headline-en" style={{ fontSize: '1.2rem', margin: 0, letterSpacing: '2px', fontWeight: 'bold' }}>LABEL TRUTH</h1>
+        </div>
         
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <button 
@@ -46,7 +50,7 @@ export const HomeScreen: React.FC = () => {
               <line x1="12" y1="8" x2="12.01" y2="8"></line>
             </svg>
           </button>
-
+          
           <button 
             onClick={() => setIsHistoryOpen(true)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: 'var(--color-text)' }}
@@ -62,31 +66,115 @@ export const HomeScreen: React.FC = () => {
       {!isDemoDismissed && savedScans.length === 0 && <DemoPreviewCard />}
 
       {/* Hero Content */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '1rem 2rem', textAlign: 'center' }}>
         
-        <h2 className={isEn ? 'headline-en' : 'headline-hi'} style={{ fontSize: '3.5rem', lineHeight: 1, marginBottom: '1.5rem', fontWeight: 900, textTransform: 'uppercase' }}>
-          {isEn ? "Know what's really in it" : "जानें कि इसमें वास्तव में क्या है"}
+        <h2 className={isEn ? 'headline-en' : 'headline-hi'} style={{ fontSize: '2.8rem', lineHeight: 1, marginBottom: '0.5rem', color: 'var(--color-pass)' }}>
+          {isEn ? "See the truth." : "सच्चाई देखें।"}
         </h2>
         
-        {/* Leaf separator */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', opacity: 0.6 }}>
-          <div style={{ width: '40px', height: '1px', backgroundColor: 'var(--color-text)' }}></div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
-            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
-          </svg>
-          <div style={{ width: '40px', height: '1px', backgroundColor: 'var(--color-text)' }}></div>
-        </div>
-        
-        <p className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '1.1rem', opacity: 0.8, maxWidth: '280px', margin: '0 auto', lineHeight: 1.4 }}>
-          {isEn ? "Scan any pack.\nWe check the claim against the real numbers." : "किसी भी पैकेट को स्कैन करें।\nहम दावे की जांच असली आंकड़ों से करते हैं।"}
+        <p className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '1rem', opacity: 0.8, maxWidth: '280px', margin: '0 auto 2rem auto', lineHeight: 1.4 }}>
+          {isEn ? "Scan any pack. We reveal what's really inside." : "किसी भी पैकेट को स्कैन करें। हम अंदर की सच्चाई सामने लाते हैं।"}
         </p>
+
+        {/* Animation Container */}
+        <div style={{ position: 'relative', width: '100%', maxWidth: '350px', height: '240px', margin: '0 auto 2rem auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          
+          {/* Base Chip Packet (Placeholder) */}
+          <div style={{
+            position: 'absolute', left: '20px', top: '20px', width: '130px', height: '200px',
+            backgroundColor: '#d8cbb6', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '10px'
+          }}>
+             <div style={{ width: '80%', height: '80px', backgroundColor: '#e8dcc8', borderRadius: '50%', marginBottom: '10px' }}></div>
+             <div style={{ width: '90%', height: '20px', backgroundColor: '#4a3b2c', borderRadius: '4px', marginBottom: '4px' }}></div>
+             <div style={{ width: '60%', height: '14px', backgroundColor: '#8b7a67', borderRadius: '4px' }}></div>
+          </div>
+
+          {/* X-Ray Chip Packet (Placeholder, clipped initially) */}
+          <div className="anim-xray" style={{
+            position: 'absolute', left: '20px', top: '20px', width: '130px', height: '200px',
+            backgroundColor: '#1a3325', borderRadius: '8px', border: '1px solid #287a41',
+            display: 'flex', flexDirection: 'column', padding: '20px 10px',
+            boxShadow: '0 0 20px rgba(40, 122, 65, 0.3)'
+          }}>
+             <div style={{ width: '100%', height: '2px', backgroundColor: '#287a41', marginBottom: '10px' }}></div>
+             {[1,2,3,4,5,6].map(i => (
+               <div key={i} style={{ width: `${60 + Math.random() * 40}%`, height: '4px', backgroundColor: '#39ff14', opacity: 0.5, borderRadius: '2px', marginBottom: '6px' }}></div>
+             ))}
+          </div>
+
+          {/* Scanner Line */}
+          <div className="anim-scanner" style={{
+            position: 'absolute', left: '20px', top: '10px', width: '2px', height: '220px',
+            backgroundColor: '#39ff14', boxShadow: '0 0 10px #39ff14, 0 0 20px #39ff14',
+            zIndex: 10
+          }}></div>
+
+          {/* Staggered Pop-Up Cards */}
+          <div style={{ position: 'absolute', left: '160px', top: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+             
+             {/* High Sugar */}
+             <div className="anim-card delay-1" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', backgroundColor: '#fbe9e7', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: '1px solid #ffccbc' }}>
+                <IconSugarCube size={16} color="#d95328" />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#d95328', lineHeight: 1.1 }}>HIGH SUGAR</span>
+                </div>
+             </div>
+
+             {/* High Fat */}
+             <div className="anim-card delay-2" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', backgroundColor: '#fff3e0', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: '1px solid #ffe0b2' }}>
+                <IconDroplet size={16} color="#ef6c00" />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#ef6c00', lineHeight: 1.1 }}>HIGH FAT</span>
+                </div>
+             </div>
+
+             {/* High Salt */}
+             <div className="anim-card delay-3" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', backgroundColor: '#fbe9e7', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: '1px solid #ffccbc' }}>
+                <IconSaltShaker size={16} color="#d95328" />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#d95328', lineHeight: 1.1 }}>HIGH SALT</span>
+                </div>
+             </div>
+
+             {/* Verification Needed */}
+             <div className="anim-card delay-4" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', backgroundColor: '#fff8e1', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: '1px solid #ffecb3' }}>
+                <IconFlask size={16} color="#f57f17" />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#f57f17', lineHeight: 1.1 }}>VERIFY NEEDED</span>
+                </div>
+             </div>
+
+             {/* Verdict */}
+             <div className="anim-card delay-verdict" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '8px 10px', backgroundColor: '#fbe9e7', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', border: '1px solid #ffccbc', marginTop: '4px' }}>
+                <span style={{ fontSize: '0.55rem', textTransform: 'uppercase', color: '#555', marginBottom: '2px' }}>Our Verdict</span>
+                <span style={{ fontSize: '0.8rem', fontWeight: '900', color: '#d95328', lineHeight: 1.1 }}>NOT<br/>RECOMMENDED</span>
+             </div>
+
+          </div>
+        </div>
+
+        {/* Feature Highlights Row */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '320px', margin: '0 auto', padding: '1rem', backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: '16px' }}>
+           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, textAlign: 'center' }}>
+             <IconShield size={20} color="var(--color-pass)" />
+             <span style={{ fontSize: '0.7rem', fontWeight: '600', marginTop: '6px', lineHeight: 1.2 }}>Trustworthy<br/>Insights</span>
+           </div>
+           <div style={{ width: '1px', backgroundColor: 'var(--color-divider)', opacity: 0.2 }}></div>
+           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, textAlign: 'center' }}>
+             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-pass)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+             <span style={{ fontSize: '0.7rem', fontWeight: '600', marginTop: '6px', lineHeight: 1.2 }}>Real Numbers,<br/>No Tricks</span>
+           </div>
+           <div style={{ width: '1px', backgroundColor: 'var(--color-divider)', opacity: 0.2 }}></div>
+           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, textAlign: 'center' }}>
+             <IconDroplet size={20} color="var(--color-pass)" />
+             <span style={{ fontSize: '0.7rem', fontWeight: '600', marginTop: '6px', lineHeight: 1.2 }}>Better Choices<br/>Everyday</span>
+           </div>
+        </div>
       </div>
 
-
-
       {/* CTA Footer */}
-      <div style={{ padding: '1rem 2rem 2rem 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', flexShrink: 0 }}>
+      <div style={{ padding: '1rem 2rem 2rem 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
         <button 
           className="effect-gradient-glow"
           onClick={() => setIsScanning(true)}
@@ -101,7 +189,8 @@ export const HomeScreen: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'space-between',
             cursor: 'pointer',
-            transition: 'opacity 0.2s'
+            transition: 'opacity 0.2s',
+            marginBottom: '0.5rem'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
@@ -111,14 +200,14 @@ export const HomeScreen: React.FC = () => {
             </svg>
             <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255,255,255,0.3)', flexShrink: 0 }}></div>
             <span className="headline-en" style={{ fontSize: '1.1rem', letterSpacing: '0.5px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-              {isEn ? 'SCAN A PRODUCT' : 'उत्पाद स्कैन करें'}
+              {isEn ? 'SCAN SOMETHING' : 'उत्पाद स्कैन करें'}
             </span>
           </div>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </button>
-
+        
         <button 
           className="effect-gradient-glow"
           onClick={() => setIsBatchMode(true)}
@@ -134,7 +223,7 @@ export const HomeScreen: React.FC = () => {
             justifyContent: 'space-between',
             cursor: 'pointer',
             transition: 'opacity 0.2s',
-            marginTop: '0.5rem'
+            marginBottom: '0.5rem'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
@@ -142,7 +231,7 @@ export const HomeScreen: React.FC = () => {
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
               <line x1="9" y1="3" x2="9" y2="21"/>
             </svg>
-            <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255,255,255,0.3)', flexShrink: 0 }}></div>
+            <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(0,0,0,0.1)', flexShrink: 0 }}></div>
             <span className="headline-en" style={{ fontSize: '1.1rem', letterSpacing: '0.5px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
               {isEn ? 'SCAN MULTIPLE' : 'कई उत्पाद स्कैन करें'}
             </span>
@@ -151,39 +240,16 @@ export const HomeScreen: React.FC = () => {
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </button>
-        <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
-          <button 
-            onClick={() => setIsHowItWorksOpen(true)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-text)',
-              opacity: 0.7,
-              fontSize: '0.9rem',
-              textDecoration: 'underline',
-              letterSpacing: '0.5px',
-              textTransform: 'uppercase',
-              cursor: 'pointer'
-            }}
-          >
-            {isEn ? 'How it works' : 'यह कैसे काम करता है'}
-          </button>
-          
-          <a 
-            href="https://forms.gle/QzGgJSZbhV4Sc62A6" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={{
-              color: 'var(--color-text)',
-              opacity: 0.7,
-              fontSize: '0.9rem',
-              textDecoration: 'underline',
-              letterSpacing: '0.5px',
-              textTransform: 'uppercase'
-            }}
-          >
-            {isEn ? 'Give Feedback' : 'प्रतिक्रिया दें'}
-          </a>
+        
+        <span style={{ fontSize: '0.9rem', fontStyle: 'italic', opacity: 0.8, color: 'var(--color-pass)' }}>
+          &#x2935; {isEn ? 'Tap to start scanning' : 'स्कैन करने के लिए टैप करें'}
+        </span>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '1rem', opacity: 0.6 }}>
+          <IconShield size={12} color="currentColor" />
+          <span style={{ fontSize: '0.65rem', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase' }}>
+            {isEn ? 'Images are used only for label analysis' : 'छवियों का उपयोग केवल लेबल विश्लेषण के लिए किया जाता है'}
+          </span>
         </div>
       </div>
     </div>
