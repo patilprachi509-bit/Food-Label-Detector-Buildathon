@@ -253,7 +253,7 @@ export const HomeScreen: React.FC = () => {
           onClick={() => setIsScanning(true)}
           style={{ 
             width: '100%', 
-            backgroundImage: 'linear-gradient(45deg, #7a9c81, #8fb596, #7a9c81)', 
+            backgroundImage: 'linear-gradient(45deg, #7a9c81, #ffccbc, #d1e2c4, #7a9c81)', 
             color: 'white', 
             border: 'none', 
             borderRadius: '16px', 
@@ -264,7 +264,7 @@ export const HomeScreen: React.FC = () => {
             cursor: 'pointer',
             transition: 'transform 0.2s, box-shadow 0.2s',
             marginBottom: '0.5rem',
-            boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+            boxShadow: '0 6px 15px rgba(122, 156, 129, 0.3)'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
@@ -287,7 +287,7 @@ export const HomeScreen: React.FC = () => {
           onClick={() => setIsBatchMode(true)}
           style={{ 
             width: '100%', 
-            backgroundImage: 'linear-gradient(45deg, #7a9c81, #8fb596, #7a9c81)', 
+            backgroundImage: 'linear-gradient(45deg, #7a9c81, #ffccbc, #d1e2c4, #7a9c81)', 
             color: 'white', 
             border: 'none', 
             borderRadius: '16px', 
@@ -298,7 +298,7 @@ export const HomeScreen: React.FC = () => {
             cursor: 'pointer',
             transition: 'transform 0.2s, box-shadow 0.2s',
             marginBottom: '0.5rem',
-            boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+            boxShadow: '0 6px 15px rgba(122, 156, 129, 0.3)'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
