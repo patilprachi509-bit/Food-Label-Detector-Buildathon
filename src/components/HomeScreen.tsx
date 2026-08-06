@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppContext } from '../context/AppContext';
 import { DemoPreviewCard } from './DemoPreviewCard';
-import { IconShield, IconDroplet, IconFlask, IconSugarCube, IconSaltShaker } from './Icons';
+import { IconShield } from './Icons';
 
 export const HomeScreen: React.FC = () => {
   const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsAwarenessOpen, isDemoDismissed, savedScans, setIsScanning, setIsBatchMode } = useAppContext();
