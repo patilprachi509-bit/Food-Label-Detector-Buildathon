@@ -114,7 +114,7 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             {/* Real Logo from public folder */}
-            <img src="/logo.png" alt="Logo" style={{ width: '80px', height: '80px', objectFit: 'contain' }} />
+            <img src="/logo.png" alt="Logo" style={{ height: '80px', width: 'auto', display: 'block' }} />
             {/* Wordmark */}
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.1' }}>
               <span className="headline-en" style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '4px', textTransform: 'uppercase' }}>LABEL</span>
@@ -203,7 +203,7 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
           backgroundColor: 'transparent'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-             <img src="/logo.png" alt="Logo" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+             <img src="/logo.png" alt="Logo" style={{ height: '50px', width: 'auto', display: 'block' }} />
              <div style={{ display: 'flex', flexDirection: 'column' }}>
                <span style={{ fontSize: '18px', fontStyle: 'italic', color: '#16402A' }}>Scanned with</span>
                <span style={{ fontSize: '26px', fontWeight: '900', letterSpacing: '2px', color: '#16402A', textTransform: 'uppercase' }}>LABEL TRUTH</span>
