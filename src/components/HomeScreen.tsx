@@ -54,9 +54,8 @@ export const HomeScreen: React.FC = () => {
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.5rem', marginTop: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <img src="/logo.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
-          <h1 className="headline-en" style={{ fontSize: '1.2rem', margin: 0, letterSpacing: '2px', fontWeight: 'bold' }}>LABEL TRUTH</h1>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <img src="/logo.png" alt="Logo" style={{ width: '48px', height: 'auto' }} />
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <button 
