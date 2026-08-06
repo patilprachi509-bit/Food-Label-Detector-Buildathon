@@ -265,11 +265,11 @@ export const HomeScreen: React.FC = () => {
         </span>
 
         <button 
-          className="effect-gradient-glow"
+          className="effect-gradient-glow anim-drift"
           onClick={() => setIsScanning(true)}
           style={{ 
             width: '100%', 
-            backgroundColor: '#385A42', 
+            backgroundImage: 'linear-gradient(45deg, #1E3A28, #385A42, #1b3d2b)', 
             color: 'white', 
             border: 'none', 
             borderRadius: '16px', 
@@ -298,11 +298,11 @@ export const HomeScreen: React.FC = () => {
         </button>
         
         <button 
-          className="effect-gradient-glow"
+          className="effect-gradient-glow anim-drift"
           onClick={() => setIsBatchMode(true)}
           style={{ 
             width: '100%', 
-            backgroundColor: '#385A42', 
+            backgroundImage: 'linear-gradient(45deg, #1E3A28, #385A42, #1b3d2b)', 
             color: 'white', 
             border: 'none', 
             borderRadius: '16px', 
