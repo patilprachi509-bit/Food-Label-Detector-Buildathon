@@ -54,6 +54,7 @@ export const HomeScreen: React.FC = () => {
         backgroundImage: `url('/screen0.png')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        filter: 'blur(2px)',
         opacity: 0.8,
         zIndex: 0
       }}></div>
