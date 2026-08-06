@@ -249,11 +249,11 @@ export const HomeScreen: React.FC = () => {
         </span>
 
         <button 
-          className="effect-gradient-glow anim-drift"
+          className="anim-drift"
           onClick={() => setIsScanning(true)}
           style={{ 
             width: '100%', 
-            backgroundImage: 'linear-gradient(45deg, #1E3A28, #385A42, #1b3d2b)', 
+            backgroundImage: 'linear-gradient(45deg, #7a9c81, #8fb596, #7a9c81)', 
             color: 'white', 
             border: 'none', 
             borderRadius: '16px', 
@@ -263,7 +263,8 @@ export const HomeScreen: React.FC = () => {
             justifyContent: 'space-between',
             cursor: 'pointer',
             transition: 'transform 0.2s, box-shadow 0.2s',
-            marginBottom: '0.5rem'
+            marginBottom: '0.5rem',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
@@ -282,11 +283,11 @@ export const HomeScreen: React.FC = () => {
         </button>
         
         <button 
-          className="effect-gradient-glow anim-drift"
+          className="anim-drift"
           onClick={() => setIsBatchMode(true)}
           style={{ 
             width: '100%', 
-            backgroundImage: 'linear-gradient(45deg, #1E3A28, #385A42, #1b3d2b)', 
+            backgroundImage: 'linear-gradient(45deg, #7a9c81, #8fb596, #7a9c81)', 
             color: 'white', 
             border: 'none', 
             borderRadius: '16px', 
@@ -296,7 +297,8 @@ export const HomeScreen: React.FC = () => {
             justifyContent: 'space-between',
             cursor: 'pointer',
             transition: 'transform 0.2s, box-shadow 0.2s',
-            marginBottom: '0.5rem'
+            marginBottom: '0.5rem',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
