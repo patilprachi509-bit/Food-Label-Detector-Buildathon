@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAppContext } from '../context/AppContext';
 import { IngredientPill } from './IngredientPill';
 import { COMMON_INGREDIENTS_HINDI } from '../utils/hindiDictionary';
@@ -18,9 +18,8 @@ const ICONS: Record<string, string> = {
 };
 
 export const IngredientsScreen: React.FC = () => {
-  const { userLanguage, extractionResult, setHasChosenResultType, resetApp, saveScan, viewingSavedScanId } = useAppContext();
+  const { userLanguage, extractionResult, setHasChosenResultType, resetApp } = useAppContext();
   const isEn = userLanguage === 'en';
-  const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
 
   if (!extractionResult) return null;
 
@@ -81,77 +80,6 @@ export const IngredientsScreen: React.FC = () => {
           })}
         </div>
 
-      </div>
-
-      {/* Sticky Bottom Action Bar */}
-      <div style={{ 
-        padding: '1.2rem 1.5rem', 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        gap: '1rem', 
-        flexWrap: 'wrap',
-        background: 'transparent',
-        zIndex: 10
-      }}>
-        {/* Save Scan Button */}
-        <button 
-          className="effect-gradient-glow"
-          onClick={() => {
-            if (!hasSaved) {
-              saveScan();
-              setHasSaved(true);
-            }
-          }}
-          disabled={hasSaved}
-          style={{
-            backgroundColor: hasSaved ? 'var(--color-pass)' : 'var(--color-text)',
-            color: 'var(--color-bg)',
-            border: 'none',
-            borderRadius: '50px',
-            padding: '0.85rem 1.25rem',
-            fontSize: '1rem',
-            fontWeight: 'bold',
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            cursor: hasSaved ? 'default' : 'pointer',
-            opacity: hasSaved ? 0.8 : 1,
-            transition: 'background-color 0.2s, transform 0.2s',
-            flex: '1 1 auto',
-            maxWidth: '200px'
-          }}
-        >
-          {hasSaved ? (isEn ? 'Saved!' : 'सहेजा गया!') : (isEn ? 'Save Scan' : 'स्कैन सहेजें')}
-        </button>
-
-        {/* Feedback Link */}
-        <a 
-          className="effect-gradient-glow"
-          href="https://forms.gle/QzGgJSZbhV4Sc62A6" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0,0,0,0.05)',
-            color: 'var(--color-text)',
-            border: '1px solid var(--color-divider)',
-            borderRadius: '50px',
-            padding: '0.85rem 1.25rem',
-            fontSize: '1rem',
-            fontWeight: 'bold',
-            textDecoration: 'none',
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            transition: 'all 0.2s',
-            flex: '1 1 auto',
-            maxWidth: '200px',
-            textAlign: 'center'
-          }}
-        >
-          {isEn ? 'Give Feedback' : 'प्रतिक्रिया दें'}
-        </a>
       </div>
     </div>
   );
