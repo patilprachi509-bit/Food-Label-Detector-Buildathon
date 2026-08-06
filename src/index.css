@@ -89,19 +89,19 @@ h1, h2, h3, h4, h5, h6 {
 
 .effect-gradient-glow {
   position: relative;
-  background: linear-gradient(135deg, #8b5cf6, #3b82f6) !important;
+  background: linear-gradient(135deg, #2d4138, #4a6659) !important;
   color: white !important;
   border: none !important;
-  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5) !important;
+  box-shadow: 0 10px 25px -5px rgba(51, 71, 62, 0.5) !important;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .effect-gradient-glow:hover {
   transform: translateY(-2px);
-  box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.6) !important;
+  box-shadow: 0 15px 30px -5px rgba(51, 71, 62, 0.6) !important;
 }
 .effect-gradient-glow:active {
   transform: translateY(2px);
-  box-shadow: 0 5px 15px -5px rgba(99, 102, 241, 0.5) !important;
+  box-shadow: 0 5px 15px -5px rgba(51, 71, 62, 0.5) !important;
 }
 
 .effect-elevated {
