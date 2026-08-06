@@ -83,26 +83,26 @@ h1, h2, h3, h4, h5, h6 {
 
 /* UI Effects */
 .effect-neumorphic {
-  background: linear-gradient(135deg, #0093E9 0%, #80D0C7 100%) !important;
+  background: linear-gradient(135deg, #a3b899, #6a8c73) !important;
   color: white !important;
-  box-shadow: 4px 4px 10px rgba(0, 147, 233, 0.3), -4px -4px 10px rgba(255, 255, 255, 0.7);
+  box-shadow: 4px 4px 10px rgba(106, 140, 115, 0.3), -4px -4px 10px rgba(255, 255, 255, 0.7);
 }
 
 .effect-gradient-glow {
   position: relative;
-  background: linear-gradient(135deg, #0093E9 0%, #80D0C7 100%) !important;
+  background: linear-gradient(135deg, #a3b899, #6a8c73) !important;
   color: white !important;
   border: none !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 147, 233, 0.4) !important;
+  box-shadow: 0 10px 25px -5px rgba(106, 140, 115, 0.5) !important;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .effect-gradient-glow:hover {
   transform: translateY(-2px);
-  box-shadow: 0 15px 30px -5px rgba(0, 147, 233, 0.5) !important;
+  box-shadow: 0 15px 30px -5px rgba(106, 140, 115, 0.6) !important;
 }
 .effect-gradient-glow:active {
   transform: translateY(2px);
-  box-shadow: 0 5px 15px -5px rgba(0, 147, 233, 0.4) !important;
+  box-shadow: 0 5px 15px -5px rgba(106, 140, 115, 0.5) !important;
 }
 
 .effect-gradient-accent {
