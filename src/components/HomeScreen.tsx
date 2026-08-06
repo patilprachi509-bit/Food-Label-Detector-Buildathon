@@ -83,8 +83,12 @@ export const HomeScreen: React.FC = () => {
         </p>
       </div>
 
+      <div style={{ padding: '0 1.5rem', marginBottom: '1rem', flexShrink: 0 }}>
+        <DemoPreviewCard />
+      </div>
+
       {/* CTA Footer */}
-      <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
+      <div style={{ padding: '1rem 2rem 2rem 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', flexShrink: 0 }}>
         <button 
           onClick={() => setIsScanning(true)}
           style={{ 
