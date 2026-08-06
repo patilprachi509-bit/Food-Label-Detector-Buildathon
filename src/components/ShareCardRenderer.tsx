@@ -80,23 +80,13 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
     }
   }
 
-  // Format Headline (Split words for two-tone color)
+  // Format Headline (Split words for two-tone color ONLY for mostly fine)
   const renderHeadline = () => {
     const text = isEn ? headlineEn : headlineHi;
     if (isGradeA) {
       return <span style={{ color: '#16402A' }}>{text}</span>;
     }
-    const words = text.split(' ');
-    if (words.length > 1) {
-      const firstWord = words.shift();
-      const restWords = words.join(' ');
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-          <span style={{ color: '#16402A', lineHeight: '0.9', fontSize: '180px' }}>{firstWord}</span>
-          <span style={{ color: '#D64E29', lineHeight: '0.9', fontSize: '140px' }}>{restWords}</span>
-        </div>
-      );
-    }
+    // If it's a fail or verification needed, make it entirely orange
     return <span style={{ color: '#D64E29' }}>{text}</span>;
   };
 
@@ -158,7 +148,7 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
 
         {/* Product Name (Large) */}
         <div style={{ display: 'flex', flexDirection: 'column', marginTop: '10px', marginBottom: '20px', maxWidth: '85%' }}>
-          <h2 style={{ fontFamily: '"Kalam", cursive', fontSize: '90px', fontWeight: '700', margin: '0 0 10px 0', color: '#16402A', lineHeight: '1.1' }}>
+          <h2 style={{ fontFamily: '"Kalam", cursive', fontSize: '90px', fontWeight: '700', margin: '0 0 10px 0', color: '#2A2622', lineHeight: '1.1' }}>
             {pName}
           </h2>
           <div style={{ height: '4px', width: '250px', backgroundColor: '#B08D57', opacity: 0.5 }}></div>
@@ -208,19 +198,19 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
           alignItems: 'flex-start',
           padding: '0 40px'
         }}>
-          <span style={{ fontSize: '120px', color: '#16402A', opacity: 0.8, lineHeight: '0.6', fontFamily: 'serif' }}>"</span>
+          <span style={{ fontSize: '120px', color: '#B08D57', opacity: 0.8, lineHeight: '0.6', fontFamily: 'serif' }}>"</span>
           <p style={{ 
             fontFamily: '"Kalam", cursive',
             fontSize: '44px', 
             fontWeight: '700', 
-            color: '#16402A', 
+            color: '#3B332C', 
             margin: '0', 
             lineHeight: '1.4',
             flex: 1
           }}>
             {isEn ? quoteEn : quoteHi}
           </p>
-          <span style={{ fontSize: '120px', color: '#16402A', opacity: 0.8, lineHeight: '0.6', fontFamily: 'serif', marginTop: 'auto' }}>"</span>
+          <span style={{ fontSize: '120px', color: '#B08D57', opacity: 0.8, lineHeight: '0.6', fontFamily: 'serif', marginTop: 'auto' }}>"</span>
         </div>
 
         {/* Footer Pill */}
@@ -237,12 +227,12 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
              <img src="/logo.png" alt="Logo" style={{ height: '50px', width: 'auto', display: 'block' }} />
              <div style={{ display: 'flex', flexDirection: 'column' }}>
-               <span style={{ fontSize: '18px', fontStyle: 'italic', color: '#16402A' }}>Scanned with</span>
-               <span style={{ fontSize: '26px', fontWeight: '900', letterSpacing: '2px', color: '#16402A', textTransform: 'uppercase' }}>LABEL TRUTH</span>
+               <span style={{ fontSize: '18px', fontStyle: 'italic', color: '#2A2622' }}>Scanned with</span>
+               <span style={{ fontSize: '26px', fontWeight: '900', letterSpacing: '2px', color: '#2A2622', textTransform: 'uppercase' }}>LABEL TRUTH</span>
              </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-            <span style={{ fontSize: '20px', fontStyle: 'italic', color: '#16402A', fontWeight: '500' }}>
+            <span style={{ fontSize: '20px', fontStyle: 'italic', color: '#2A2622', fontWeight: '500' }}>
               Scan. Know. Choose Better.
             </span>
             <span style={{ fontSize: '20px', color: '#D64E29', fontWeight: '700', textDecoration: 'underline' }}>
