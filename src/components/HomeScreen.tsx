@@ -168,74 +168,7 @@ export const HomeScreen: React.FC = () => {
             }}></div>
           </div>
 
-          {/* Right Side: Staggered Pop-Up Cards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '170px', flexShrink: 0 }}>
-             
-             {/* High Sugar */}
-             <div className="anim-card delay-1">
-               <div className="anim-drift" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', padding: '8px 10px', backgroundImage: 'linear-gradient(45deg, #fbe9e7, #ffccbc)', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.08)', border: '1px solid rgba(217, 83, 40, 0.2)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <IconSugarCube size={18} color="#d95328" />
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: '0.65rem', fontWeight: '900', color: '#d95328', lineHeight: 1.1 }}>HIGH SUGAR</span>
-                      <span style={{ fontSize: '0.5rem', color: '#774332', lineHeight: 1, marginTop: '2px' }}>12.6g / serve</span>
-                    </div>
-                  </div>
-                  <div style={{ backgroundColor: '#d95328', borderRadius: '50%', padding: '2px', color: 'white', display: 'flex' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
-               </div>
-             </div>
 
-             {/* High Fat */}
-             <div className="anim-card delay-2">
-               <div className="anim-drift" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', padding: '8px 10px', backgroundImage: 'linear-gradient(45deg, #fff3e0, #ffe0b2)', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.08)', border: '1px solid rgba(239, 108, 0, 0.2)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <IconDroplet size={18} color="#ef6c00" />
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: '0.65rem', fontWeight: '900', color: '#ef6c00', lineHeight: 1.1 }}>HIGH FAT</span>
-                      <span style={{ fontSize: '0.5rem', color: '#824814', lineHeight: 1, marginTop: '2px' }}>8.7g / serve</span>
-                    </div>
-                  </div>
-                  <div style={{ backgroundColor: '#ef6c00', borderRadius: '50%', padding: '2px', color: 'white', display: 'flex' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
-               </div>
-             </div>
-
-             {/* High Salt */}
-             <div className="anim-card delay-3">
-               <div className="anim-drift" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', padding: '8px 10px', backgroundImage: 'linear-gradient(45deg, #fbe9e7, #ffccbc)', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.08)', border: '1px solid rgba(217, 83, 40, 0.2)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <IconSaltShaker size={18} color="#d95328" />
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: '0.65rem', fontWeight: '900', color: '#d95328', lineHeight: 1.1 }}>HIGH SALT</span>
-                      <span style={{ fontSize: '0.5rem', color: '#774332', lineHeight: 1, marginTop: '2px' }}>450mg / serve</span>
-                    </div>
-                  </div>
-                  <div style={{ backgroundColor: '#d95328', borderRadius: '50%', padding: '2px', color: 'white', display: 'flex' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
-               </div>
-             </div>
-
-             {/* Verification Needed */}
-             <div className="anim-card delay-4">
-               <div className="anim-drift" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', padding: '8px 10px', backgroundImage: 'linear-gradient(45deg, #fff8e1, #ffecb3)', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.08)', border: '1px solid rgba(245, 127, 23, 0.2)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <IconFlask size={18} color="#f57f17" />
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: '0.65rem', fontWeight: '900', color: '#f57f17', lineHeight: 1.1 }}>SOME<br/>ADDITIVES</span>
-                    </div>
-                  </div>
-                  <div style={{ backgroundColor: '#f57f17', borderRadius: '50%', padding: '2px', color: 'white', display: 'flex' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div>
-               </div>
-             </div>
-
-             {/* Verdict */}
-             <div className="anim-card delay-verdict" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', backgroundColor: '#fbe9e7', borderRadius: '8px', boxShadow: '0 6px 15px rgba(217, 83, 40, 0.15)', border: '1px solid #ffccbc', marginTop: '6px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '0.55rem', textTransform: 'uppercase', color: '#555', marginBottom: '2px' }}>Our Verdict</span>
-                  <span style={{ fontSize: '0.85rem', fontWeight: '900', color: '#d95328', lineHeight: 1.1 }}>NOT<br/>RECOMMENDED</span>
-                </div>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d95328" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-             </div>
-
-          </div>
         </div>
 
 
