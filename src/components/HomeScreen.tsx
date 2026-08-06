@@ -239,7 +239,7 @@ export const HomeScreen: React.FC = () => {
         </div>
 
         {/* Feature Highlights Row */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '320px', margin: '0 auto', padding: '1rem', backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: '16px' }}>
+        <div className="anim-drift" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '320px', margin: '0 auto', padding: '1rem', backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,0.9), rgba(220,252,231,0.8), rgba(254,252,232,0.8))', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, textAlign: 'center' }}>
              <IconShield size={20} color="var(--color-pass)" />
              <span style={{ fontSize: '0.7rem', fontWeight: '600', marginTop: '6px', lineHeight: 1.2 }}>Trustworthy<br/>Insights</span>
