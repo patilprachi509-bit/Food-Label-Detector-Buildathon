@@ -451,7 +451,7 @@ export const VerdictScreen: React.FC = () => {
 
 
 
-        {/* Footer Links (Awareness & AI Guardrails) */}
+        {/* Footer Links (Awareness) */}
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
           {/* Awareness Link */}
           {(overallState === 'NOT RECOMMENDED' || overallState === 'MOSTLY FINE') && (
@@ -479,23 +479,6 @@ export const VerdictScreen: React.FC = () => {
               {isEn ? 'Did You Know?' : 'क्या आप जानते हैं?'}
             </button>
           )}
-
-          {/* AI Guardrails Link */}
-          <button 
-            onClick={() => alert(isEn ? 'AI models can make mistakes. Always verify claims and nutrition numbers against the physical packet.' : 'AI मॉडल गलतियाँ कर सकते हैं। हमेशा भौतिक पैकेट से दावों और पोषण संख्याओं को सत्यापित करें।')}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-text)',
-              opacity: 0.6,
-              textDecoration: 'underline',
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-              fontFamily: 'inherit'
-            }}
-          >
-            {isEn ? 'AI Disclaimer & Guardrails' : 'AI अस्वीकरण और सुरक्षा उपाय'}
-          </button>
         </div>
 
 
@@ -581,6 +564,25 @@ export const VerdictScreen: React.FC = () => {
           >
             {isEn ? 'Give Feedback' : 'प्रतिक्रिया दें'}
           </a>
+        </div>
+
+        {/* AI Guardrails Link (Very Bottom) */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-1rem', paddingBottom: '2rem' }}>
+          <button 
+            onClick={() => alert(isEn ? 'AI models can make mistakes. Always verify claims and nutrition numbers against the physical packet.' : 'AI मॉडल गलतियाँ कर सकते हैं। हमेशा भौतिक पैकेट से दावों और पोषण संख्याओं को सत्यापित करें।')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--color-text)',
+              opacity: 0.6,
+              textDecoration: 'underline',
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              fontFamily: 'inherit'
+            }}
+          >
+            {isEn ? 'AI Disclaimer & Guardrails' : 'AI अस्वीकरण और सुरक्षा उपाय'}
+          </button>
         </div>
       </div>
     </div>
