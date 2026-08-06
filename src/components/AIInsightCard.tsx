@@ -16,6 +16,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ insight, isEn }) =
 
   return (
     <div 
+      className="effect-elevated"
       style={{
         backgroundColor: 'rgba(0,0,0,0.02)',
         border: '1.5px dashed var(--color-text)',

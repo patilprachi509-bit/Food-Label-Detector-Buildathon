@@ -38,13 +38,14 @@ export const DemoPreviewCard: React.FC = () => {
   }, []);
 
   return (
-    <div style={{
+    <div 
+      className="effect-elevated"
+      style={{
       position: 'relative',
       backgroundColor: 'var(--color-surface)',
       margin: '0 1.5rem 1rem 1.5rem',
       borderRadius: '16px',
       padding: '1.25rem',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
