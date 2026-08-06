@@ -49,9 +49,9 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
       {/* Back Button & Ingredients (Left) */}
       <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '1rem' }}>
         <button 
+          className="effect-neumorphic"
           style={{ 
-            background: 'none', 
-            border: '1px solid var(--color-divider)', 
+            border: 'none', 
             borderRadius: '50%',
             width: '40px',
             height: '40px',
@@ -71,8 +71,9 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
         </button>
         {onIngredientsClick && (
           <button 
+            className="effect-neumorphic"
             onClick={onIngredientsClick} 
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+            style={{ border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
             aria-label="Ingredients"
             title={isEn ? "View Details" : "विवरण देखें"}
           >
@@ -100,8 +101,9 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', alignItems: 'center' }}>
         {!isSavedView && onCompareClick && (
           <button 
+            className="effect-neumorphic"
             onClick={onCompareClick} 
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+            style={{ border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
             aria-label="Compare"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -114,9 +116,10 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
         )}
         
         <button 
+          className="effect-neumorphic"
           onClick={handleAudio}
           disabled={isAudioLoading}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: (isAudioLoading || isSavedView) ? 0.5 : 1, color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+          style={{ border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', opacity: (isAudioLoading || isSavedView) ? 0.5 : 1, color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
           aria-label="Listen"
         >
           {isAudioLoading ? (
@@ -132,8 +135,9 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
         
         {onShareClick && (
           <button 
+            className="effect-neumorphic"
             onClick={onShareClick} 
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+            style={{ border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
             aria-label="Share"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -520,6 +520,7 @@ export const VerdictScreen: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '3rem', marginBottom: '3rem', flexWrap: 'wrap' }}>
           {/* Save Scan Button */}
           <button 
+            className="effect-pushable"
             onClick={() => {
               if (!hasSaved) {
                 saveScan();
@@ -549,6 +550,7 @@ export const VerdictScreen: React.FC = () => {
 
           {/* Feedback Link */}
           <a 
+            className="effect-pushable"
             href="https://forms.gle/QzGgJSZbhV4Sc62A6" 
             target="_blank" 
             rel="noopener noreferrer"

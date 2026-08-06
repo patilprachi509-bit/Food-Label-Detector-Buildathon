@@ -90,6 +90,7 @@ export const HomeScreen: React.FC = () => {
       {/* CTA Footer */}
       <div style={{ padding: '1rem 2rem 2rem 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', flexShrink: 0 }}>
         <button 
+          className="effect-pushable"
           onClick={() => setIsScanning(true)}
           style={{ 
             width: '100%', 
@@ -102,8 +103,7 @@ export const HomeScreen: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'space-between',
             cursor: 'pointer',
-            transition: 'opacity 0.2s',
-            boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+            transition: 'opacity 0.2s'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
@@ -122,6 +122,7 @@ export const HomeScreen: React.FC = () => {
         </button>
 
         <button 
+          className="effect-pushable"
           onClick={() => setIsBatchMode(true)}
           style={{ 
             width: '100%', 

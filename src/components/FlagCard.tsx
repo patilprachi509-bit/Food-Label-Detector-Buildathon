@@ -36,8 +36,7 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
     position: 'relative',
     overflow: 'hidden',
     cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 8px 24px rgba(0,0,0,0.06)'
+    transition: 'all 0.2s ease'
   };
 
   const badgeStyle: React.CSSProperties = {
@@ -73,7 +72,14 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
   }
 
   return (
-    <div style={containerStyle} onClick={() => setIsExpanded(!isExpanded)}>
+    <div 
+      className="effect-elevated"
+      style={{
+        ...containerStyle,
+        transform: isExpanded ? 'scale(1.02)' : 'scale(1)',
+      }} 
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
       {/* Tier 1: Always Visible */}
       {flag.claim && (
         <div style={{ marginBottom: '1.5rem' }}>

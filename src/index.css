@@ -80,3 +80,24 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
   z-index: 0;
 }
+
+/* UI Effects */
+.effect-neumorphic {
+  background: #fcf9f2; /* Needs exact background match to look like extruded surface */
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.08), -4px -4px 10px rgba(255, 255, 255, 0.9);
+}
+
+.effect-pushable {
+  position: relative;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.25) !important; /* Force shadow over inline styles */
+}
+.effect-pushable:active {
+  transform: translateY(6px);
+  box-shadow: 0 0px 0 rgba(0,0,0,0.25) !important;
+}
+
+.effect-elevated {
+  background: white;
+  box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.08), 0 10px 15px -6px rgba(0, 0, 0, 0.04);
+}
