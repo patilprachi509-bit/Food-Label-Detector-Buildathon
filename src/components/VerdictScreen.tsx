@@ -472,24 +472,30 @@ export const VerdictScreen: React.FC = () => {
 
           {/* Awareness Link */}
           {(overallState === 'NOT RECOMMENDED' || overallState === 'MOSTLY FINE') && (
-            <>
-              <div style={{ width: '1px', height: '12px', backgroundColor: 'var(--color-text)', opacity: 0.3 }}></div>
-              <button 
-                onClick={() => setIsAwarenessOpen(true)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--color-text)',
-                  opacity: 0.6,
-                  textDecoration: 'underline',
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  fontFamily: 'inherit'
-                }}
-              >
-                {isEn ? 'Did You Know?' : 'क्या आप जानते हैं?'}
-              </button>
-            </>
+            <button 
+              className="effect-gradient-glow"
+              onClick={() => setIsAwarenessOpen(true)}
+              style={{
+                marginLeft: '0.5rem',
+                border: 'none',
+                borderRadius: '24px',
+                padding: '0.4rem 1rem',
+                fontSize: '0.8rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+              {isEn ? 'Did You Know?' : 'क्या आप जानते हैं?'}
+            </button>
           )}
         </div>
 
