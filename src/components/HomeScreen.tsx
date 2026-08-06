@@ -36,6 +36,7 @@ export const HomeScreen: React.FC = () => {
       backgroundColor: 'var(--color-bg)',
       color: 'var(--color-text)',
       overflowY: 'auto',
+      overflowX: 'hidden',
       position: 'relative'
     }}>
       {/* Blurred Background Image */}
@@ -45,9 +46,11 @@ export const HomeScreen: React.FC = () => {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         filter: 'blur(3px)',
-        zIndex: -1,
-        opacity: 0.7
+        opacity: 0.8
       }}></div>
+
+      {/* Main Content Wrapper */}
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', padding: '1rem 1.5rem', marginTop: '1rem' }}>
@@ -306,10 +309,11 @@ export const HomeScreen: React.FC = () => {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '1rem', opacity: 0.6 }}>
           <IconShield size={12} color="currentColor" />
-          <span style={{ fontSize: '0.65rem', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
             {isEn ? 'Images are used only for label analysis' : 'छवियों का उपयोग केवल लेबल विश्लेषण के लिए किया जाता है'}
           </span>
         </div>
+      </div>
       </div>
     </div>
   );
