@@ -28,6 +28,8 @@ function createWavHeader(dataLength: number, sampleRate = 24000, numChannels = 1
   return new Uint8Array(buffer);
 }
 
+const audioCache = new Map<string, string>();
+
 export const playVerdictAudio = async (
   flags: Flag[],
   relevantIngredients: TranslatableString[],
@@ -60,6 +62,17 @@ export const playVerdictAudio = async (
     });
   }
 
+  if (audioCache.has(synthesisText)) {
+    console.log('Audio served from cache');
+    console.time('tts_generation (cached)');
+    const wavBase64 = audioCache.get(synthesisText)!;
+    const audio = new Audio(`data:audio/wav;base64,${wavBase64}`);
+    audio.play();
+    console.timeEnd('tts_generation (cached)');
+    return;
+  }
+
+  console.time('tts_generation (network)');
   try {
     const response = await fetch('/api/tts', {
       method: 'POST',
@@ -92,10 +105,15 @@ export const playVerdictAudio = async (
       }
       wavBase64 = btoa(wavBase64);
       
+      // Store in cache
+      audioCache.set(synthesisText, wavBase64);
+
       const audio = new Audio(`data:audio/wav;base64,${wavBase64}`);
       audio.play();
     }
+    console.timeEnd('tts_generation (network)');
   } catch (e) {
     console.error("Audio Synthesis failed:", e);
+    console.timeEnd('tts_generation (network)');
   }
 };

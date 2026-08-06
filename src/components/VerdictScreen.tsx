@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { useAppContext } from '../context/AppContext';
 import type { TranslatableString, SavedScan } from '../context/AppContext';
 import { evaluateRules } from '../utils/ruleEngine';
@@ -10,6 +10,8 @@ import { SavedScansScreen } from './SavedScansScreen';
 import { XRayVisualizer } from './XRayVisualizer';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
 import { ManufacturerReferenceCard } from './ManufacturerReferenceCard';
+import { ShareCardRenderer } from './ShareCardRenderer';
+import html2canvas from 'html2canvas';
 
 export const VerdictScreen: React.FC = () => {
   const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType, setIsAwarenessOpen } = useAppContext();
@@ -18,6 +20,7 @@ export const VerdictScreen: React.FC = () => {
   const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
   const [isPickingCompare, setIsPickingCompare] = useState(false);
   const [compareAgainstScans, setCompareAgainstScans] = useState<SavedScan[] | null>(null);
+  const shareCardRef = useRef<HTMLDivElement>(null);
 
   const flags = useMemo(() => {
     if (!extractionResult) return [];
@@ -99,18 +102,58 @@ export const VerdictScreen: React.FC = () => {
       ? `I checked ${pName} with Food Label Detector — ${verdictStr}. Check your own products: ${appUrl}`
       : `मैंने Food Label Detector के साथ ${pName} की जाँच की — ${verdictStr}। अपने उत्पादों की जाँच करें: ${appUrl}`;
 
-    if (navigator.share) {
-      try {
-        await navigator.share({ text: textToShare });
-      } catch (err) {
-        console.error("Error sharing", err);
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(textToShare);
-        alert(isEn ? "Copied to clipboard!" : "क्लिपबोर्ड पर कॉपी किया गया!");
-      } catch (err) {
-        console.error("Clipboard error", err);
+    try {
+      if (!shareCardRef.current) throw new Error("Renderer not ready");
+      
+      const canvas = await html2canvas(shareCardRef.current, {
+        scale: 1, // Already 1080x1080
+        useCORS: true,
+        backgroundColor: '#F7F2E9'
+      });
+      
+      canvas.toBlob(async (blob) => {
+        if (!blob) throw new Error("Canvas generation failed");
+        
+        const file = new File([blob], 'verdict.png', { type: 'image/png' });
+        
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: 'Food Label Detector',
+            text: textToShare,
+            files: [file]
+          });
+        } else if (navigator.share) {
+          // Fallback if browser doesn't support file sharing
+          await navigator.share({
+            title: 'Food Label Detector',
+            text: textToShare,
+          });
+          // Also trigger download of the image
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'verdict.png';
+          a.click();
+          URL.revokeObjectURL(url);
+        } else {
+          // No web share support, just download
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'verdict.png';
+          a.click();
+          URL.revokeObjectURL(url);
+          alert(isEn ? "Image downloaded!" : "छवि डाउनलोड हो गई!");
+        }
+      }, 'image/png');
+    } catch (err) {
+      console.error('Error sharing:', err);
+      // Fallback
+      if (navigator.share) {
+        navigator.share({
+          title: 'Food Label Detector',
+          text: textToShare,
+        }).catch(console.error);
       }
     }
   };
@@ -591,6 +634,13 @@ export const VerdictScreen: React.FC = () => {
           {isEn ? 'Give Feedback' : 'प्रतिक्रिया दें'}
         </a>
       </div>
+
+      <ShareCardRenderer 
+        ref={shareCardRef}
+        extractionResult={extractionResult}
+        flags={flags}
+        isEn={isEn}
+      />
     </div>
   );
 };
