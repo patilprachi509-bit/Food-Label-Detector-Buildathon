@@ -318,6 +318,31 @@ export const VerdictScreen: React.FC = () => {
           <XRayVisualizer data={extractionResult} />
         )}
 
+        {/* Additional Insights / Subheadings */}
+        {flags
+          .filter(f => f.type !== 'needs_verification' && f.ruleId !== 'G1' && f.ruleId !== 'G2' && f.ruleId !== 'G3' && f.ruleId !== 'G4' && f.ruleId !== 'PROV_OIL' && f.ruleId !== 'PROV_150' && (f.claim || f.ruleId === 'INFO1'))
+          .map((flag, idx) => {
+            let textEn = flag.claim?.normalized_english || flag.message_en;
+            let textHi = flag.claim?.localized_display || flag.claim?.normalized_english || flag.message_hi;
+            
+            return (
+              <p key={`insight-${idx}`} className={isEn ? "headline-en" : "headline-hi"} style={{ textAlign: 'center', fontSize: '1.1rem', color: flag.type === 'claim_contradiction' ? 'var(--color-fail)' : 'var(--color-text)', marginTop: '-0.5rem', marginBottom: '1.5rem', fontWeight: 700, opacity: flag.ruleId === 'INFO1' ? 0.7 : 1 }}>
+                {flag.type === 'claim_contradiction' && (
+                  <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--color-fail)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>
+                    {isEn ? 'MISLEADING CLAIM:' : 'भ्रामक दावा:'}
+                  </span>
+                )}
+                {flag.type === 'claim_contradiction' ? (
+                  <span style={{ textDecoration: 'line-through' }}>
+                    {isEn ? textEn : textHi}
+                  </span>
+                ) : (
+                  isEn ? textEn : textHi
+                )}
+              </p>
+            );
+          })
+        }
 
 
 
@@ -439,7 +464,7 @@ export const VerdictScreen: React.FC = () => {
           />
         )}
 
-        {flags.filter(flag => flag.type !== 'needs_verification').map((flag, idx) => (
+        {flags.filter(flag => flag.type !== 'needs_verification' && flag.ruleId !== 'INFO1').map((flag, idx) => (
           <div key={`${flag.ruleId}-${idx}`} style={{ marginBottom: '1.5rem' }}>
             <FlagCard flag={flag} />
           </div>
@@ -513,6 +538,7 @@ export const VerdictScreen: React.FC = () => {
 
         {/* Save Scan Button */}
         <div style={{ marginTop: '3rem', textAlign: 'center', paddingBottom: '2rem' }}>
+
           <button 
             onClick={() => {
               if (!hasSaved) {
