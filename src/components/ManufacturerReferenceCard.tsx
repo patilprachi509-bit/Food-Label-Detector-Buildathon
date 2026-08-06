@@ -96,11 +96,17 @@ export const ManufacturerReferenceCard: React.FC<Props> = ({ servingSizeG, servi
         </div>
       )}
 
-      <p style={{ fontSize: '0.75rem', opacity: 0.6, fontStyle: 'italic', margin: 0, lineHeight: 1.3 }}>
-        {isEn 
-          ? "This is the manufacturer's own stated serving size, which may differ from the health-based recommendations above."
-          : "यह निर्माता द्वारा बताई गई सर्विंग मात्रा है, जो ऊपर दी गई स्वास्थ्य-आधारित सिफारिशों से अलग हो सकती है।"}
-      </p>
+      <details style={{ opacity: 0.7, marginTop: '1rem', borderTop: '1px dashed rgba(0,0,0,0.1)', paddingTop: '0.75rem' }}>
+        <summary style={{ fontSize: '0.8rem', cursor: 'pointer', outline: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          {isEn ? 'Disclaimer' : 'अस्वीकरण'}
+        </summary>
+        <p style={{ fontSize: '0.75rem', fontStyle: 'italic', margin: '0.5rem 0 0 0', lineHeight: 1.3 }}>
+          {isEn 
+            ? "This is the manufacturer's own stated serving size, which may differ from the health-based recommendations above."
+            : "यह निर्माता द्वारा बताई गई सर्विंग मात्रा है, जो ऊपर दी गई स्वास्थ्य-आधारित सिफारिशों से अलग हो सकती है।"}
+        </p>
+      </details>
     </div>
   );
 };

@@ -343,11 +343,17 @@ export const VerdictScreen: React.FC = () => {
 
 
         {flags.some(f => f.type === 'claim_contradiction' || f.type === 'general_health') && (
-          <p className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.7rem', opacity: 0.6, fontStyle: 'italic', marginTop: '0.75rem', marginBottom: '1.5rem', textAlign: 'center', lineHeight: 1.3, padding: '0 1rem' }}>
-            {isEn 
-              ? "We call it exactly as the rules say it is. A flagged product is not recommended — that verdict never changes. Where portion guidance appears, it's there to help you make the best of a real choice, not to soften the verdict."
-              : "हम नियमों के अनुसार जो सही है वही बताते हैं। जिस उत्पाद को फ़्लैग किया गया है, वह अनुशंसित नहीं है — यह फैसला कभी नहीं बदलता। जहाँ मात्रा से जुड़ी सलाह दी जाती है, वह आपके असली विकल्प को बेहतर बनाने के लिए है, फैसले को नरम करने के लिए नहीं।"}
-          </p>
+          <details style={{ textAlign: 'center', marginBottom: '1.5rem', opacity: 0.7 }}>
+            <summary style={{ fontSize: '0.8rem', cursor: 'pointer', outline: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', borderBottom: '1px dashed currentColor', paddingBottom: '2px' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              {isEn ? 'Disclaimer' : 'अस्वीकरण'}
+            </summary>
+            <p className={isEn ? 'body-en' : 'body-hi'} style={{ fontSize: '0.7rem', fontStyle: 'italic', marginTop: '0.75rem', lineHeight: 1.3, padding: '0 1rem' }}>
+              {isEn 
+                ? "We call it exactly as the rules say it is. A flagged product is not recommended — that verdict never changes. Where portion guidance appears, it's there to help you make the best of a real choice, not to soften the verdict."
+                : "हम नियमों के अनुसार जो सही है वही बताते हैं। जिस उत्पाद को फ़्लैग किया गया है, वह अनुशंसित नहीं है — यह फैसला कभी नहीं बदलता। जहाँ मात्रा से जुड़ी सलाह दी जाती है, वह आपके असली विकल्प को बेहतर बनाने के लिए है, फैसले को नरम करने के लिए नहीं।"}
+            </p>
+          </details>
         )}
 
 
