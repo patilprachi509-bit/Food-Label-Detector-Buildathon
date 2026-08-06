@@ -48,14 +48,14 @@ export const HomeScreen: React.FC = () => {
       overflowX: 'hidden',
       position: 'relative'
     }}>
-      {/* Blurred Background Image */}
+      {/* Background Image */}
       <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
         backgroundImage: `url('/screen0.png')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        filter: 'blur(3px)',
-        opacity: 0.8
+        opacity: 0.8,
+        zIndex: 0
       }}></div>
 
       {/* Main Content Wrapper */}
@@ -268,7 +268,7 @@ export const HomeScreen: React.FC = () => {
           onClick={() => setIsScanning(true)}
           style={{ 
             width: '100%', 
-            backgroundColor: '#1E3A28', 
+            backgroundColor: '#385A42', 
             color: 'white', 
             border: 'none', 
             borderRadius: '16px', 
@@ -301,7 +301,7 @@ export const HomeScreen: React.FC = () => {
           onClick={() => setIsBatchMode(true)}
           style={{ 
             width: '100%', 
-            backgroundColor: '#1E3A28', 
+            backgroundColor: '#385A42', 
             color: 'white', 
             border: 'none', 
             borderRadius: '16px', 
