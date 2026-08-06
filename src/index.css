@@ -83,8 +83,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* UI Effects */
 .effect-neumorphic {
-  background: linear-gradient(135deg, #fff1f2 0%, #f0fdfa 50%, #f8fafc 100%) !important;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.08), -4px -4px 10px rgba(255, 255, 255, 0.9);
+  background: linear-gradient(135deg, #f5d0b5 0%, #d1e3d6 100%) !important;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1), -4px -4px 10px rgba(255, 255, 255, 0.7);
 }
 
 .effect-gradient-glow {
