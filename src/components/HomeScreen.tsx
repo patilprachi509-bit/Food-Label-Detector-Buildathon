@@ -20,7 +20,7 @@ export const HomeScreen: React.FC = () => {
   React.useEffect(() => {
     const interval = setInterval(() => {
       setActiveImageIndex((prev) => (prev + 1) % images.length);
-    }, 4000);
+    }, 10000); // 10s per item to let animation finish and rest
     return () => clearInterval(interval);
   }, []);
 
@@ -93,8 +93,8 @@ export const HomeScreen: React.FC = () => {
           {isEn ? "Scan any pack. We reveal what's really inside." : "किसी भी पैकेट को स्कैन करें। हम अंदर की सच्चाई सामने लाते हैं।"}
         </p>
 
-        {/* Animation Container */}
-        <div style={{ position: 'relative', width: '100%', maxWidth: '350px', height: '240px', margin: '0 auto 2rem auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        {/* Animation Container (Keyed by activeImageIndex to force restart of CSS animations) */}
+        <div key={activeImageIndex} style={{ position: 'relative', width: '100%', maxWidth: '350px', height: '240px', margin: '0 auto 2rem auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           
           {/* Base Chip Packet (Real Image) */}
           <img 
