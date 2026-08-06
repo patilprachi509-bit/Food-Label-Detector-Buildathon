@@ -88,23 +88,19 @@ export const XRayVisualizer: React.FC<Props> = ({ data }) => {
       <div style={{ display: 'flex', width: '280px', maxWidth: '100%', position: 'relative' }}>
         
         {/* Pouch Wrapper */}
-        <div style={{ width: '130px', height: '220px', position: 'relative', flexShrink: 0, filter: 'drop-shadow(0 8px 15px rgba(0,0,0,0.1))' }}>
-          {/* SVG Clip Path Definition */}
-          <svg width="0" height="0" style={{ position: 'absolute' }}>
-            <defs>
-              <clipPath id="bag-shape" clipPathUnits="objectBoundingBox">
-                <path d="M 0,0 L 1,0 Q 0.88,0.5 1,1 L 0,1 Q 0.12,0.5 0,0 Z" />
-              </clipPath>
-            </defs>
-          </svg>
-
-          {/* Highlights & Seals */}
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 20, boxShadow: 'inset 8px 0 15px rgba(255,255,255,0.7), inset -8px 0 15px rgba(0,0,0,0.1)', clipPath: 'url(#bag-shape)' }}></div>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '10px', backgroundColor: 'rgba(255,255,255,0.8)', borderBottom: '1px solid rgba(0,0,0,0.05)', zIndex: 21, clipPath: 'url(#bag-shape)', backgroundImage: 'repeating-linear-gradient(90deg, transparent 0px, transparent 1px, rgba(0,0,0,0.08) 1px, rgba(0,0,0,0.08) 2px)' }}></div>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '10px', backgroundColor: 'rgba(255,255,255,0.8)', borderTop: '1px solid rgba(0,0,0,0.05)', zIndex: 21, clipPath: 'url(#bag-shape)', backgroundImage: 'repeating-linear-gradient(90deg, transparent 0px, transparent 1px, rgba(0,0,0,0.08) 1px, rgba(0,0,0,0.08) 2px)' }}></div>
+        <div style={{ width: '130px', height: '220px', position: 'relative', flexShrink: 0, filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.15))', borderRadius: '4px', backgroundColor: '#e2dfd8', border: '1px solid rgba(0,0,0,0.1)' }}>
           
-          {/* Inner Pouch with Layers */}
-          <div style={{ width: '100%', height: '100%', backgroundColor: 'rgba(255,255,255,0.4)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', clipPath: 'url(#bag-shape)' }}>
+          {/* Top Seal */}
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '14px', background: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.7), rgba(255,255,255,0.7) 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px)', zIndex: 30, borderBottom: '1px solid rgba(0,0,0,0.15)', borderTopLeftRadius: '4px', borderTopRightRadius: '4px' }}></div>
+
+          {/* Bottom Seal */}
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '14px', background: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.7), rgba(255,255,255,0.7) 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px)', zIndex: 30, borderTop: '1px solid rgba(0,0,0,0.15)', borderBottomLeftRadius: '4px', borderBottomRightRadius: '4px' }}></div>
+
+          {/* Highlights & Overlays for Glossy Plastic Effect */}
+          <div style={{ position: 'absolute', top: '14px', bottom: '14px', left: 0, right: 0, pointerEvents: 'none', zIndex: 20, boxShadow: 'inset 12px 0 20px rgba(255,255,255,0.8), inset -12px 0 20px rgba(0,0,0,0.2)', background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.05) 100%)' }}></div>
+
+          {/* Layered Textures */}
+          <div style={{ position: 'absolute', top: '14px', bottom: '14px', left: '2px', right: '2px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
             {layers.map((layer, idx) => (
               <div 
                 key={layer.id}
