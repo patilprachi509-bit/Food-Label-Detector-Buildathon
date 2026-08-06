@@ -10,9 +10,11 @@ interface IngredientPillProps {
   isFaded: boolean;
   isEn: boolean;
   description?: string;
+  iconStr?: string;
+  percentage?: number;
 }
 
-export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainName, isExpandable, isFaded, isEn, description }) => {
+export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainName, isExpandable, isFaded, isEn, description, iconStr, percentage }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
   const isAdditiveCategory = isFSSAIAdditive(rawName, plainName);
@@ -64,7 +66,10 @@ export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainNa
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'space-between' }}>
-        <span>{rawName}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {iconStr && <span style={{ fontSize: '1.2rem' }}>{iconStr}</span>}
+          <span>{rawName} {percentage ? `${percentage}%` : ''}</span>
+        </div>
         {isExpandable && (
           <span style={{ fontSize: '0.6rem', opacity: 0.6, transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
             ▼
