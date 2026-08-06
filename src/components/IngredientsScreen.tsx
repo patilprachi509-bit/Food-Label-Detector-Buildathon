@@ -52,7 +52,8 @@ export const IngredientsScreen: React.FC = () => {
           {extractionResult.ingredients.raw_list.map((ing, idx) => {
             let rawName = ing.normalized_english;
             if (!isEn) {
-              rawName = ing.localized_display || COMMON_INGREDIENTS_HINDI[ing.normalized_english.toLowerCase()] || ing.normalized_english;
+              const strippedName = ing.normalized_english.replace(/\s*\d+(\.\d+)?%?\s*$/, '').trim().toLowerCase();
+              rawName = ing.localized_display || COMMON_INGREDIENTS_HINDI[strippedName] || COMMON_INGREDIENTS_HINDI[ing.normalized_english.toLowerCase()] || ing.normalized_english;
             }
             
             const plainName = ing.plain_name || '';
