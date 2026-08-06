@@ -62,10 +62,10 @@ export const XRayVisualizer: React.FC<Props> = ({ data }) => {
   // Calculate percentages and Y coordinates for lines
   let currentYPercent = 0;
   const layersWithMath = components.map(c => {
-    // minimum 10% height so the layer is visible
-    let percent = (c.valueGrams / totalGrams) * 100;
-    if (percent < 10) percent = 10;
-    return { ...c, targetPercent: percent };
+    // Use square root to compress the massive differences between macros (e.g. 50g fat vs 0.5g salt)
+    // Add a baseline of 1.5 so even tiny amounts (0.1g) get a visible sliver, while strictly preserving sorting order.
+    let target = Math.sqrt(c.valueGrams) + 1.5;
+    return { ...c, targetPercent: target };
   });
 
   const newTotal = layersWithMath.reduce((sum, c) => sum + c.targetPercent, 0);
