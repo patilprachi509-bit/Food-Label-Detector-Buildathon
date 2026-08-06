@@ -21,6 +21,7 @@ export const VerdictScreen: React.FC = () => {
   const [isPickingCompare, setIsPickingCompare] = useState(false);
   const [compareAgainstScans, setCompareAgainstScans] = useState<SavedScan[] | null>(null);
   const shareCardRef = useRef<HTMLDivElement>(null);
+  const [isSharing, setIsSharing] = useState(false);
 
   const flags = useMemo(() => {
     if (!extractionResult) return [];
@@ -103,6 +104,7 @@ export const VerdictScreen: React.FC = () => {
       : `मैंने Food Label Detector के साथ ${pName} की जाँच की — ${verdictStr}। अपने उत्पादों की जाँच करें: ${appUrl}`;
 
     try {
+      setIsSharing(true);
       if (!shareCardRef.current) throw new Error("Renderer not ready");
       
       const canvas = await html2canvas(shareCardRef.current, {
@@ -155,6 +157,9 @@ export const VerdictScreen: React.FC = () => {
           text: textToShare,
         }).catch(console.error);
       }
+    } finally {
+      // Need a slight timeout in case the native share sheet is still initializing
+      setTimeout(() => setIsSharing(false), 500);
     }
   };
 
@@ -188,7 +193,8 @@ export const VerdictScreen: React.FC = () => {
       <Header 
         onAudioClick={handleAudioClick} 
         isAudioLoading={isAudioLoading} 
-        onShareClick={handleShareClick} 
+        onShareClick={handleShareClick}
+        isSharingLoading={isSharing} 
         onCompareClick={handleCompareClick}
         onIngredientsClick={() => setHasChosenResultType('ingredients')}
       />
