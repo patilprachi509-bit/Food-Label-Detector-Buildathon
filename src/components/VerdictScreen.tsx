@@ -451,8 +451,9 @@ export const VerdictScreen: React.FC = () => {
 
 
 
-        {/* AI Guardrails Link */}
-        <div style={{ textAlign: 'center', marginTop: '1rem', marginBottom: '1rem' }}>
+        {/* Footer Links (AI Guardrails & Awareness) */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          {/* AI Guardrails Link */}
           <button 
             onClick={() => alert(isEn ? 'AI models can make mistakes. Always verify claims and nutrition numbers against the physical packet.' : 'AI मॉडल गलतियाँ कर सकते हैं। हमेशा भौतिक पैकेट से दावों और पोषण संख्याओं को सत्यापित करें।')}
             style={{
@@ -468,28 +469,29 @@ export const VerdictScreen: React.FC = () => {
           >
             {isEn ? 'AI Disclaimer & Guardrails' : 'AI अस्वीकरण और सुरक्षा उपाय'}
           </button>
-        </div>
 
-        {/* Awareness Link */}
-        {(overallState === 'NOT RECOMMENDED' || overallState === 'MOSTLY FINE') && (
-          <div style={{ textAlign: 'center', marginTop: '1rem', marginBottom: '1rem' }}>
-            <button 
-              onClick={() => setIsAwarenessOpen(true)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--color-text)',
-                opacity: 0.6,
-                textDecoration: 'underline',
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                fontFamily: 'inherit'
-              }}
-            >
-              {isEn ? 'Did You Know?' : 'क्या आप जानते हैं?'}
-            </button>
-          </div>
-        )}
+          {/* Awareness Link */}
+          {(overallState === 'NOT RECOMMENDED' || overallState === 'MOSTLY FINE') && (
+            <>
+              <div style={{ width: '1px', height: '12px', backgroundColor: 'var(--color-text)', opacity: 0.3 }}></div>
+              <button 
+                onClick={() => setIsAwarenessOpen(true)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--color-text)',
+                  opacity: 0.6,
+                  textDecoration: 'underline',
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit'
+                }}
+              >
+                {isEn ? 'Did You Know?' : 'क्या आप जानते हैं?'}
+              </button>
+            </>
+          )}
+        </div>
 
 
 
@@ -514,9 +516,9 @@ export const VerdictScreen: React.FC = () => {
           </div>
         )}
 
-        {/* Save Scan Button */}
-        <div style={{ marginTop: '3rem', textAlign: 'center', paddingBottom: '2rem' }}>
-
+        {/* Footer Buttons */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '3rem', marginBottom: '3rem', flexWrap: 'wrap' }}>
+          {/* Save Scan Button */}
           <button 
             onClick={() => {
               if (!hasSaved) {
@@ -530,39 +532,44 @@ export const VerdictScreen: React.FC = () => {
               color: 'var(--color-bg)',
               border: 'none',
               borderRadius: '50px',
-              padding: '1rem 2.5rem',
-              fontSize: '1.1rem',
+              padding: '0.85rem 1.25rem',
+              fontSize: '1rem',
               fontWeight: 'bold',
               letterSpacing: '1px',
               textTransform: 'uppercase',
               cursor: hasSaved ? 'default' : 'pointer',
               opacity: hasSaved ? 0.8 : 1,
-              transition: 'background-color 0.2s'
+              transition: 'background-color 0.2s',
+              flex: '1 1 auto',
+              maxWidth: '200px'
             }}
           >
             {hasSaved ? (isEn ? 'Saved!' : 'सहेजा गया!') : (isEn ? 'Save Scan' : 'स्कैन सहेजें')}
           </button>
-        </div>
 
-        {/* Feedback Link */}
-        <div style={{ marginTop: '1rem', marginBottom: '3rem', textAlign: 'center' }}>
+          {/* Feedback Link */}
           <a 
             href="https://forms.gle/QzGgJSZbhV4Sc62A6" 
             target="_blank" 
             rel="noopener noreferrer"
             style={{
-              display: 'inline-block',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               backgroundColor: 'rgba(0,0,0,0.05)',
               color: 'var(--color-text)',
               border: '1px solid var(--color-divider)',
               borderRadius: '50px',
-              padding: '0.75rem 2rem',
-              fontSize: '0.9rem',
+              padding: '0.85rem 1.25rem',
+              fontSize: '1rem',
               fontWeight: 'bold',
               textDecoration: 'none',
               letterSpacing: '1px',
               textTransform: 'uppercase',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s',
+              flex: '1 1 auto',
+              maxWidth: '200px',
+              textAlign: 'center'
             }}
           >
             {isEn ? 'Give Feedback' : 'प्रतिक्रिया दें'}
