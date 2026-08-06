@@ -23,7 +23,6 @@ import { LowConfidenceScreen } from './PlaceholderScreens';
 export const ProcessingScreen: React.FC = () => {
   const { 
     userLanguage, frontImage, ingredientsImage, thirdImage, curvedImages,
-    setFrontImage, setIngredientsImage, setThirdImage,
     setExtractionResult, setPendingExtractionResult, resetApp
   } = useAppContext();
   const [error, setError] = useState<string | null>(null);
