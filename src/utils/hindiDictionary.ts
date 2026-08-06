@@ -52,5 +52,22 @@ export const COMMON_INGREDIENTS_HINDI: Record<string, string> = {
   "baking powder": "बेकिंग पाउडर",
   "baking soda": "बेकिंग सोडा",
   "vinegar": "सिरका",
-  "lemon juice": "नींबू का रस"
+  "lemon juice": "नींबू का रस",
+
+  // Generic Functional Categories (for fallback robustness)
+  "acidity regulator": "अम्लता नियामक",
+  "emulsifier": "पायसीकारक (इमल्सीफायर)",
+  "preservative": "परिरक्षक (प्रिजर्वेटिव)",
+  "antioxidant": "एंटीऑक्सीडेंट",
+  "colour": "रंग",
+  "color": "रंग",
+  "flavoring": "स्वाद (फ्लेवर)",
+  "flavouring": "स्वाद (फ्लेवर)",
+  "stabilizer": "स्टेबलाइजर",
+  "thickener": "गाढ़ा करने वाला (थिनकर)",
+  "raising agent": "उभारने वाला एजेंट",
+  "sweetener": "स्वीटनर",
+  "anti-caking agent": "एंटी-केकिंग एजेंट",
+  "glazing agent": "ग्लेजिंग एजेंट",
+  "permitted synthetic food colour": "अनुमत सिंथेटिक खाद्य रंग"
 };

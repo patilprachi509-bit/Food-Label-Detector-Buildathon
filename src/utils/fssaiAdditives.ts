@@ -38,8 +38,16 @@ const FSSAI_ADDITIVES = new Set([
   "citric acid", "sodium citrate", "potassium citrate", "calcium citrate",
   "malic acid", "tartaric acid", "lactic acid", "phosphoric acid", 
   "sodium phosphate", "potassium phosphate", "calcium phosphate",
-  "sodium bicarbonate", "potassium bicarbonate", "ammonium bicarbonate"
+  "sodium bicarbonate", "potassium bicarbonate", "ammonium bicarbonate",
+
+  // Generic Functional Categories (for robust matching)
+  "acidity regulator", "emulsifier", "preservative", "antioxidant", 
+  "colour", "color", "flavoring", "flavouring", "stabilizer", "thickener",
+  "raising agent", "sweetener", "anti-caking agent", "glazing agent"
 ]);
+
+// Regex for contextual additive numbers (e.g. "(322)") that directly follow a functional category word
+const CATEGORY_PREFIX_REGEX = /\b(acidity regulator|emulsifier|preservative|antioxidant|colour|color|flavoring|flavouring|stabilizer|thickener|raising agent|sweetener|anti-caking agent|glazing agent)s?\s*[\(:\[]?\s*\d{3}[a-z]?\s*[\):\]]?\b/i;
 
 export const isFSSAIAdditive = (rawName: string, plainName: string): boolean => {
   const lowerRaw = rawName.toLowerCase();
@@ -47,7 +55,13 @@ export const isFSSAIAdditive = (rawName: string, plainName: string): boolean => 
 
   // 1. Explicit Regulatory Formatting (INS / E-Numbers)
   // If the manufacturer explicitly lists an INS or E number, it is inherently a regulated additive.
-  if (/ins\s?\d+/i.test(lowerRaw) || /\be\s?\d+\b/i.test(lowerRaw)) {
+  if (/ins\s?-?\s?\d+/i.test(lowerRaw) || /\be\s?-?\s?\d+\b/i.test(lowerRaw)) {
+    return true;
+  }
+
+  // 1b. Contextual Bare Numbers
+  // Matches a 3-digit number in brackets ONLY if it directly follows a known functional category word
+  if (CATEGORY_PREFIX_REGEX.test(lowerRaw)) {
     return true;
   }
 
