@@ -178,3 +178,14 @@ h1, h2, h3, h4, h5, h6 {
 .delay-3 { animation-delay: 3.4s; }
 .delay-4 { animation-delay: 3.7s; }
 .delay-verdict { animation-delay: 4.2s; }
+
+/* Animated Drift for Cards */
+@keyframes gradientDrift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.anim-drift {
+  background-size: 200% 200%;
+  animation: popUpCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, gradientDrift 4s ease infinite;
+}

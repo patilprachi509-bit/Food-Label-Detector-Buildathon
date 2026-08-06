@@ -34,19 +34,23 @@ export const HomeScreen: React.FC = () => {
       flexDirection: 'column', 
       height: '100vh', 
       backgroundColor: 'var(--color-bg)',
-      backgroundImage: `url('/screen0.png')`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
       color: 'var(--color-text)',
-      overflowY: 'auto'
+      overflowY: 'auto',
+      position: 'relative'
     }}>
+      {/* Blurred Background Image */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+        backgroundImage: `url('/screen0.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        filter: 'blur(3px)',
+        zIndex: -1,
+        opacity: 0.7
+      }}></div>
+
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 1.5rem', marginTop: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <img src="/logo.png" alt="Logo" style={{ width: '24px', height: 'auto' }} />
-          <h1 className="headline-en" style={{ fontSize: '1.2rem', margin: 0, letterSpacing: '2px', fontWeight: 'bold' }}>LABEL TRUTH</h1>
-        </div>
-        
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', padding: '1rem 1.5rem', marginTop: '1rem' }}>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <button 
             onClick={toggleLanguage}
@@ -94,95 +98,114 @@ export const HomeScreen: React.FC = () => {
         </p>
 
         {/* Animation Container (Keyed by activeImageIndex to force restart of CSS animations) */}
-        <div key={activeImageIndex} style={{ position: 'relative', width: '100%', maxWidth: '350px', height: '240px', margin: '0 auto 2rem auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div key={activeImageIndex} style={{ position: 'relative', width: '100%', maxWidth: '380px', height: '300px', margin: '0 auto 1.5rem auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           
           {/* Base Chip Packet (Real Image) */}
           <img 
             src={images[activeImageIndex]} 
             alt="Product" 
             style={{
-              position: 'absolute', left: '20px', top: '20px', width: '130px', height: '200px',
-              objectFit: 'cover', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+              position: 'absolute', left: '20px', top: '10px', width: '160px', height: '260px',
+              objectFit: 'cover', borderRadius: '12px', boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
             }}
           />
 
           {/* X-Ray Chip Packet */}
           <div className="anim-xray" style={{
-            position: 'absolute', left: '20px', top: '20px', width: '130px', height: '200px',
-            borderRadius: '8px', overflow: 'hidden', border: '1px solid #287a41',
-            boxShadow: '0 0 20px rgba(40, 122, 65, 0.3)'
+            position: 'absolute', left: '20px', top: '10px', width: '160px', height: '260px',
+            borderRadius: '12px', overflow: 'hidden', border: '1px solid #ADFF2F',
+            boxShadow: '0 0 25px rgba(173, 255, 47, 0.4)'
           }}>
             <img 
               src={images[activeImageIndex]} 
               alt="Product X-Ray" 
               style={{
                 width: '100%', height: '100%', objectFit: 'cover',
-                filter: 'brightness(0.3) sepia(1) hue-rotate(70deg) saturate(5)',
+                filter: 'brightness(0.25) sepia(1) hue-rotate(80deg) saturate(6)',
               }}
             />
             <div style={{
               position: 'absolute', inset: 0,
-              backgroundImage: 'linear-gradient(#287a41 1px, transparent 1px), linear-gradient(90deg, #287a41 1px, transparent 1px)',
-              backgroundSize: '10px 10px',
-              opacity: 0.5
+              backgroundImage: 'linear-gradient(rgba(173,255,47,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(173,255,47,0.8) 1px, transparent 1px)',
+              backgroundSize: '15px 15px',
+              opacity: 0.3
             }}></div>
             <div style={{
-              position: 'absolute', top: '40px', left: '10px', right: '10px',
-              display: 'flex', flexDirection: 'column', gap: '6px'
+              position: 'absolute', top: '30px', left: '15px', right: '15px',
+              display: 'flex', flexDirection: 'column', gap: '4px'
             }}>
-               <div style={{ width: '100%', height: '2px', backgroundColor: '#39ff14', marginBottom: '4px' }}></div>
-               {[1,2,3,4,5,6].map(i => (
-                 <div key={i} style={{ width: `${60 + Math.random() * 40}%`, height: '4px', backgroundColor: '#39ff14', opacity: 0.7, borderRadius: '2px' }}></div>
+               <span style={{ color: '#ADFF2F', fontSize: '0.65rem', fontWeight: 'bold', letterSpacing: '1px' }}>INGREDIENTS</span>
+               <div style={{ width: '100%', height: '1px', backgroundColor: '#ADFF2F', marginBottom: '6px' }}></div>
+               {['Potato', 'Edible Vegetable Oil', 'Palmolein Oil', 'Iodised Salt', 'Sugar', 'Flavour Enhancer'].map(i => (
+                 <span key={i} style={{ color: '#ADFF2F', fontSize: '0.55rem', opacity: 0.9 }}>{i}</span>
                ))}
             </div>
           </div>
 
           {/* Scanner Line */}
           <div className="anim-scanner" style={{
-            position: 'absolute', left: '20px', top: '10px', width: '2px', height: '220px',
-            backgroundColor: '#39ff14', boxShadow: '0 0 10px #39ff14, 0 0 20px #39ff14',
+            position: 'absolute', left: '20px', top: '0', width: '3px', height: '280px',
+            backgroundColor: '#ADFF2F', boxShadow: '0 0 15px #ADFF2F, 0 0 30px #ADFF2F',
             zIndex: 10
           }}></div>
 
           {/* Staggered Pop-Up Cards */}
-          <div style={{ position: 'absolute', left: '160px', top: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ position: 'absolute', left: '190px', top: '10px', display: 'flex', flexDirection: 'column', gap: '8px', width: '170px' }}>
              
              {/* High Sugar */}
-             <div className="anim-card delay-1" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', backgroundColor: '#fbe9e7', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: '1px solid #ffccbc' }}>
-                <IconSugarCube size={16} color="#d95328" />
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#d95328', lineHeight: 1.1 }}>HIGH SUGAR</span>
+             <div className="anim-drift delay-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', padding: '8px 10px', backgroundImage: 'linear-gradient(45deg, #fbe9e7, #ffccbc)', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.08)', border: '1px solid rgba(217, 83, 40, 0.2)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <IconSugarCube size={18} color="#d95328" />
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '0.65rem', fontWeight: '900', color: '#d95328', lineHeight: 1.1 }}>HIGH SUGAR</span>
+                    <span style={{ fontSize: '0.5rem', color: '#774332', lineHeight: 1, marginTop: '2px' }}>12.6g / serve</span>
+                  </div>
                 </div>
+                <div style={{ backgroundColor: '#d95328', borderRadius: '50%', padding: '2px', color: 'white', display: 'flex' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
              </div>
 
              {/* High Fat */}
-             <div className="anim-card delay-2" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', backgroundColor: '#fff3e0', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: '1px solid #ffe0b2' }}>
-                <IconDroplet size={16} color="#ef6c00" />
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#ef6c00', lineHeight: 1.1 }}>HIGH FAT</span>
+             <div className="anim-drift delay-2" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', padding: '8px 10px', backgroundImage: 'linear-gradient(45deg, #fff3e0, #ffe0b2)', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.08)', border: '1px solid rgba(239, 108, 0, 0.2)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <IconDroplet size={18} color="#ef6c00" />
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '0.65rem', fontWeight: '900', color: '#ef6c00', lineHeight: 1.1 }}>HIGH FAT</span>
+                    <span style={{ fontSize: '0.5rem', color: '#824814', lineHeight: 1, marginTop: '2px' }}>8.7g / serve</span>
+                  </div>
                 </div>
+                <div style={{ backgroundColor: '#ef6c00', borderRadius: '50%', padding: '2px', color: 'white', display: 'flex' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
              </div>
 
              {/* High Salt */}
-             <div className="anim-card delay-3" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', backgroundColor: '#fbe9e7', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: '1px solid #ffccbc' }}>
-                <IconSaltShaker size={16} color="#d95328" />
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#d95328', lineHeight: 1.1 }}>HIGH SALT</span>
+             <div className="anim-drift delay-3" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', padding: '8px 10px', backgroundImage: 'linear-gradient(45deg, #fbe9e7, #ffccbc)', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.08)', border: '1px solid rgba(217, 83, 40, 0.2)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <IconSaltShaker size={18} color="#d95328" />
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '0.65rem', fontWeight: '900', color: '#d95328', lineHeight: 1.1 }}>HIGH SALT</span>
+                    <span style={{ fontSize: '0.5rem', color: '#774332', lineHeight: 1, marginTop: '2px' }}>450mg / serve</span>
+                  </div>
                 </div>
+                <div style={{ backgroundColor: '#d95328', borderRadius: '50%', padding: '2px', color: 'white', display: 'flex' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
              </div>
 
              {/* Verification Needed */}
-             <div className="anim-card delay-4" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', backgroundColor: '#fff8e1', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', border: '1px solid #ffecb3' }}>
-                <IconFlask size={16} color="#f57f17" />
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#f57f17', lineHeight: 1.1 }}>VERIFY NEEDED</span>
+             <div className="anim-drift delay-4" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', padding: '8px 10px', backgroundImage: 'linear-gradient(45deg, #fff8e1, #ffecb3)', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.08)', border: '1px solid rgba(245, 127, 23, 0.2)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <IconFlask size={18} color="#f57f17" />
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: '0.65rem', fontWeight: '900', color: '#f57f17', lineHeight: 1.1 }}>SOME<br/>ADDITIVES</span>
+                  </div>
                 </div>
+                <div style={{ backgroundColor: '#f57f17', borderRadius: '50%', padding: '2px', color: 'white', display: 'flex' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div>
              </div>
 
              {/* Verdict */}
-             <div className="anim-card delay-verdict" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '8px 10px', backgroundColor: '#fbe9e7', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', border: '1px solid #ffccbc', marginTop: '4px' }}>
-                <span style={{ fontSize: '0.55rem', textTransform: 'uppercase', color: '#555', marginBottom: '2px' }}>Our Verdict</span>
-                <span style={{ fontSize: '0.8rem', fontWeight: '900', color: '#d95328', lineHeight: 1.1 }}>NOT<br/>RECOMMENDED</span>
+             <div className="anim-card delay-verdict" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', backgroundColor: '#fbe9e7', borderRadius: '8px', boxShadow: '0 6px 15px rgba(217, 83, 40, 0.15)', border: '1px solid #ffccbc', marginTop: '6px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: '0.55rem', textTransform: 'uppercase', color: '#555', marginBottom: '2px' }}>Our Verdict</span>
+                  <span style={{ fontSize: '0.85rem', fontWeight: '900', color: '#d95328', lineHeight: 1.1 }}>NOT<br/>RECOMMENDED</span>
+                </div>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d95328" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
              </div>
 
           </div>
@@ -209,12 +232,17 @@ export const HomeScreen: React.FC = () => {
 
       {/* CTA Footer */}
       <div style={{ padding: '1rem 2rem 2rem 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+        
+        <span style={{ fontSize: '0.9rem', fontStyle: 'italic', opacity: 0.8, color: '#597a5f', marginBottom: '4px' }}>
+          {isEn ? 'Tap to start scanning' : 'स्कैन करने के लिए टैप करें'} &#x2934;
+        </span>
+
         <button 
           className="effect-gradient-glow"
           onClick={() => setIsScanning(true)}
           style={{ 
             width: '100%', 
-            backgroundColor: 'var(--color-pass)', 
+            backgroundColor: '#597a5f', 
             color: 'white', 
             border: 'none', 
             borderRadius: '16px', 
@@ -223,7 +251,7 @@ export const HomeScreen: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'space-between',
             cursor: 'pointer',
-            transition: 'opacity 0.2s',
+            transition: 'transform 0.2s, box-shadow 0.2s',
             marginBottom: '0.5rem'
           }}
         >
@@ -247,37 +275,34 @@ export const HomeScreen: React.FC = () => {
           onClick={() => setIsBatchMode(true)}
           style={{ 
             width: '100%', 
-            backgroundColor: 'transparent', 
-            color: 'var(--color-text)', 
-            border: '2px solid var(--color-pass)', 
+            backgroundColor: '#597a5f', 
+            color: 'white', 
+            border: 'none', 
             borderRadius: '16px', 
             padding: '1.25rem', 
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             cursor: 'pointer',
-            transition: 'opacity 0.2s',
+            transition: 'transform 0.2s, box-shadow 0.2s',
             marginBottom: '0.5rem'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--color-pass)' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
               <line x1="9" y1="3" x2="9" y2="21"/>
             </svg>
-            <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(0,0,0,0.1)', flexShrink: 0 }}></div>
+            <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255,255,255,0.3)', flexShrink: 0 }}></div>
             <span className="headline-en" style={{ fontSize: '1.1rem', letterSpacing: '0.5px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
               {isEn ? 'SCAN MULTIPLE' : 'कई उत्पाद स्कैन करें'}
             </span>
           </div>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--color-pass)' }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </button>
-        
-        <span style={{ fontSize: '0.9rem', fontStyle: 'italic', opacity: 0.8, color: 'var(--color-pass)' }}>
-          &#x2935; {isEn ? 'Tap to start scanning' : 'स्कैन करने के लिए टैप करें'}
-        </span>
+
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '1rem', opacity: 0.6 }}>
           <IconShield size={12} color="currentColor" />
