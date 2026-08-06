@@ -80,30 +80,14 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
     }
   }
 
-  // Format Headline (Gradient)
+  // Format Headline (Solid Colors for html2canvas compatibility)
   const renderHeadline = () => {
     const text = isEn ? headlineEn : headlineHi;
     if (isGradeA) {
-      return (
-        <span style={{ 
-          background: 'linear-gradient(90deg, #16402A 0%, #287a41 100%)', 
-          WebkitBackgroundClip: 'text', 
-          WebkitTextFillColor: 'transparent' 
-        }}>
-          {text}
-        </span>
-      );
+      return <span style={{ color: '#16402A' }}>{text}</span>;
     }
-    // If it's a fail or verification needed, make it entirely orange gradient
-    return (
-      <span style={{ 
-        background: 'linear-gradient(90deg, #D64E29 0%, #E67E22 100%)', 
-        WebkitBackgroundClip: 'text', 
-        WebkitTextFillColor: 'transparent' 
-      }}>
-        {text}
-      </span>
-    );
+    // If it's a fail or verification needed, make it entirely orange
+    return <span style={{ color: '#D64E29' }}>{text}</span>;
   };
 
   return (
