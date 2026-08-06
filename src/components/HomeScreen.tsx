@@ -90,7 +90,7 @@ export const HomeScreen: React.FC = () => {
       {/* CTA Footer */}
       <div style={{ padding: '1rem 2rem 2rem 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', flexShrink: 0 }}>
         <button 
-          className="effect-pushable"
+          className="effect-gradient-glow"
           onClick={() => setIsScanning(true)}
           style={{ 
             width: '100%', 
@@ -122,7 +122,7 @@ export const HomeScreen: React.FC = () => {
         </button>
 
         <button 
-          className="effect-pushable"
+          className="effect-gradient-glow"
           onClick={() => setIsBatchMode(true)}
           style={{ 
             width: '100%', 
