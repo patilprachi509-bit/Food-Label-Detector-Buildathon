@@ -7,9 +7,10 @@ interface ShareCardRendererProps {
   extractionResult: ExtractionResult | null;
   flags: Flag[];
   isEn: boolean;
+  frontImage?: string | null;
 }
 
-export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererProps>(({ extractionResult, flags, isEn }, ref) => {
+export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererProps>(({ extractionResult, flags, isEn, frontImage }, ref) => {
   if (!extractionResult) return null;
 
   // Determine Overall State
@@ -113,13 +114,8 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
         {/* Top Header: Logo + Product Name */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            {/* Real Logo from public folder */}
+            {/* Real Logo from public folder (No wordmark) */}
             <img src="/logo.png" alt="Logo" style={{ height: '80px', width: 'auto', display: 'block' }} />
-            {/* Wordmark */}
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.1' }}>
-              <span className="headline-en" style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '4px', textTransform: 'uppercase' }}>LABEL</span>
-              <span className="headline-en" style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '4px', textTransform: 'uppercase' }}>TRUTH</span>
-            </div>
           </div>
           
           {/* Smart Choice Badge for Grade A */}
@@ -145,12 +141,31 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
           )}
         </div>
 
-        {/* Product Name - using handwritten font (Kalam) */}
-        <div style={{ marginTop: '20px', marginBottom: '10px' }}>
-          <h2 style={{ fontFamily: '"Kalam", cursive', fontSize: '56px', fontWeight: '700', margin: '0 0 10px 0', color: '#16402A', maxWidth: '80%', lineHeight: '1.2' }}>
-            {pName}
-          </h2>
-          <div style={{ height: '3px', width: '200px', backgroundColor: '#B08D57', opacity: 0.5 }}></div>
+        {/* Product Image & Name */}
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '30px', marginTop: '10px', marginBottom: '20px' }}>
+          {frontImage && (
+            <div style={{
+              width: '180px',
+              height: '180px',
+              borderRadius: '20px',
+              overflow: 'hidden',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+              backgroundColor: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '4px solid #16402A',
+              flexShrink: 0
+            }}>
+              <img src={frontImage} alt="Product" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+          )}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <h2 style={{ fontFamily: '"Kalam", cursive', fontSize: '56px', fontWeight: '700', margin: '0 0 10px 0', color: '#16402A', lineHeight: '1.2' }}>
+              {pName}
+            </h2>
+            <div style={{ height: '3px', width: '200px', backgroundColor: '#B08D57', opacity: 0.5 }}></div>
+          </div>
         </div>
 
         {/* Massive Verdict Headline */}

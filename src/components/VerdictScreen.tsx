@@ -14,7 +14,7 @@ import { ShareCardRenderer } from './ShareCardRenderer';
 import html2canvas from 'html2canvas';
 
 export const VerdictScreen: React.FC = () => {
-  const { extractionResult, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType, setIsAwarenessOpen } = useAppContext();
+  const { extractionResult, frontImage, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType, setIsAwarenessOpen } = useAppContext();
   const isEn = userLanguage === 'en';
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
@@ -640,6 +640,7 @@ export const VerdictScreen: React.FC = () => {
         extractionResult={extractionResult}
         flags={flags}
         isEn={isEn}
+        frontImage={frontImage}
       />
     </div>
   );
