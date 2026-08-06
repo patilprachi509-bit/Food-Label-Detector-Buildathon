@@ -84,7 +84,7 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', color: 'var(--color-text)', zIndex: 100, display: 'flex', flexDirection: 'column', backgroundImage: `url('/background.png')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderBottom: '1px solid var(--color-divider)' }}>
-        <button onClick={onClose} style={{ background: 'none', border: '1px solid var(--color-divider)', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', color: 'var(--color-text)' }}>
+        <button onClick={onClose} className="effect-elevated" style={{ background: 'var(--color-bg)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', color: 'var(--color-text)', fontSize: '1.2rem', fontWeight: 'bold' }}>
           &times;
         </button>
         <div style={{ textAlign: 'center' }}>
@@ -97,7 +97,7 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
       </div>
 
       <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', overflowX: 'auto', position: 'relative', zIndex: 1 }}>
-        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, backgroundColor: 'transparent', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--color-divider)' }}>
+        <table className="effect-elevated" style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, backgroundColor: 'var(--color-bg)', borderRadius: '16px', overflow: 'hidden', border: 'none' }}>
           <thead>
             <tr style={{ backgroundColor: 'var(--color-text)', color: 'var(--color-bg)' }}>
               <th style={{ padding: '0.75rem', textAlign: 'left', minWidth: '120px', position: 'sticky', left: 0, backgroundColor: 'var(--color-text)', zIndex: 3 }}></th>
@@ -114,8 +114,8 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
               </td>
               <td style={{ padding: '0.75rem', textAlign: 'center' }}>
                 <span style={{ 
-                  display: 'inline-block', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase',
-                  backgroundColor: currentIsFlagged ? 'var(--color-fail)' : 'var(--color-pass)', color: 'var(--color-bg)'
+                  display: 'inline-block', padding: '0.3rem 0.8rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px',
+                  backgroundColor: currentIsFlagged ? 'var(--color-fail)' : 'var(--color-pass)', color: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                 }}>
                   {currentVerdict}
                 </span>
@@ -123,8 +123,8 @@ export const CompareOverlay: React.FC<CompareOverlayProps> = ({ currentScan, sav
               {savedVerdicts.map((verdict, idx) => (
                 <td key={idx} style={{ padding: '0.75rem', textAlign: 'center' }}>
                   <span style={{ 
-                    display: 'inline-block', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase',
-                    backgroundColor: savedIsFlaggedArray[idx] ? 'var(--color-fail)' : 'var(--color-pass)', color: 'var(--color-bg)'
+                    display: 'inline-block', padding: '0.3rem 0.8rem', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px',
+                    backgroundColor: savedIsFlaggedArray[idx] ? 'var(--color-fail)' : 'var(--color-pass)', color: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                   }}>
                     {verdict}
                   </span>
