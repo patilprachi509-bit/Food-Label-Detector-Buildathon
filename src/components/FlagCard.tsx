@@ -22,6 +22,8 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
   let bgImage = 'none';
   if (flag.nutrientFocus === 'sugar') bgImage = "url('/sugar-bg.png')";
   else if (flag.nutrientFocus === 'salt') bgImage = "url('/salt-bg.png')";
+  else if (flag.nutrientFocus === 'fat') bgImage = "url('/oil-bg.png')";
+  else if (isNeedsVerification) bgImage = "url('/verification-bg.png')";
 
   const containerStyle: React.CSSProperties = {
     backgroundColor: isNeedsVerification ? 'rgba(71, 85, 105, 0.05)' : 'var(--color-bg)',
