@@ -83,12 +83,12 @@ export const XRayVisualizer: React.FC<Props> = ({ data }) => {
   });
 
   return (
-    <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', backgroundColor: '#fcf9f2', borderRadius: '0.75rem', position: 'relative', overflow: 'hidden', marginBottom: '2rem' }}>
+    <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.5rem', backgroundColor: '#fcf9f2', borderRadius: '0.5rem', position: 'relative', overflow: 'hidden', marginBottom: '1.5rem' }}>
       {/* Container holding pouch + lines + cards */}
-      <div style={{ display: 'flex', width: '500px', maxWidth: '100%', position: 'relative' }}>
+      <div style={{ display: 'flex', width: '280px', maxWidth: '100%', position: 'relative' }}>
         
         {/* Pouch Wrapper */}
-        <div style={{ width: '240px', height: '420px', position: 'relative', flexShrink: 0, filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.1))' }}>
+        <div style={{ width: '130px', height: '220px', position: 'relative', flexShrink: 0, filter: 'drop-shadow(0 8px 15px rgba(0,0,0,0.1))' }}>
           {/* SVG Clip Path Definition */}
           <svg width="0" height="0" style={{ position: 'absolute' }}>
             <defs>
@@ -99,9 +99,9 @@ export const XRayVisualizer: React.FC<Props> = ({ data }) => {
           </svg>
 
           {/* Highlights & Seals */}
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 20, boxShadow: 'inset 15px 0 30px rgba(255,255,255,0.7), inset -15px 0 30px rgba(0,0,0,0.1)', clipPath: 'url(#bag-shape)' }}></div>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '18px', backgroundColor: 'rgba(255,255,255,0.8)', borderBottom: '2px solid rgba(0,0,0,0.05)', zIndex: 21, clipPath: 'url(#bag-shape)', backgroundImage: 'repeating-linear-gradient(90deg, transparent 0px, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px)' }}></div>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '18px', backgroundColor: 'rgba(255,255,255,0.8)', borderTop: '2px solid rgba(0,0,0,0.05)', zIndex: 21, clipPath: 'url(#bag-shape)', backgroundImage: 'repeating-linear-gradient(90deg, transparent 0px, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px)' }}></div>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 20, boxShadow: 'inset 8px 0 15px rgba(255,255,255,0.7), inset -8px 0 15px rgba(0,0,0,0.1)', clipPath: 'url(#bag-shape)' }}></div>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '10px', backgroundColor: 'rgba(255,255,255,0.8)', borderBottom: '1px solid rgba(0,0,0,0.05)', zIndex: 21, clipPath: 'url(#bag-shape)', backgroundImage: 'repeating-linear-gradient(90deg, transparent 0px, transparent 1px, rgba(0,0,0,0.08) 1px, rgba(0,0,0,0.08) 2px)' }}></div>
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '10px', backgroundColor: 'rgba(255,255,255,0.8)', borderTop: '1px solid rgba(0,0,0,0.05)', zIndex: 21, clipPath: 'url(#bag-shape)', backgroundImage: 'repeating-linear-gradient(90deg, transparent 0px, transparent 1px, rgba(0,0,0,0.08) 1px, rgba(0,0,0,0.08) 2px)' }}></div>
           
           {/* Inner Pouch with Layers */}
           <div style={{ width: '100%', height: '100%', backgroundColor: 'rgba(255,255,255,0.4)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', clipPath: 'url(#bag-shape)' }}>
@@ -117,14 +117,14 @@ export const XRayVisualizer: React.FC<Props> = ({ data }) => {
                   backgroundPosition: 'center',
                   height: `${layer.heightPercent}%`,
                   backgroundImage: `url('${layer.texture}')`,
-                  backgroundSize: layer.id === 'salt' ? '60px auto' : '80px auto',
+                  backgroundSize: layer.id === 'salt' ? '30px auto' : '40px auto',
                   backgroundRepeat: 'repeat',
-                  boxShadow: layer.id === 'fat' ? 'inset 0 10px 15px -10px rgba(0,0,0,0.5)' : 'none'
+                  boxShadow: layer.id === 'fat' ? 'inset 0 5px 8px -5px rgba(0,0,0,0.5)' : 'none'
                 }}
               >
                 {/* Drop shadow between layers */}
                 {idx > 0 && (
-                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '10px', background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), transparent)', zIndex: 10, pointerEvents: 'none' }}></div>
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '5px', background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), transparent)', zIndex: 10, pointerEvents: 'none' }}></div>
                 )}
               </div>
             ))}
@@ -132,7 +132,7 @@ export const XRayVisualizer: React.FC<Props> = ({ data }) => {
         </div>
 
         {/* Connection Lines SVG */}
-        <svg viewBox="0 0 40 420" preserveAspectRatio="none" style={{ width: '40px', height: '420px', flexShrink: 0, marginLeft: '0.5rem' }}>
+        <svg viewBox="0 0 24 220" preserveAspectRatio="none" style={{ width: '24px', height: '220px', flexShrink: 0, marginLeft: '0.25rem' }}>
           {layers.map(layer => (
             <g key={layer.id}>
               <line 
@@ -143,30 +143,30 @@ export const XRayVisualizer: React.FC<Props> = ({ data }) => {
                 stroke={layer.color} 
                 strokeWidth="1.5" 
               />
-              <circle cx="2" cy={`${layer.centerPercent}%`} r="3" fill={layer.color} />
+              <circle cx="2" cy={`${layer.centerPercent}%`} r="2" fill={layer.color} />
             </g>
           ))}
         </svg>
 
         {/* Data Panel */}
-        <div style={{ height: '420px', position: 'relative', flexGrow: 1, marginLeft: '0.5rem' }}>
+        <div style={{ height: '220px', position: 'relative', flexGrow: 1, marginLeft: '0.25rem' }}>
           {layers.map(layer => {
             const Icon = layer.icon;
             return (
               <div 
                 key={layer.id}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', position: 'absolute', left: 0, width: '100%', backgroundColor: '#fcf9f2', top: `calc(${layer.centerPercent}% - 20px)` }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', position: 'absolute', left: 0, width: '100%', backgroundColor: '#fcf9f2', top: `calc(${layer.centerPercent}% - 12px)` }}
               >
                 <div 
-                  style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1px solid currentColor', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, backgroundColor: '#fcf9f2', color: layer.color }}
+                  style={{ width: '24px', height: '24px', borderRadius: '50%', border: '1px solid currentColor', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, backgroundColor: '#fcf9f2', color: layer.color }}
                 >
                   <Icon />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontWeight: 800, fontSize: '0.85rem', letterSpacing: '0.025em', lineHeight: 1, marginBottom: '2px', color: layer.color }}>
+                  <span style={{ fontWeight: 800, fontSize: '0.65rem', letterSpacing: '0.01em', lineHeight: 1, marginBottom: '2px', color: layer.color }}>
                     {layer.label}
                   </span>
-                  <span style={{ fontWeight: 700, fontSize: '1.1rem', color: '#1f2937', lineHeight: 1, marginBottom: '2px' }}>
+                  <span style={{ fontWeight: 700, fontSize: '0.8rem', color: '#1f2937', lineHeight: 1, marginBottom: '0' }}>
                     {layer.valueGrams}g
                   </span>
                 </div>
