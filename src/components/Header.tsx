@@ -46,8 +46,8 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
       zIndex: 50, 
       position: 'relative' 
     }}>
-      {/* Back Button (Left) */}
-      <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+      {/* Back Button & Ingredients (Left) */}
+      <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '1rem' }}>
         <button 
           style={{ 
             background: 'none', 
@@ -69,6 +69,23 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
         </button>
+        {onIngredientsClick && (
+          <button 
+            onClick={onIngredientsClick} 
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+            aria-label="Ingredients"
+            title={isEn ? "View Details" : "विवरण देखें"}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Title (Center) */}
@@ -81,22 +98,6 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
       
       {/* Actions (Right) */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', alignItems: 'center' }}>
-        {onIngredientsClick && (
-          <button 
-            onClick={onIngredientsClick} 
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
-            aria-label="Ingredients"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="8" y1="6" x2="21" y2="6"></line>
-              <line x1="8" y1="12" x2="21" y2="12"></line>
-              <line x1="8" y1="18" x2="21" y2="18"></line>
-              <line x1="3" y1="6" x2="3.01" y2="6"></line>
-              <line x1="3" y1="12" x2="3.01" y2="12"></line>
-              <line x1="3" y1="18" x2="3.01" y2="18"></line>
-            </svg>
-          </button>
-        )}
         {!isSavedView && onCompareClick && (
           <button 
             onClick={onCompareClick} 
