@@ -112,7 +112,7 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
         }}
       >
         {/* Top Header: Logo + Product Name */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             {/* Real Logo from public folder (No wordmark) */}
             <img src="/logo.png" alt="Logo" style={{ height: '80px', width: 'auto', display: 'block' }} />
@@ -130,10 +130,8 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
                justifyContent: 'center',
                clipPath: 'polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%)',
                width: '160px',
-               height: '220px',
-               position: 'absolute',
-               top: '0',
-               right: '100px'
+               height: '200px',
+               marginTop: '-60px' // Hang from top
              }}>
                <IconShield size={48} color="#F7F2E9" />
                <span style={{ marginTop: '20px', fontSize: '14px', fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '2px', lineHeight: '1.4' }}>SMART CHOICE<br/>UNLOCKED</span>
@@ -141,45 +139,47 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
           )}
         </div>
 
+        {/* Product Name (Large) */}
+        <div style={{ display: 'flex', flexDirection: 'column', marginTop: '10px', marginBottom: '20px', maxWidth: '85%' }}>
+          <h2 style={{ fontFamily: '"Kalam", cursive', fontSize: '90px', fontWeight: '700', margin: '0 0 10px 0', color: '#16402A', lineHeight: '1.1' }}>
+            {pName}
+          </h2>
+          <div style={{ height: '4px', width: '250px', backgroundColor: '#B08D57', opacity: 0.5 }}></div>
+        </div>
+
         {/* Product Image & Name */}
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '30px', marginTop: '10px', marginBottom: '20px' }}>
+        {/* Verdict & Image Row */}
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px', marginBottom: '20px' }}>
+          <h1 className={isEn ? 'headline-en' : 'headline-hi'} style={{ 
+            fontSize: isGradeA ? '170px' : '150px', 
+            fontWeight: '900', 
+            margin: '0', 
+            lineHeight: '0.9',
+            textTransform: 'uppercase',
+            letterSpacing: isEn ? '-2px' : '0',
+            flex: 1
+          }}>
+            {renderHeadline()}
+          </h1>
+
           {frontImage && (
             <div style={{
-              width: '180px',
-              height: '180px',
-              borderRadius: '20px',
+              width: '260px',
+              height: '260px',
+              borderRadius: '30px',
               overflow: 'hidden',
               boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
               backgroundColor: '#fff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              border: '4px solid #16402A',
-              flexShrink: 0
+              border: '6px solid #16402A',
+              flexShrink: 0,
+              marginLeft: '30px'
             }}>
               <img src={frontImage} alt="Product" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           )}
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <h2 style={{ fontFamily: '"Kalam", cursive', fontSize: '56px', fontWeight: '700', margin: '0 0 10px 0', color: '#16402A', lineHeight: '1.2' }}>
-              {pName}
-            </h2>
-            <div style={{ height: '3px', width: '200px', backgroundColor: '#B08D57', opacity: 0.5 }}></div>
-          </div>
-        </div>
-
-        {/* Massive Verdict Headline */}
-        <div style={{ marginTop: '10px', marginBottom: '20px' }}>
-          <h1 className={isEn ? 'headline-en' : 'headline-hi'} style={{ 
-            fontSize: isGradeA ? '180px' : '160px', 
-            fontWeight: '900', 
-            margin: '0', 
-            lineHeight: '0.9',
-            textTransform: 'uppercase',
-            letterSpacing: isEn ? '-2px' : '0'
-          }}>
-            {renderHeadline()}
-          </h1>
         </div>
 
         {/* Dynamic Quote Callout */}
