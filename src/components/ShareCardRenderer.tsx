@@ -43,23 +43,40 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
   let quoteHi = `10 स्रोतों वाले नियमों के विरुद्ध जाँचा गया — कुछ भी फ़्लैग नहीं किया गया।`;
   
   if (!isGradeA) {
-    if (tierFlags.length === 1) {
-      if (tierFlags[0].ruleId === 'G1') {
-        quoteEn = `Sugar levels outweigh everything else — that's why this is Not Recommended.`;
-        quoteHi = `चीनी का स्तर बाकी सब पर भारी है — इसलिए यह अनुशंसित नहीं है।`;
-      } else if (tierFlags[0].ruleId === 'G2') {
-        quoteEn = `Fat/Oil content outweighs everything else — that's why this is Not Recommended.`;
-        quoteHi = `वसा/तेल की मात्रा बाकी सब पर भारी है — इसलिए यह अनुशंसित नहीं है।`;
-      } else if (tierFlags[0].ruleId === 'G3') {
-        quoteEn = `Salt levels outweigh everything else — that's why this is Not Recommended.`;
-        quoteHi = `नमक का स्तर बाकी सब पर भारी है — इसलिए यह अनुशंसित नहीं है।`;
+    const exceededEn: string[] = [];
+    const exceededHi: string[] = [];
+    
+    if (tierFlags.some(f => f.ruleId === 'G1')) { exceededEn.push('Sugar'); exceededHi.push('चीनी'); }
+    if (tierFlags.some(f => f.ruleId === 'G2')) { exceededEn.push('Fat'); exceededHi.push('वसा'); }
+    if (tierFlags.some(f => f.ruleId === 'G3')) { exceededEn.push('Salt'); exceededHi.push('नमक'); }
+    if (tierFlags.some(f => f.ruleId === 'G4')) { exceededEn.push('Trans Fat'); exceededHi.push('ट्रांस फैट'); }
+    if (tierFlags.some(f => f.type === 'claim_contradiction')) { exceededEn.push('Misleading Claims'); exceededHi.push('भ्रामक दावे'); }
+    
+    if (exceededEn.length > 0) {
+      let joinedEn = '';
+      let joinedHi = '';
+      
+      if (exceededEn.length === 1) {
+        joinedEn = exceededEn[0];
+        joinedHi = exceededHi[0];
+      } else if (exceededEn.length === 2) {
+        joinedEn = exceededEn.join(' and ');
+        joinedHi = exceededHi.join(' और ');
       } else {
-        quoteEn = `Specific ingredients outweigh everything else — that's why this is Not Recommended.`;
-        quoteHi = `विशिष्ट सामग्रियां बाकी सब पर भारी हैं — इसलिए यह अनुशंसित नहीं है।`;
+        const lastEn = exceededEn.pop();
+        joinedEn = exceededEn.join(', ') + ' and ' + lastEn;
+        const lastHi = exceededHi.pop();
+        joinedHi = exceededHi.join(', ') + ' और ' + lastHi;
       }
+      
+      const isPluralEn = exceededEn.length > 0 || joinedEn.includes('and');
+      
+      quoteEn = `${joinedEn} ${isPluralEn ? 'outweigh' : 'outweighs'} everything else — that's why this is Not Recommended.`;
+      quoteHi = `${joinedHi} बाकी सब पर भारी ${isPluralEn ? 'हैं' : 'है'} — इसलिए यह अनुशंसित नहीं है।`;
     } else {
-      quoteEn = `Multiple factors like sugar, salt or additives outweigh everything else — that's why this is Not Recommended.`;
-      quoteHi = `चीनी, नमक या एडिटिव्स जैसे कई कारक बाकी सब पर भारी हैं — इसलिए यह अनुशंसित नहीं है।`;
+      // Fallback if it's some other flag we didn't explicitly map above
+      quoteEn = `Specific factors outweigh everything else — that's why this is Not Recommended.`;
+      quoteHi = `विशिष्ट कारक बाकी सब पर भारी हैं — इसलिए यह अनुशंसित नहीं है।`;
     }
   }
 
