@@ -64,7 +64,7 @@ export const HomeScreen: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.5rem', marginTop: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <img src="/logo.png" alt="Logo" style={{ width: '48px', height: 'auto' }} />
+          <img src="/logo.png" alt="Logo" style={{ width: '150px', height: 'auto' }} />
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <button 
