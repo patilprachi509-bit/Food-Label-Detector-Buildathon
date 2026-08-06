@@ -145,52 +145,52 @@ export const VerdictScreen: React.FC = () => {
       <Header onAudioClick={handleAudioClick} isAudioLoading={isAudioLoading} onShareClick={handleShareClick} onCompareClick={handleCompareClick} />
       
       <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '1.5rem', zIndex: 1, position: 'relative' }}>
-        
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem', position: 'absolute', top: '1.5rem', right: '1.5rem', zIndex: 10 }}>
-          <button 
-            onClick={() => setHasChosenResultType('ingredients')}
-            style={{ 
-              background: 'var(--color-bg)', 
-              border: '1px solid var(--color-divider)', 
-              borderRadius: '50%', 
-              width: '40px', 
-              height: '40px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              cursor: 'pointer', 
-              color: 'var(--color-text)', 
-              boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-            }}
-            title={isEn ? 'View full ingredient list' : 'पूरी सामग्री सूची देखें'}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="8" y1="6" x2="21" y2="6"></line>
-              <line x1="8" y1="12" x2="21" y2="12"></line>
-              <line x1="8" y1="18" x2="21" y2="18"></line>
-              <line x1="3" y1="6" x2="3.01" y2="6"></line>
-              <line x1="3" y1="12" x2="3.01" y2="12"></line>
-              <line x1="3" y1="18" x2="3.01" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-        
 
-        
         {/* Overarching Verdict */}
-        <div style={{ marginBottom: '1.5rem', textAlign: 'center', paddingTop: '1.5rem' }}>
+        <div style={{ marginBottom: '1.5rem', textAlign: 'center', paddingTop: '0.5rem' }}>
           
-          {/* Product Name Display */}
-          <h1 style={{ fontSize: '1.2rem', fontWeight: 'normal', marginBottom: '0.5rem', marginTop: 0, opacity: 0.8, lineHeight: 1.2 }}>
-            {(() => {
-              const brand = extractionResult?.front_of_pack?.brand_name?.trim();
-              const product = extractionResult?.front_of_pack?.product_name?.trim();
-              if (brand && product) return `${brand} ${product}`;
-              if (brand) return brand;
-              if (product) return product;
-              return isEn ? "Unknown Product" : "अज्ञात उत्पाद";
-            })()}
-          </h1>
+          {/* Header Row: Product Name & Info Icon */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', marginBottom: '0.5rem' }}>
+            <h1 style={{ fontSize: '1.2rem', fontWeight: 'normal', margin: 0, opacity: 0.8, lineHeight: 1.2, textAlign: 'left', flex: 1 }}>
+              {(() => {
+                const brand = extractionResult?.front_of_pack?.brand_name?.trim();
+                const product = extractionResult?.front_of_pack?.product_name?.trim();
+                if (brand && product) return `${brand} ${product}`;
+                if (brand) return brand;
+                if (product) return product;
+                return isEn ? "Unknown Product" : "अज्ञात उत्पाद";
+              })()}
+            </h1>
+            <button 
+              onClick={() => setHasChosenResultType('ingredients')}
+              style={{ 
+                background: 'var(--color-bg)', 
+                border: '1px solid var(--color-divider)', 
+                borderRadius: '50%', 
+                width: '36px', 
+                height: '36px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                cursor: 'pointer', 
+                color: 'var(--color-text)', 
+                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                flexShrink: 0,
+                marginTop: '-4px'
+              }}
+              title={isEn ? 'View full ingredient list' : 'पूरी सामग्री सूची देखें'}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
 
           {(() => {
             const tierFlags = flags.filter(f => f.ruleId !== 'PROV_OIL' && f.ruleId !== 'PROV_150' && f.ruleId !== 'INFO1');
@@ -247,11 +247,11 @@ export const VerdictScreen: React.FC = () => {
               }
 
               return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-fail)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-fail)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
                   </svg>
-                  <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-fail)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap', textAlign: 'center' }}>
+                  <h2 className="headline-en" style={{ fontSize: '1.5rem', color: 'var(--color-fail)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap', textAlign: 'center' }}>
                     {isEn ? headlinesEn.join('\n•\n') : headlinesHi.join('\n•\n')}
                   </h2>
                 </div>
@@ -260,51 +260,51 @@ export const VerdictScreen: React.FC = () => {
               const nutrientEn = tierFlags[0].ruleId === 'G1' ? 'SUGAR' : tierFlags[0].ruleId === 'G2' ? 'FAT/OIL' : 'SALT';
               const nutrientHi = tierFlags[0].ruleId === 'G1' ? 'चीनी' : tierFlags[0].ruleId === 'G2' ? 'वसा/तेल' : 'नमक';
               return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-verify)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-verify)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                     <line x1="12" y1="9" x2="12" y2="13"></line>
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
                   </svg>
-                  <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-verify)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap', textAlign: 'center' }}>
+                  <h2 className="headline-en" style={{ fontSize: '1.5rem', color: 'var(--color-verify)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap', textAlign: 'center' }}>
                     {isEn ? `MOSTLY FINE — WATCH THE ${nutrientEn}` : `ज़्यादातर ठीक है, बस ${nutrientHi} पर ध्यान दें।`}
                   </h2>
                 </div>
               );
             } else if (tierFlags.some(f => f.type === 'needs_verification')) {
               return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-verify)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-verify)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                     <line x1="12" y1="9" x2="12" y2="13"></line>
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
                   </svg>
-                  <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-verify)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap', textAlign: 'center' }}>
+                  <h2 className="headline-en" style={{ fontSize: '1.5rem', color: 'var(--color-verify)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap', textAlign: 'center' }}>
                     {isEn ? 'VERIFICATION NEEDED' : 'सत्यापन की आवश्यकता है'}
                   </h2>
                 </div>
               );
             } else if (tierFlags.length > 0) {
               return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-verify)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-verify)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                     <line x1="12" y1="9" x2="12" y2="13"></line>
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
                   </svg>
-                  <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-pass)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap', textAlign: 'center' }}>
+                  <h2 className="headline-en" style={{ fontSize: '1.5rem', color: 'var(--color-pass)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap', textAlign: 'center' }}>
                     {isEn ? 'MINOR ISSUES' : 'मामूली समस्याएँ'}
                   </h2>
                 </div>
               );
             } else {
               return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-pass)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-pass)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                   </svg>
-                  <h2 className="headline-en" style={{ fontSize: '1.8rem', color: 'var(--color-pass)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap', textAlign: 'center' }}>
+                  <h2 className="headline-en" style={{ fontSize: '1.5rem', color: 'var(--color-pass)', lineHeight: 1.1, fontWeight: 900, margin: 0, wordBreak: 'normal', whiteSpace: 'pre-wrap', textAlign: 'center' }}>
                     {isEn ? 'GOOD CHOICE' : 'अच्छा विकल्प'}
                   </h2>
                 </div>
