@@ -238,23 +238,7 @@ export const HomeScreen: React.FC = () => {
           </div>
         </div>
 
-        {/* Feature Highlights Row */}
-        <div className="anim-drift" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', maxWidth: '320px', margin: '0 auto', padding: '1rem', backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,0.9), rgba(220,252,231,0.8), rgba(254,252,232,0.8))', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
-           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, textAlign: 'center' }}>
-             <IconShield size={20} color="var(--color-pass)" />
-             <span style={{ fontSize: '0.7rem', fontWeight: '600', marginTop: '6px', lineHeight: 1.2 }}>Trustworthy<br/>Insights</span>
-           </div>
-           <div style={{ width: '1px', backgroundColor: 'var(--color-divider)', opacity: 0.2 }}></div>
-           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, textAlign: 'center' }}>
-             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-pass)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-             <span style={{ fontSize: '0.7rem', fontWeight: '600', marginTop: '6px', lineHeight: 1.2 }}>Real Numbers,<br/>No Tricks</span>
-           </div>
-           <div style={{ width: '1px', backgroundColor: 'var(--color-divider)', opacity: 0.2 }}></div>
-           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, textAlign: 'center' }}>
-             <IconDroplet size={20} color="var(--color-pass)" />
-             <span style={{ fontSize: '0.7rem', fontWeight: '600', marginTop: '6px', lineHeight: 1.2 }}>Better Choices<br/>Everyday</span>
-           </div>
-        </div>
+
       </div>
 
       {/* CTA Footer */}
