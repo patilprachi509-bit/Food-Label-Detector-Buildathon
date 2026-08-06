@@ -529,10 +529,7 @@ export const VerdictScreen: React.FC = () => {
         alignItems: 'center', 
         gap: '1rem', 
         flexWrap: 'wrap',
-        background: 'rgba(247, 242, 233, 0.85)', /* match var(--color-bg) but transparent */
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderTop: '1px solid rgba(176, 141, 87, 0.2)', /* faint divider color */
+        background: 'transparent',
         zIndex: 10
       }}>
         {/* Save Scan Button */}

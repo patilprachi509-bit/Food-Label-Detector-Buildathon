@@ -91,10 +91,7 @@ export const IngredientsScreen: React.FC = () => {
         alignItems: 'center', 
         gap: '1rem', 
         flexWrap: 'wrap',
-        background: 'rgba(247, 242, 233, 0.85)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderTop: '1px solid rgba(176, 141, 87, 0.2)',
+        background: 'transparent',
         zIndex: 10
       }}>
         {/* Save Scan Button */}
