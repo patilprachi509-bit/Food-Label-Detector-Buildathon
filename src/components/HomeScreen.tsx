@@ -4,7 +4,7 @@ import { useAppContext } from '../context/AppContext';
 import { IconShield, IconDroplet, IconFlask, IconSugarCube, IconSaltShaker } from './Icons';
 
 export const HomeScreen: React.FC = () => {
-  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsAwarenessOpen, isDemoDismissed, savedScans, setIsScanning, setIsBatchMode } = useAppContext();
+  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsAwarenessOpen, setIsScanning, setIsBatchMode } = useAppContext();
   const isEn = userLanguage === 'en';
 
   const [activeImageIndex, setActiveImageIndex] = React.useState(0);
