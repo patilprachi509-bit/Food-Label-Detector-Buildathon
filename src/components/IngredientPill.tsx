@@ -48,11 +48,10 @@ export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainNa
 
   return (
     <div 
-      className="effect-elevated"
       onClick={() => isExpandable && setIsExpanded(!isExpanded)}
       style={{ 
         padding: '0.5rem 1rem', 
-        border: 'none', 
+        border: '1px solid var(--color-divider)', 
         borderRadius: isExpanded ? '12px' : '50px', 
         fontSize: '0.9rem', 
         opacity: isFaded ? 0.6 : 1,
