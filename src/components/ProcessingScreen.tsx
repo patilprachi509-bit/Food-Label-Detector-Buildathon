@@ -194,8 +194,14 @@ export const ProcessingScreen: React.FC = () => {
       );
     }
     
-    // For 500 errors (like Cloud Vision failing, or unparseable text), show the expected Low Confidence screen instead of a stack trace.
-    return <LowConfidenceScreen />;
+    // TEMPORARY DEBUG: Surface raw error directly instead of LowConfidenceScreen
+    return (
+      <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#fee2e2', color: '#991b1b', textAlign: 'center' }}>
+        <h2 style={{ marginBottom: '1rem' }}>RAW API ERROR (DEBUG)</h2>
+        <p style={{ wordBreak: 'break-word', fontFamily: 'monospace', fontSize: '0.85rem' }}>{error}</p>
+        <button onClick={resetApp} style={{ marginTop: '2rem', padding: '1rem', backgroundColor: '#991b1b', color: 'white', border: 'none', borderRadius: '8px' }}>Restart</button>
+      </div>
+    );
   }
 
   return (
