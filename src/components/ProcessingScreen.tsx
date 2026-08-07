@@ -18,7 +18,7 @@ interface CacheEntry {
   timestamp: number;
 }
 
-import { LowConfidenceScreen } from './PlaceholderScreens';
+// import { LowConfidenceScreen } from './PlaceholderScreens';
 
 export const ProcessingScreen: React.FC = () => {
   const { 
