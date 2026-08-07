@@ -128,20 +128,24 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
           {/* Smart Choice Badge for Grade A */}
           {isGradeA && (
              <div style={{
-               backgroundColor: '#16402A',
-               color: '#F7F2E9',
-               padding: '20px',
+               position: 'relative',
+               width: '160px',
+               height: '200px',
+               marginTop: '-60px', // Hang from top
                display: 'flex',
                flexDirection: 'column',
                alignItems: 'center',
-               justifyContent: 'center',
-               clipPath: 'polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%)',
-               width: '160px',
-               height: '200px',
-               marginTop: '-60px' // Hang from top
+               justifyContent: 'center'
              }}>
-               <IconShield size={48} color="#F7F2E9" />
-               <span style={{ marginTop: '20px', fontSize: '14px', fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '2px', lineHeight: '1.4' }}>SMART CHOICE<br/>UNLOCKED</span>
+               {/* SVG Ribbon Background to avoid html2canvas clipPath bugs */}
+               <svg style={{ position: 'absolute', top: 0, left: 0, zIndex: 0 }} width="160" height="200" viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                 <path d="M0 0H160V170L80 200L0 170V0Z" fill="#16402A"/>
+               </svg>
+               
+               <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: '20px' }}>
+                 <IconShield size={48} color="#F7F2E9" />
+                 <span style={{ marginTop: '20px', color: '#F7F2E9', fontSize: '14px', fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '2px', lineHeight: '1.4' }}>SMART CHOICE<br/>UNLOCKED</span>
+               </div>
              </div>
           )}
         </div>
