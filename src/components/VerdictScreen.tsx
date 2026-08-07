@@ -10,6 +10,7 @@ import { XRayVisualizer } from './XRayVisualizer';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
 import { ManufacturerReferenceCard } from './ManufacturerReferenceCard';
 import { ShareCardRenderer } from './ShareCardRenderer';
+import { RichText } from './RichText';
 import html2canvas from 'html2canvas';
 
 export const VerdictScreen: React.FC = () => {
@@ -340,10 +341,10 @@ export const VerdictScreen: React.FC = () => {
                 )}
                 {flag.type === 'claim_contradiction' ? (
                   <span style={{ textDecoration: 'line-through' }}>
-                    {isEn ? textEn : textHi}
+                    <RichText text={isEn ? textEn : textHi} isEn={isEn} />
                   </span>
                 ) : (
-                  isEn ? textEn : textHi
+                  <RichText text={isEn ? textEn : textHi} isEn={isEn} />
                 )}
               </p>
             );

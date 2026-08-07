@@ -98,8 +98,9 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
     
     if (fraction <= 0.1) {
       const daysWorth = (truePercentage / 100).toFixed(1);
-      primaryEn = `A full ${containerWithWeightEn} contains about ${daysWorth} days' worth of your daily ${limitingNutrientEn} limit, all in one sitting!`;
-      primaryHi = `सिर्फ एक पूरे ${containerWithWeightHi} में आपके ${daysWorth} दिनों के बराबर ${limitingNutrientHi} है, वह भी एक ही बार में!`;
+      
+      primaryEn = `To stay balanced, limit this to just a tiny taste (about ${targetRounded}${weightUnit}). A full ${containerWithWeightEn} contains ${daysWorth} days' worth of your daily ${limitingNutrientEn} limit!`;
+      primaryHi = `संतुलन बनाए रखने के लिए, इसे सिर्फ एक छोटे से हिस्से (लगभग ${targetRounded}${weightUnit}) तक सीमित रखें। एक पूरे ${containerWithWeightHi} में आपके ${daysWorth} दिनों के बराबर ${limitingNutrientHi} है!`;
     } else {
       const containerWordEn = isPack ? 'pack' : 'product';
       const containerWordHi = isPack ? 'पैक' : 'उत्पाद';
