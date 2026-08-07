@@ -1,8 +1,7 @@
 import React, { useMemo, useState, useRef } from 'react';
 import { useAppContext } from '../context/AppContext';
-import type { TranslatableString, SavedScan } from '../context/AppContext';
+import type { SavedScan } from '../context/AppContext';
 import { evaluateRules } from '../utils/ruleEngine';
-import { playVerdictAudio } from '../utils/audioService';
 import { Header } from './Header';
 import { FlagCard } from './FlagCard';
 import { CompareOverlay } from './CompareOverlay';
@@ -16,7 +15,6 @@ import html2canvas from 'html2canvas';
 export const VerdictScreen: React.FC = () => {
   const { extractionResult, frontImage, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType, setIsAwarenessOpen, hasSeenCombineTip, setHasSeenCombineTip } = useAppContext();
   const isEn = userLanguage === 'en';
-  const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
   const [isPickingCompare, setIsPickingCompare] = useState(false);
   const [compareAgainstScans, setCompareAgainstScans] = useState<SavedScan[] | null>(null);
@@ -36,45 +34,6 @@ export const VerdictScreen: React.FC = () => {
     if (flags.length > 0) return 'MINOR ISSUES';
     return 'GOOD CHOICE';
   }, [flags]);
-
-
-
-  // Aggregate relevant ingredients across all flags AND any ingredients that were translated (INS codes, scientific terms)
-  const relevantIngredients = useMemo(() => {
-    if (!extractionResult) return [];
-    
-    const allIngredients: TranslatableString[] = [];
-    
-    // 1. Add all ingredients explicitly flagged by ruleEngine
-    flags.forEach(flag => {
-      flag.relevantIngredients.forEach(ing => {
-        if (!allIngredients.find(i => i.normalized_english === ing.normalized_english)) {
-          allIngredients.push(ing);
-        }
-      });
-    });
-
-    extractionResult.ingredients.raw_list.forEach(ing => {
-      if (ing.plain_name && ing.plain_name.trim().toLowerCase() !== ing.normalized_english.trim().toLowerCase()) {
-        if (!allIngredients.find(i => i.normalized_english === ing.normalized_english)) {
-          allIngredients.push(ing);
-        }
-      }
-    });
-
-    return allIngredients;
-  }, [flags, extractionResult]);
-
-
-
-  const handleAudioClick = async () => {
-    /* FEATURE FLAG: Audio disabled due to caching bug
-    if (!userLanguage) return;
-    setIsAudioLoading(true);
-    await playVerdictAudio(flags, relevantIngredients, userLanguage);
-    setIsAudioLoading(false);
-    */
-  };
 
   const handleCompareClick = () => {
     setIsPickingCompare(true);
@@ -193,8 +152,6 @@ export const VerdictScreen: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'var(--color-text)', backgroundImage: `url('/background.png')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <Header 
-        onAudioClick={handleAudioClick} 
-        isAudioLoading={isAudioLoading} 
         onShareClick={handleShareClick}
         isSharingLoading={isSharing} 
         onCompareClick={handleCompareClick}
@@ -522,7 +479,6 @@ export const VerdictScreen: React.FC = () => {
         {/* Footer Links (Awareness) */}
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
           {/* Awareness Link */}
-          {(overallState === 'NOT RECOMMENDED' || overallState === 'MOSTLY FINE') && (
             <button 
               className="effect-gradient-accent"
               onClick={() => setIsAwarenessOpen(true)}
@@ -546,7 +502,6 @@ export const VerdictScreen: React.FC = () => {
               </svg>
               {isEn ? 'Did You Know?' : 'क्या आप जानते हैं?'}
             </button>
-          )}
         </div>
 
 

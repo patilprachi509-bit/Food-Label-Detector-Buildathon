@@ -227,14 +227,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isDemoDismissed, setIsDemoDismissed] = useSessionState<boolean>('ss_isDemoDismissed', false);
   const [hasSeenCombineTip, setHasSeenCombineTipState] = useState<boolean>(() => {
     try {
-      return localStorage.getItem('has_seen_combine_tip') === 'true';
+      return localStorage.getItem('has_seen_combine_tip_v2') === 'true';
     } catch {
       return false;
     }
   });
 
   const setHasSeenCombineTip = (val: boolean) => {
-    localStorage.setItem('has_seen_combine_tip', String(val));
+    try {
+      localStorage.setItem('has_seen_combine_tip_v2', String(val));
+    } catch (e) {
+      console.error(e);
+    }
     setHasSeenCombineTipState(val);
   };
 

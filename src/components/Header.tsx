@@ -10,7 +10,7 @@ interface HeaderProps {
   onIngredientsClick?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, onShareClick, isSharingLoading, onCompareClick, onIngredientsClick }) => {
+export const Header: React.FC<HeaderProps> = ({ onShareClick, isSharingLoading, onCompareClick, onIngredientsClick }) => {
   const { viewingSavedScanId, setViewingSavedScanId, setIsHistoryOpen, userLanguage, resetApp, viewingBatchResultId, setViewingBatchResultId, setExtractionResult } = useAppContext();
   const isEn = userLanguage === 'en';
   
@@ -26,14 +26,6 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
       setExtractionResult(null);
     } else {
       resetApp();
-    }
-  };
-
-  const handleAudio = () => {
-    if (isSavedView) {
-      alert(isEn ? "Audio isn't available for saved scans." : "सहेजे गए स्कैन के लिए ऑडियो उपलब्ध नहीं है।");
-    } else if (onAudioClick) {
-      onAudioClick();
     }
   };
 

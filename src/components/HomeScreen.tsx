@@ -4,7 +4,7 @@ import { useAppContext } from '../context/AppContext';
 import { IconShield, IconDroplet, IconFlask, IconSugarCube, IconSaltShaker } from './Icons';
 
 export const HomeScreen: React.FC = () => {
-  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsAwarenessOpen, setIsScanning, setIsBatchMode } = useAppContext();
+  const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsAwarenessOpen, setIsHowItWorksOpen, setIsScanning, setIsBatchMode } = useAppContext();
   const isEn = userLanguage === 'en';
 
   const [activeImageIndex, setActiveImageIndex] = React.useState(0);
@@ -77,9 +77,23 @@ export const HomeScreen: React.FC = () => {
           </button>
           
           <button 
+            onClick={() => setIsHowItWorksOpen(true)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: 'var(--color-text)' }}
+            aria-label="How it works"
+            title={isEn ? "How it works" : "यह कैसे काम करता है"}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </button>
+          
+          <button 
             onClick={() => setIsAwarenessOpen(true)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', color: 'var(--color-text)' }}
             aria-label="Awareness"
+            title={isEn ? "Awareness" : "जागरूकता"}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10"></circle>
