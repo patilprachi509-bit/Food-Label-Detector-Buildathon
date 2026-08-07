@@ -1,11 +1,18 @@
 import React from 'react';
 import { useAppContext } from '../context/AppContext';
+import { RichText } from './RichText';
 
 export const AwarenessScreen: React.FC = () => {
   const { userLanguage, setIsAwarenessOpen } = useAppContext();
   const isEn = userLanguage === 'en';
 
-  const facts = [
+  const facts: Array<{
+    titleEn: string;
+    titleHi: string;
+    bodyEn: string;
+    bodyHi: string;
+    source: string;
+  }> = [
     {
       titleEn: "50-metre school HFSS ban",
       titleHi: "50 मीटर स्कूल HFSS बैन",
@@ -104,7 +111,7 @@ export const AwarenessScreen: React.FC = () => {
                 {isEn ? fact.titleEn : fact.titleHi}
               </h3>
               <p className={isEn ? 'body-en' : 'body-hi'} style={{ margin: '0 0 1rem 0', fontSize: '1rem', lineHeight: 1.5, opacity: 0.9 }}>
-                {isEn ? fact.bodyEn : fact.bodyHi}
+                <RichText text={isEn ? fact.bodyEn : fact.bodyHi} isEn={isEn} />
               </p>
               <div style={{
                 fontSize: '0.8rem',
@@ -119,7 +126,7 @@ export const AwarenessScreen: React.FC = () => {
                   <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                   <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                 </svg>
-                <span>{fact.source}</span>
+                <span><RichText text={fact.source} isEn={isEn} /></span>
               </div>
             </div>
           ))}

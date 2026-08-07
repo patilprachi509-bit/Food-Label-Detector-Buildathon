@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 interface CitationProps {
-  shortLabel: string;
+  shortLabel: string | React.ReactNode;
   textEn: string | React.ReactNode;
   textHi: string | React.ReactNode;
   isEn: boolean;

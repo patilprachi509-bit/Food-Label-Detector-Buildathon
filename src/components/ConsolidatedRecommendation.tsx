@@ -3,6 +3,7 @@ import type { ExtractionResult } from '../context/AppContext';
 import type { Flag } from '../utils/ruleEngine';
 import { getDailyLimitInfo } from '../utils/dailyLimits';
 import { Citation } from './Citation';
+import { RichText } from './RichText';
 
 interface Props {
   flags: Flag[];
@@ -145,9 +146,9 @@ export const ConsolidatedRecommendation: React.FC<Props> = ({ flags, extractionR
       </p>
       <div style={{ borderTop: '1px solid var(--color-divider)', paddingTop: '0.25rem' }}>
         <Citation 
-          shortLabel="ICMR-NIN"
-          textEn="Adult reference, ICMR-NIN"
-          textHi="वयस्क संदर्भ, ICMR-NIN"
+          shortLabel={<RichText text="ICMR-NIN" isEn={isEn} />}
+          textEn={<>Adult reference, <RichText text="ICMR-NIN" isEn={isEn} /></>}
+          textHi={<>वयस्क संदर्भ, <RichText text="ICMR-NIN" isEn={isEn} /></>}
           isEn={isEn}
         />
       </div>

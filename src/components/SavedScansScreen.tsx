@@ -3,6 +3,7 @@ import { useAppContext } from '../context/AppContext';
 import type { SavedScan } from '../context/AppContext';
 import { evaluateRules } from '../utils/ruleEngine';
 import type { Flag } from '../utils/ruleEngine';
+import { CombinedPortionScreen } from './CombinedPortionScreen';
 
 interface SavedScansScreenProps {
   onSelectForCompare?: (scans: SavedScan[]) => void;
@@ -18,13 +19,17 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
     setUserFocus,
     setViewingSavedScanId,
     setIsHistoryOpen,
-    userLanguage
+    userLanguage,
+    userGender
   } = useAppContext();
 
   const isEn = userLanguage === 'en';
   const isCompareMode = !!onSelectForCompare;
   const [viewMode, setViewMode] = useState<'recent' | 'health'>('recent');
+  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [selectedForCombine, setSelectedForCombine] = useState<SavedScan[]>([]);
   const [selectedForCompare, setSelectedForCompare] = useState<SavedScan[]>([]);
+  const [isViewingCombined, setIsViewingCombined] = useState(false);
 
   const handleOpenScan = (scan: SavedScan) => {
     if (onSelectForCompare) {
@@ -40,6 +45,12 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
           return [...prev, scan];
         }
       });
+    } else if (isSelectMode) {
+      setSelectedForCombine(prev => {
+        const isSelected = prev.some(s => s.id === scan.id);
+        if (isSelected) return prev.filter(s => s.id !== scan.id);
+        return [...prev, scan];
+      });
     } else {
       setExtractionResult(scan.extractionResult);
       setUserFocus(scan.userFocus);
@@ -51,6 +62,9 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
   const handleBack = () => {
     if (onCloseCompare) {
       onCloseCompare();
+    } else if (isSelectMode) {
+      setIsSelectMode(false);
+      setSelectedForCombine([]);
     } else {
       setIsHistoryOpen(false);
     }
@@ -175,19 +189,19 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
                 return isEn ? "Unknown Product" : "अज्ञात उत्पाद";
               })()}
             </h4>
-            {!isCompareMode && (
+            {!isCompareMode && !isSelectMode && (
               <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: badgeColor, backgroundColor: badgeBg, padding: '2px 8px', borderRadius: '12px', marginLeft: '0.5rem', whiteSpace: 'nowrap' }}>
                 {badgeText}
               </span>
             )}
-            {isCompareMode && (
+            {(isCompareMode || isSelectMode) && (
               <div style={{ marginLeft: '0.5rem', display: 'flex', alignItems: 'center' }}>
                 <div style={{ 
                   width: '24px', height: '24px', borderRadius: '50%', border: '2px solid var(--color-text)',
-                  backgroundColor: selectedForCompare.some(s => s.id === scan.id) ? 'var(--color-text)' : 'transparent',
+                  backgroundColor: (isCompareMode ? selectedForCompare : selectedForCombine).some(s => s.id === scan.id) ? 'var(--color-text)' : 'transparent',
                   display: 'flex', justifyContent: 'center', alignItems: 'center', transition: 'background-color 0.2s'
                 }}>
-                  {selectedForCompare.some(s => s.id === scan.id) && (
+                  {(isCompareMode ? selectedForCompare : selectedForCombine).some(s => s.id === scan.id) && (
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-bg)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
@@ -200,7 +214,7 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
             {formattedDate} • {formattedTime}
           </p>
         </div>
-        {!isCompareMode && (
+        {!isCompareMode && !isSelectMode && (
           <button 
             onClick={(e) => { e.stopPropagation(); deleteScan(scan.id); }}
             style={{ padding: '1rem', background: 'none', border: 'none', borderLeft: '1px solid var(--color-divider)', cursor: 'pointer', color: 'var(--color-fail)', fontSize: '1.2rem', height: '100%' }}
@@ -211,6 +225,17 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
       </div>
     );
   };
+
+  if (isViewingCombined) {
+    return (
+      <CombinedPortionScreen 
+        scans={selectedForCombine} 
+        onClose={() => setIsViewingCombined(false)} 
+        isEn={isEn} 
+        userGender={userGender} 
+      />
+    );
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'var(--color-text)', backgroundImage: `url('/background.png')`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
@@ -224,11 +249,22 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
         </button>
         <div style={{ textAlign: 'center' }}>
           <h3 className="headline-en" style={{ letterSpacing: '2px', fontSize: '1rem', margin: 0 }}>
-            {isCompareMode ? (isEn ? 'SELECT TO COMPARE' : 'तुलना करने के लिए चुनें') : (isEn ? 'SAVED SCANS' : 'सहेजे गए स्कैन')}
+            {isCompareMode ? (isEn ? 'SELECT TO COMPARE' : 'तुलना करने के लिए चुनें') : 
+             isSelectMode ? (isEn ? 'SELECT TO COMBINE' : 'मिलाने के लिए चुनें') : 
+             (isEn ? 'SAVED SCANS' : 'सहेजे गए स्कैन')}
           </h3>
           <div style={{ width: '40px', height: '2px', backgroundColor: 'var(--color-text)', margin: '4px auto 0' }}></div>
         </div>
-        <div style={{ width: '40px' }}></div> {/* Spacer */}
+        <div style={{ width: '40px', display: 'flex', justifyContent: 'flex-end' }}>
+          {!isCompareMode && !isSelectMode && savedScans.length > 0 && (
+            <button 
+              onClick={() => setIsSelectMode(true)}
+              style={{ background: 'none', border: 'none', color: 'var(--color-text)', fontSize: '0.8rem', fontWeight: 'bold', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '1px' }}
+            >
+              {isEn ? 'Select' : 'चुनें'}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* List */}
@@ -349,7 +385,7 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
         )}
       </div>
 
-      {isCompareMode && (
+      {(isCompareMode || isSelectMode) && (
         <div style={{ 
           padding: '1.2rem 1.5rem', 
           display: 'flex', 
@@ -359,28 +395,34 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
         }}>
           <button 
             className="effect-gradient-glow"
-            onClick={() => onSelectForCompare && onSelectForCompare(selectedForCompare)}
-            disabled={selectedForCompare.length === 0}
+            onClick={() => {
+              if (isCompareMode && onSelectForCompare) {
+                onSelectForCompare(selectedForCompare);
+              } else if (isSelectMode && selectedForCombine.length >= 2) {
+                setIsViewingCombined(true);
+              }
+            }}
+            disabled={isCompareMode ? selectedForCompare.length === 0 : selectedForCombine.length < 2}
             style={{
-              backgroundColor: selectedForCompare.length > 0 ? 'var(--color-pass)' : 'transparent',
-              color: selectedForCompare.length > 0 ? 'white' : 'var(--color-text)',
-              border: selectedForCompare.length > 0 ? 'none' : '1px solid var(--color-divider)',
+              backgroundColor: (isCompareMode ? selectedForCompare.length > 0 : selectedForCombine.length >= 2) ? 'var(--color-pass)' : 'transparent',
+              color: (isCompareMode ? selectedForCompare.length > 0 : selectedForCombine.length >= 2) ? 'white' : 'var(--color-text)',
+              border: (isCompareMode ? selectedForCompare.length > 0 : selectedForCombine.length >= 2) ? 'none' : '1px solid var(--color-divider)',
               borderRadius: '50px',
               padding: '1rem 2.5rem',
               fontSize: '1.1rem',
               fontWeight: 'bold',
               letterSpacing: '1px',
               textTransform: 'uppercase',
-              cursor: selectedForCompare.length > 0 ? 'pointer' : 'default',
-              opacity: selectedForCompare.length > 0 ? 1 : 0.5,
+              cursor: (isCompareMode ? selectedForCompare.length > 0 : selectedForCombine.length >= 2) ? 'pointer' : 'default',
+              opacity: (isCompareMode ? selectedForCompare.length > 0 : selectedForCombine.length >= 2) ? 1 : 0.5,
               transition: 'all 0.2s',
               width: '100%',
               maxWidth: '400px'
             }}
           >
-            {isEn 
-              ? `COMPARE SELECTED (${selectedForCompare.length}/2)` 
-              : `चयनित की तुलना करें (${selectedForCompare.length}/2)`
+            {isCompareMode 
+              ? (isEn ? `COMPARE SELECTED (${selectedForCompare.length}/2)` : `चयनित की तुलना करें (${selectedForCompare.length}/2)`)
+              : (isEn ? `COMBINED VIEW (${selectedForCombine.length})` : `संयुक्त दृश्य (${selectedForCombine.length})`)
             }
           </button>
         </div>

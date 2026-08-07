@@ -116,7 +116,8 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
           </button>
         )}
         
-        <button 
+        {/* FEATURE FLAG: Audio disabled due to caching bug */}
+        {/* <button 
           className="effect-neumorphic"
           onClick={handleAudio}
           disabled={isAudioLoading}
@@ -132,7 +133,7 @@ export const Header: React.FC<HeaderProps> = ({ onAudioClick, isAudioLoading, on
               <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
             </svg>
           )}
-        </button>
+        </button> */}
         
         {onShareClick && (
           <button 

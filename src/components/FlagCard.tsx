@@ -3,6 +3,7 @@ import type { Flag } from '../utils/ruleEngine';
 import { useAppContext } from '../context/AppContext';
 import { IconSugarCube, IconSaltShaker, IconDroplet } from './Icons';
 import { Citation } from './Citation';
+import { RichText } from './RichText';
 
 interface FlagCardProps {
   flag: Flag;
@@ -111,11 +112,11 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div style={{ flex: 1 }}>
           <h3 className="headline-en" style={{ fontSize: '2rem', lineHeight: 1.1, marginTop: flag.claim ? '1rem' : 0, margin: 0, wordBreak: 'break-word' }}>
-            {isEn ? (flag.headline_en || flag.message_en) : (flag.headline_hi || flag.message_hi)}
+            <RichText text={isEn ? (flag.headline_en || flag.message_en) : (flag.headline_hi || flag.message_hi)} isEn={isEn} />
           </h3>
           {(isEn ? flag.headline_en : flag.headline_hi) && (
             <p style={{ fontSize: '1rem', marginTop: '0.75rem', marginBottom: 0, opacity: 0.9, lineHeight: 1.4 }}>
-              {isEn ? flag.message_en : flag.message_hi}
+              <RichText text={isEn ? flag.message_en : flag.message_hi} isEn={isEn} />
             </p>
           )}
           {isGeneralHealth && flag.relevantIngredients && flag.relevantIngredients.length > 0 && (
@@ -246,23 +247,29 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
 
           {/* Citation Marker */}
           <Citation 
-            shortLabel={flag.source.includes('ICMR') ? 'ICMR-NIN' : flag.source.includes('FSSAI') ? 'FSSAI' : 'Source'}
+            shortLabel={
+              flag.source.includes('ICMR') 
+                ? <RichText text="ICMR-NIN" isEn={isEn} />
+                : flag.source.includes('FSSAI') 
+                ? <RichText text="FSSAI" isEn={isEn} />
+                : 'Source'
+            }
             textEn={
               <>
-                Source: {flag.source}
+                Source: <RichText text={flag.source} isEn={true} />
                 {userFocus === flag.nutrientFocus && flag.evalDirection && (
                   <div style={{ marginTop: '0.4rem', color: 'var(--color-fail)' }}>
-                    As per {flag.source}, this is {flag.evalDirection} the general threshold.
+                    As per <RichText text={flag.source} isEn={true} />, this is {flag.evalDirection} the general threshold.
                   </div>
                 )}
               </>
             }
             textHi={
               <>
-                स्रोत: {flag.source === 'Adult reference, ICMR-NIN Dietary Guidelines 2024' ? 'वयस्क संदर्भ, ICMR-NIN आहार दिशानिर्देश 2024' : flag.source}
+                स्रोत: <RichText text={flag.source === 'Adult reference, ICMR-NIN Dietary Guidelines 2024' ? 'वयस्क संदर्भ, ICMR-NIN आहार दिशानिर्देश 2024' : flag.source} isEn={false} />
                 {userFocus === flag.nutrientFocus && flag.evalDirection && (
                   <div style={{ marginTop: '0.4rem', color: 'var(--color-fail)' }}>
-                    {flag.source === 'Adult reference, ICMR-NIN Dietary Guidelines 2024' ? 'ICMR-NIN' : flag.source} के अनुसार, यह सामान्य सीमा से {flag.evalDirection === 'above' ? 'ऊपर' : 'नीचे'} है।
+                    <RichText text={flag.source === 'Adult reference, ICMR-NIN Dietary Guidelines 2024' ? 'ICMR-NIN' : flag.source} isEn={false} /> के अनुसार, यह सामान्य सीमा से {flag.evalDirection === 'above' ? 'ऊपर' : 'नीचे'} है।
                   </div>
                 )}
               </>
@@ -273,7 +280,7 @@ export const FlagCard: React.FC<FlagCardProps> = ({ flag }) => {
           {/* Health Association Line */}
           {healthAssociationEn && (
             <div style={{ marginTop: '1rem', fontSize: '0.85rem', lineHeight: 1.4, padding: '0.75rem', backgroundColor: 'rgba(0,0,0,0.03)', borderRadius: '8px', borderLeft: '4px solid var(--color-fail)' }}>
-              <strong>{isEn ? 'Health Context:' : 'स्वास्थ्य संदर्भ:'}</strong> {isEn ? healthAssociationEn : healthAssociationHi}
+              <strong>{isEn ? 'Health Context:' : 'स्वास्थ्य संदर्भ:'}</strong> <RichText text={isEn ? healthAssociationEn : healthAssociationHi} isEn={isEn} />
             </div>
           )}
         </div>

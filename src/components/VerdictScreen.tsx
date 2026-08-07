@@ -14,7 +14,7 @@ import { ShareCardRenderer } from './ShareCardRenderer';
 import html2canvas from 'html2canvas';
 
 export const VerdictScreen: React.FC = () => {
-  const { extractionResult, frontImage, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType, setIsAwarenessOpen } = useAppContext();
+  const { extractionResult, frontImage, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType, setIsAwarenessOpen, hasSeenCombineTip, setHasSeenCombineTip } = useAppContext();
   const isEn = userLanguage === 'en';
   const [isAudioLoading, setIsAudioLoading] = useState(false);
   const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
@@ -68,10 +68,12 @@ export const VerdictScreen: React.FC = () => {
 
 
   const handleAudioClick = async () => {
+    /* FEATURE FLAG: Audio disabled due to caching bug
     if (!userLanguage) return;
     setIsAudioLoading(true);
     await playVerdictAudio(flags, relevantIngredients, userLanguage);
     setIsAudioLoading(false);
+    */
   };
 
   const handleCompareClick = () => {
@@ -216,6 +218,26 @@ export const VerdictScreen: React.FC = () => {
                 return isEn ? "Unknown Product" : "अज्ञात उत्पाद";
               })()}
             </h1>
+          </div>
+
+          <div style={{ marginBottom: '0.5rem' }}>
+            <h3 style={{ 
+              fontSize: '1rem', 
+              fontWeight: 'bold', 
+              margin: 0, 
+              color: overallState === 'NOT RECOMMENDED' ? 'var(--color-fail)' : 
+                     (overallState === 'MOSTLY FINE' || overallState === 'MINOR ISSUES' || overallState === 'VERIFICATION NEEDED') ? 'var(--color-verify)' : 
+                     'var(--color-pass)',
+              textTransform: 'uppercase', 
+              letterSpacing: '1px' 
+            }}>
+              {isEn ? overallState : (
+                overallState === 'NOT RECOMMENDED' ? 'अनुशंसित नहीं' :
+                overallState === 'MOSTLY FINE' ? 'ज़्यादातर ठीक है' :
+                overallState === 'VERIFICATION NEEDED' ? 'सत्यापन की आवश्यकता है' :
+                overallState === 'MINOR ISSUES' ? 'मामूली समस्याएँ' : 'अच्छा विकल्प'
+              )}
+            </h3>
           </div>
 
 
@@ -570,26 +592,40 @@ export const VerdictScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Sticky Bottom Action Bar */}
       <div style={{ 
         padding: '1.2rem 1.5rem', 
         display: 'flex', 
+        flexDirection: 'column',
         justifyContent: 'center', 
         alignItems: 'center', 
-        gap: '1rem', 
-        flexWrap: 'wrap',
         background: 'transparent',
         zIndex: 10
       }}>
-        {/* Save Scan Button */}
-        <button 
-          className="effect-gradient-glow"
-          onClick={() => {
-            if (!hasSaved) {
-              saveScan();
-              setHasSaved(true);
-            }
-          }}
+        {!hasSaved && !hasSeenCombineTip && (
+          <p style={{
+            margin: '0 0 0.5rem 0',
+            fontSize: '0.75rem',
+            opacity: 0.7,
+            textAlign: 'center',
+            maxWidth: '300px',
+            lineHeight: 1.3
+          }}>
+            {isEn 
+              ? "Tip: Save this to combine it with other products later and split your daily safety budget across them." 
+              : "सुझाव: बाद में इसे अन्य उत्पादों के साथ मिलाने और अपनी रोज़ की सुरक्षित सीमा को उनमें बाँटने के लिए इसे सेव करें।"}
+          </p>
+        )}
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
+          {/* Save Scan Button */}
+          <button 
+            className="effect-gradient-glow"
+            onClick={() => {
+              if (!hasSaved) {
+                saveScan();
+                setHasSaved(true);
+                if (!hasSeenCombineTip) setHasSeenCombineTip(true);
+              }
+            }}
           disabled={hasSaved}
           style={{
             backgroundColor: hasSaved ? 'var(--color-pass)' : 'var(--color-text)',
@@ -639,6 +675,7 @@ export const VerdictScreen: React.FC = () => {
         >
           {isEn ? 'Give Feedback' : 'प्रतिक्रिया दें'}
         </a>
+        </div>
       </div>
 
       <ShareCardRenderer 

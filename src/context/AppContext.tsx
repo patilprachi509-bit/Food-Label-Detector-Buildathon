@@ -136,6 +136,8 @@ interface AppContextType {
   clearBatchMode: () => void;
   isDemoDismissed: boolean;
   setIsDemoDismissed: (val: boolean) => void;
+  hasSeenCombineTip: boolean;
+  setHasSeenCombineTip: (val: boolean) => void;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -223,6 +225,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const [isDemoDismissed, setIsDemoDismissed] = useSessionState<boolean>('ss_isDemoDismissed', false);
+  const [hasSeenCombineTip, setHasSeenCombineTipState] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('has_seen_combine_tip') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const setHasSeenCombineTip = (val: boolean) => {
+    localStorage.setItem('has_seen_combine_tip', String(val));
+    setHasSeenCombineTipState(val);
+  };
 
   const clearBatchMode = () => {
     setIsBatchMode(false);
@@ -349,7 +363,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       isBatchFinished, setIsBatchFinished,
       viewingBatchResultId, setViewingBatchResultId,
       clearBatchMode,
-      isDemoDismissed, setIsDemoDismissed
+      isDemoDismissed, setIsDemoDismissed,
+      hasSeenCombineTip, setHasSeenCombineTip
     }}>
       {children}
     </AppContext.Provider>

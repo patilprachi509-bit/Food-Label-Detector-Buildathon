@@ -14,6 +14,8 @@ interface IngredientPillProps {
   percentage?: number;
 }
 
+import { RichText } from './RichText';
+
 export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainName, isExpandable: parentIsExpandable, isFaded, isEn, description, iconStr, percentage }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -40,11 +42,10 @@ export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainNa
     restrictionEn = "This ingredient is banned in the EU, though permitted in India. (verified 30 July 2026)";
     restrictionHi = "यह सामग्री यूरोपीय संघ में प्रतिबंधित है, हालांकि भारत में इसकी इजाज़त है। (सत्यापित 30 जुलाई 2026)";
   }
-
-  // Preserve maida context note
+  
   if (lowerRaw.includes("maida") || lowerRaw.includes("refined wheat flour")) {
-    maidaEn = "Refined wheat flour has its fiber and nutrients stripped away compared to whole wheat.";
-    maidaHi = "मैदा (रिफाइंड गेहूं का आटा) में साबुत गेहूं की तुलना में फाइबर और पोषक तत्व नहीं होते हैं।";
+    maidaEn = "Refined wheat flour has its fiber and nutrients stripped away compared to whole wheat, and has a high GI (Glycemic Index).";
+    maidaHi = "मैदा (रिफाइंड गेहूं का आटा) में साबुत गेहूं की तुलना में फाइबर और पोषक तत्व नहीं होते हैं, और इसका GI (ग्लाइसेमिक इंडेक्स) उच्च होता है।";
   }
 
   return (
@@ -104,16 +105,14 @@ export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainNa
             />
           )}
           {maidaEn && (
-            <Citation 
-              shortLabel="Nutrition Note"
-              textEn={maidaEn}
-              textHi={maidaHi}
-              isEn={isEn}
-            />
+            <div style={{ marginTop: '0.75rem', padding: '0.75rem', backgroundColor: 'rgba(212,175,55,0.1)', borderLeft: '3px solid #D4AF37', borderRadius: '0 8px 8px 0', fontSize: '0.85rem', lineHeight: 1.4 }}>
+              <strong>{isEn ? 'Nutrition Note: ' : 'पोषण नोट: '}</strong>
+              <RichText text={isEn ? maidaEn : maidaHi} isEn={isEn} />
+            </div>
           )}
           {description && (
             <div style={{ marginTop: '0.5rem', fontWeight: 'normal', fontStyle: 'italic', opacity: 0.9 }}>
-              {description}
+              <RichText text={description} isEn={isEn} />
             </div>
           )}
         </div>

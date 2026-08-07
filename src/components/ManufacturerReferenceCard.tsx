@@ -12,10 +12,14 @@ interface Props {
   isEn: boolean;
 }
 
-const RdaItem: React.FC<{ label: string, value: number }> = ({ label, value }) => (
+import { RichText } from './RichText';
+
+const RdaItem: React.FC<{ label: string, value: number, isEn: boolean }> = ({ label, value, isEn }) => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.03)', padding: '0.5rem 0.75rem', borderRadius: '8px', minWidth: '60px' }}>
     <span style={{ fontSize: '0.75rem', opacity: 0.7, textTransform: 'capitalize', marginBottom: '0.25rem' }}>{label}</span>
-    <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--color-text)' }}>{value}%</span>
+    <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--color-text)' }}>
+      {value}<RichText text="% RDA" isEn={isEn} />
+    </span>
   </div>
 );
 
@@ -94,7 +98,7 @@ export const ManufacturerReferenceCard: React.FC<Props> = ({ servingSizeG, servi
       {entries.length > 0 && (
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
           {entries.map(([key, val]) => (
-            <RdaItem key={key} label={getLabel(key, isEn)} value={val} />
+            <RdaItem key={key} label={getLabel(key, isEn)} value={val} isEn={isEn} />
           ))}
         </div>
       )}
