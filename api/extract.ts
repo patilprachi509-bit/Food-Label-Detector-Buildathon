@@ -238,7 +238,8 @@ export async function POST(req: Request) {
         normalized_english: { type: "STRING" },
         localized_display: { type: "STRING" },
         plain_name: { type: "STRING" }
-      }
+      },
+      required: ["normalized_english", "localized_display", "plain_name"]
     };
 
     const payload = {
@@ -264,7 +265,8 @@ export async function POST(req: Request) {
                 properties: {
                   normalized_english: { type: "STRING" },
                   localized_display: { type: "STRING" }
-                }
+                },
+                required: ["normalized_english", "localized_display"]
               }
             },
             front_of_pack: {
@@ -281,9 +283,11 @@ export async function POST(req: Request) {
                       concern: {
                         type: "OBJECT",
                         nullable: true,
-                        properties: translatableStringSchema.properties
+                        properties: translatableStringSchema.properties,
+                        required: ["normalized_english", "localized_display", "plain_name"]
                       }
-                    }
+                    },
+                    required: ["claim", "concern"]
                   }
                 },
                 brand_name: { type: "STRING" },
@@ -298,7 +302,8 @@ export async function POST(req: Request) {
                   enum: ["vegetarian", "non-vegetarian"],
                   nullable: true
                 }
-              }
+              },
+              required: ["has_celebrity_endorsement", "claims", "unverified_claim_notes", "brand_name", "product_name", "net_weight_g", "consumption_format", "declared_dietary_type"]
             },
             ingredients: {
               type: "OBJECT",
@@ -317,7 +322,8 @@ export async function POST(req: Request) {
                         properties: {
                           normalized_english: { type: "STRING" },
                           localized_display: { type: "STRING", nullable: true }
-                        }
+                        },
+                        required: ["normalized_english", "localized_display"]
                       },
                       percentage: { type: "NUMBER", nullable: true },
                       reasons_added: {
@@ -328,7 +334,8 @@ export async function POST(req: Request) {
                           properties: {
                             normalized_english: { type: "STRING" },
                             localized_display: { type: "STRING", nullable: true }
-                          }
+                          },
+                          required: ["normalized_english", "localized_display"]
                         }
                       },
                       icon: { 
@@ -337,13 +344,13 @@ export async function POST(req: Request) {
                         nullable: true
                       }
                     },
-                    required: ["normalized_english", "plain_name"]
+                    required: ["normalized_english", "localized_display", "plain_name", "description", "percentage", "reasons_added", "icon"]
                   }
                 },
                 order_index: { type: "BOOLEAN" },
                 detected_language: { type: "STRING" }
               },
-              required: ["raw_list"]
+              required: ["raw_list", "order_index", "detected_language"]
             },
             nutrition: {
               type: "OBJECT",
@@ -369,16 +376,19 @@ export async function POST(req: Request) {
                     added_sugar: { type: "NUMBER", nullable: true },
                     fat: { type: "NUMBER", nullable: true },
                     sodium: { type: "NUMBER", nullable: true }
-                  }
+                  },
+                  required: ["energy", "sugar", "added_sugar", "fat", "sodium"]
                 }
-              }
+              },
+              required: ["serving_size", "energy_kcal", "total_fat_g", "saturated_fat_g", "trans_fat_g", "total_sugar_g", "added_sugar_g", "sodium_mg", "protein_g", "fiber_g", "manufacturer_serving_size_g", "manufacturer_servings_per_pack", "manufacturer_per_serve_rda"]
             },
             extraction_confidence: {
               type: "STRING",
               enum: ["high", "medium", "low"]
             },
             raw_transcription: { type: "STRING" }
-          }
+          },
+          required: ["manufacturer_advisories", "front_of_pack", "ingredients", "nutrition", "extraction_confidence", "raw_transcription"]
         }
       }
     };

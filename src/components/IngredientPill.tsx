@@ -14,10 +14,11 @@ interface IngredientPillProps {
   percentage?: number;
 }
 
-export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainName, isExpandable, isFaded, isEn, description, iconStr, percentage }) => {
+export const IngredientPill: React.FC<IngredientPillProps> = ({ rawName, plainName, isExpandable: parentIsExpandable, isFaded, isEn, description, iconStr, percentage }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
   const isAdditiveCategory = isFSSAIAdditive(rawName, plainName);
+  const isExpandable = parentIsExpandable || isAdditiveCategory;
 
   let CategoryIcon = null;
   if (/preservative/i.test(plainName)) CategoryIcon = IconShield;
