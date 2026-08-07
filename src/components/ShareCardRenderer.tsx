@@ -236,10 +236,10 @@ export const ShareCardRenderer = forwardRef<HTMLDivElement, ShareCardRendererPro
              </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-            <span style={{ fontSize: '20px', fontStyle: 'italic', color: '#2A2622', fontWeight: '500' }}>
+            <span style={{ fontSize: '18px', fontStyle: 'italic', color: '#2A2622', fontWeight: '500' }}>
               Scan. Know. Choose Better.
             </span>
-            <span style={{ fontSize: '20px', color: '#D64E29', fontWeight: '700', textDecoration: 'underline' }}>
+            <span style={{ fontSize: '16px', color: '#D64E29', fontWeight: '700', textDecoration: 'underline', marginTop: '4px' }}>
               food-label-detector-buildathon.vercel.app
             </span>
           </div>
