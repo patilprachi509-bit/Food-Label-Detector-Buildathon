@@ -23,7 +23,7 @@ interface CacheEntry {
 export const ProcessingScreen: React.FC = () => {
   const { 
     userLanguage, frontImage, ingredientsImage, thirdImage, curvedImages,
-    setExtractionResult, setPendingExtractionResult, resetApp
+    setExtractionResult, resetApp
   } = useAppContext();
   const [error, setError] = useState<string | null>(null);
   const [loadingStep, setLoadingStep] = useState(0);
