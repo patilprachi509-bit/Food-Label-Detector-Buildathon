@@ -7,10 +7,11 @@ import { CombinedPortionScreen } from './CombinedPortionScreen';
 
 interface SavedScansScreenProps {
   onSelectForCompare?: (scans: SavedScan[]) => void;
+  onSelectForCombine?: (scans: SavedScan[]) => void;
   onCloseCompare?: () => void;
 }
 
-export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForCompare, onCloseCompare }) => {
+export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForCompare, onSelectForCombine, onCloseCompare }) => {
   const { 
     savedScans, 
     deleteScan, 
@@ -25,8 +26,9 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
 
   const isEn = userLanguage === 'en';
   const isCompareMode = !!onSelectForCompare;
+  const isCombinePickMode = !!onSelectForCombine;
   const [viewMode, setViewMode] = useState<'recent' | 'health'>('recent');
-  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [isSelectMode, setIsSelectMode] = useState(isCombinePickMode);
   const [selectedForCombine, setSelectedForCombine] = useState<SavedScan[]>([]);
   const [selectedForCompare, setSelectedForCompare] = useState<SavedScan[]>([]);
   const [isViewingCombined, setIsViewingCombined] = useState(false);
@@ -398,23 +400,25 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
             onClick={() => {
               if (isCompareMode && onSelectForCompare) {
                 onSelectForCompare(selectedForCompare);
+              } else if (isCombinePickMode && onSelectForCombine) {
+                onSelectForCombine(selectedForCombine);
               } else if (isSelectMode && selectedForCombine.length >= 2) {
                 setIsViewingCombined(true);
               }
             }}
-            disabled={isCompareMode ? selectedForCompare.length === 0 : selectedForCombine.length < 2}
+            disabled={isCompareMode ? selectedForCompare.length === 0 : isCombinePickMode ? selectedForCombine.length === 0 : selectedForCombine.length < 2}
             style={{
-              backgroundColor: (isCompareMode ? selectedForCompare.length > 0 : selectedForCombine.length >= 2) ? 'var(--color-pass)' : 'transparent',
-              color: (isCompareMode ? selectedForCompare.length > 0 : selectedForCombine.length >= 2) ? 'white' : 'var(--color-text)',
-              border: (isCompareMode ? selectedForCompare.length > 0 : selectedForCombine.length >= 2) ? 'none' : '1px solid var(--color-divider)',
+              backgroundColor: (isCompareMode ? selectedForCompare.length > 0 : isCombinePickMode ? selectedForCombine.length > 0 : selectedForCombine.length >= 2) ? 'var(--color-pass)' : 'transparent',
+              color: (isCompareMode ? selectedForCompare.length > 0 : isCombinePickMode ? selectedForCombine.length > 0 : selectedForCombine.length >= 2) ? 'white' : 'var(--color-text)',
+              border: (isCompareMode ? selectedForCompare.length > 0 : isCombinePickMode ? selectedForCombine.length > 0 : selectedForCombine.length >= 2) ? 'none' : '1px solid var(--color-divider)',
               borderRadius: '50px',
               padding: '1rem 2.5rem',
               fontSize: '1.1rem',
               fontWeight: 'bold',
               letterSpacing: '1px',
               textTransform: 'uppercase',
-              cursor: (isCompareMode ? selectedForCompare.length > 0 : selectedForCombine.length >= 2) ? 'pointer' : 'default',
-              opacity: (isCompareMode ? selectedForCompare.length > 0 : selectedForCombine.length >= 2) ? 1 : 0.5,
+              cursor: (isCompareMode ? selectedForCompare.length > 0 : isCombinePickMode ? selectedForCombine.length > 0 : selectedForCombine.length >= 2) ? 'pointer' : 'default',
+              opacity: (isCompareMode ? selectedForCompare.length > 0 : isCombinePickMode ? selectedForCombine.length > 0 : selectedForCombine.length >= 2) ? 1 : 0.5,
               transition: 'all 0.2s',
               width: '100%',
               maxWidth: '400px'
@@ -422,6 +426,8 @@ export const SavedScansScreen: React.FC<SavedScansScreenProps> = ({ onSelectForC
           >
             {isCompareMode 
               ? (isEn ? `COMPARE SELECTED (${selectedForCompare.length}/2)` : `चयनित की तुलना करें (${selectedForCompare.length}/2)`)
+              : isCombinePickMode
+              ? (isEn ? `ADD TO COMBINATION (${selectedForCombine.length})` : `संयोजन में जोड़ें (${selectedForCombine.length})`)
               : (isEn ? `COMBINED VIEW (${selectedForCombine.length})` : `संयुक्त दृश्य (${selectedForCombine.length})`)
             }
           </button>

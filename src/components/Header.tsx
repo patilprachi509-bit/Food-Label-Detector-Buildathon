@@ -7,10 +7,11 @@ interface HeaderProps {
   onShareClick?: () => void;
   isSharingLoading?: boolean;
   onCompareClick?: () => void;
+  onCombineClick?: () => void;
   onIngredientsClick?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onShareClick, isSharingLoading, onCompareClick, onIngredientsClick }) => {
+export const Header: React.FC<HeaderProps> = ({ onShareClick, isSharingLoading, onCompareClick, onCombineClick, onIngredientsClick }) => {
   const { viewingSavedScanId, setViewingSavedScanId, setIsHistoryOpen, userLanguage, resetApp, viewingBatchResultId, setViewingBatchResultId, setExtractionResult } = useAppContext();
   const isEn = userLanguage === 'en';
   
@@ -98,12 +99,28 @@ export const Header: React.FC<HeaderProps> = ({ onShareClick, isSharingLoading, 
             onClick={onCompareClick} 
             style={{ border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
             aria-label="Compare"
+            title={isEn ? "Compare" : "तुलना करें"}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="16 3 21 3 21 8"></polyline>
               <line x1="4" y1="14" x2="21" y2="3"></line>
               <polyline points="8 21 3 21 3 16"></polyline>
               <line x1="20" y1="10" x2="3" y2="21"></line>
+            </svg>
+          </button>
+        )}
+
+        {!isSavedView && onCombineClick && (
+          <button 
+            className="effect-neumorphic"
+            onClick={onCombineClick} 
+            style={{ border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', color: 'var(--color-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+            aria-label="Combine"
+            title={isEn ? "Combine" : "मिलाएं"}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
           </button>
         )}

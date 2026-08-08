@@ -6,6 +6,7 @@ import { Header } from './Header';
 import { FlagCard } from './FlagCard';
 import { CompareOverlay } from './CompareOverlay';
 import { SavedScansScreen } from './SavedScansScreen';
+import { CombinedPortionScreen } from './CombinedPortionScreen';
 import { XRayVisualizer } from './XRayVisualizer';
 import { ConsolidatedRecommendation } from './ConsolidatedRecommendation';
 import { ManufacturerReferenceCard } from './ManufacturerReferenceCard';
@@ -19,6 +20,10 @@ export const VerdictScreen: React.FC = () => {
   const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
   const [isPickingCompare, setIsPickingCompare] = useState(false);
   const [compareAgainstScans, setCompareAgainstScans] = useState<SavedScan[] | null>(null);
+  
+  const [isPickingCombine, setIsPickingCombine] = useState(false);
+  const [combineWithScans, setCombineWithScans] = useState<SavedScan[] | null>(null);
+
   const shareCardRef = useRef<HTMLDivElement>(null);
   const [isSharing, setIsSharing] = useState(false);
 
@@ -38,6 +43,10 @@ export const VerdictScreen: React.FC = () => {
 
   const handleCompareClick = () => {
     setIsPickingCompare(true);
+  };
+
+  const handleCombineClick = () => {
+    setIsPickingCombine(true);
   };
 
   const handleShareClick = async () => {
@@ -148,6 +157,37 @@ export const VerdictScreen: React.FC = () => {
     );
   }
 
+  if (combineWithScans && combineWithScans.length > 0 && extractionResult) {
+    const currentSavedScan: SavedScan = {
+      id: 'current',
+      timestamp: Date.now(),
+      productName: extractionResult.front_of_pack?.product_name || null,
+      brandName: extractionResult.front_of_pack?.brand_name || null,
+      extractionResult,
+      userFocus
+    };
+    return (
+      <CombinedPortionScreen 
+        scans={[currentSavedScan, ...combineWithScans]} 
+        onClose={() => setCombineWithScans(null)} 
+        isEn={isEn} 
+        userGender={userGender}
+      />
+    );
+  }
+
+  if (isPickingCombine) {
+    return (
+      <SavedScansScreen 
+        onSelectForCombine={(scans) => {
+          setCombineWithScans(scans);
+          setIsPickingCombine(false);
+        }} 
+        onCloseCompare={() => setIsPickingCombine(false)} 
+      />
+    );
+  }
+
   // The old "NO ISSUES FOUND" screen block has been removed, as the new VerdictSummaryVisual handles it natively.
 
   return (
@@ -156,6 +196,7 @@ export const VerdictScreen: React.FC = () => {
         onShareClick={handleShareClick}
         isSharingLoading={isSharing} 
         onCompareClick={handleCompareClick}
+        onCombineClick={handleCombineClick}
         onIngredientsClick={() => setHasChosenResultType('ingredients')}
       />
       
