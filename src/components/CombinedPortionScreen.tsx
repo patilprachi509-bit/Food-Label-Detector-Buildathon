@@ -92,35 +92,38 @@ export const CombinedPortionScreen: React.FC<Props> = ({ scans, onClose, isEn, u
       });
     });
 
-    let maxFraction = 0;
-    let limitingNutrient = '';
-    let limitingDailyLimit = 0;
-
-    if (totalSugarFraction > maxFraction) { maxFraction = totalSugarFraction; limitingNutrient = 'sugar'; limitingDailyLimit = sugarDailyLimit; }
-    if (totalFatFraction > maxFraction) { maxFraction = totalFatFraction; limitingNutrient = 'fat'; limitingDailyLimit = fatDailyLimit; }
-    if (totalSaltFraction > maxFraction) { maxFraction = totalSaltFraction; limitingNutrient = 'salt'; limitingDailyLimit = saltDailyLimit; }
-
-    // If no nutrient has limits, return null
-    if (limitingNutrient === '') return null;
+    if (sugarDailyLimit === 0 && fatDailyLimit === 0 && saltDailyLimit === 0) return null;
 
     // Calculate individual portions
-    const budgetPerProduct = (limitingDailyLimit * 0.25) / scans.length;
-    
     productDetails.forEach(p => {
-      let nutrientPer100g = 0;
-      if (limitingNutrient === 'sugar') nutrientPer100g = p.sugarPer100g;
-      if (limitingNutrient === 'fat') nutrientPer100g = p.fatPer100g;
-      if (limitingNutrient === 'salt') nutrientPer100g = p.saltPer100g;
+      let targetGrams = Infinity;
+      let bottleneckNutrient = '';
 
-      if (nutrientPer100g > 0) {
-        p.targetGrams = Math.round((budgetPerProduct / nutrientPer100g) * 100);
+      if (p.sugarPer100g > 0 && sugarDailyLimit > 0) {
+        const sugarBudget = (sugarDailyLimit * 0.25) / scans.length;
+        const g = (sugarBudget / p.sugarPer100g) * 100;
+        if (g < targetGrams) { targetGrams = g; bottleneckNutrient = 'sugar'; }
+      }
+      if (p.fatPer100g > 0 && fatDailyLimit > 0) {
+        const fatBudget = (fatDailyLimit * 0.25) / scans.length;
+        const g = (fatBudget / p.fatPer100g) * 100;
+        if (g < targetGrams) { targetGrams = g; bottleneckNutrient = 'fat'; }
+      }
+      if (p.saltPer100g > 0 && saltDailyLimit > 0) {
+        const saltBudget = (saltDailyLimit * 0.25) / scans.length;
+        const g = (saltBudget / p.saltPer100g) * 100;
+        if (g < targetGrams) { targetGrams = g; bottleneckNutrient = 'salt'; }
+      }
+
+      if (targetGrams === Infinity) {
+        p.targetGrams = -1;
       } else {
-        p.targetGrams = -1; // Unrestricted for this nutrient
+        p.targetGrams = Math.round(targetGrams);
+        p.bottleneckNutrient = bottleneckNutrient;
       }
     });
 
     return {
-      limitingNutrient,
       productDetails
     };
 
@@ -140,9 +143,10 @@ export const CombinedPortionScreen: React.FC<Props> = ({ scans, onClose, isEn, u
     );
   }
 
-  const nutrientEn = combinedInfo.limitingNutrient === 'sugar' ? 'Sugar' : combinedInfo.limitingNutrient === 'fat' ? 'Fat' : 'Salt';
-  const nutrientHi = combinedInfo.limitingNutrient === 'sugar' ? 'चीनी' : combinedInfo.limitingNutrient === 'fat' ? 'वसा' : 'नमक';
   const numProducts = scans.length;
+
+  const getNutrientLabelEn = (n: string) => n === 'sugar' ? 'Sugar' : n === 'fat' ? 'Fat' : n === 'salt' ? 'Salt' : '';
+  const getNutrientLabelHi = (n: string) => n === 'sugar' ? 'चीनी' : n === 'fat' ? 'वसा' : n === 'salt' ? 'नमक' : '';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--color-bg)', color: 'var(--color-text)', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100, overflowY: 'auto' }}>
@@ -155,13 +159,10 @@ export const CombinedPortionScreen: React.FC<Props> = ({ scans, onClose, isEn, u
 
       <div style={{ padding: '1.5rem' }}>
         <div className="effect-elevated" style={{ backgroundColor: 'var(--color-bg)', backgroundImage: "url('/suggestion-bg.png')", backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: '24px', padding: '2rem', marginBottom: '2rem' }}>
-          <h4 style={{ textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '1px', marginBottom: '0.75rem', fontWeight: 'bold', color: 'var(--color-fail)' }}>
-            {isEn ? 'Limiting Nutrient: ' : 'सीमित पोषक तत्व: '}{isEn ? nutrientEn : nutrientHi}
-          </h4>
           <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--color-text)', margin: '0 0 1rem 0', lineHeight: 1.3 }}>
             {isEn 
-              ? `Your 25% daily ${nutrientEn.toLowerCase()} safety budget is split evenly across these ${numProducts} products.`
-              : `आपका 25% दैनिक ${nutrientHi} सुरक्षित बजट इन ${numProducts} उत्पादों में समान रूप से विभाजित किया गया है।`}
+              ? `Your 25% daily safety budget (for Sugar, Fat, and Salt) is split evenly across these ${numProducts} products.`
+              : `आपका 25% दैनिक सुरक्षित बजट (चीनी, वसा और नमक के लिए) इन ${numProducts} उत्पादों में समान रूप से विभाजित किया गया है।`}
           </p>
           <div style={{ borderTop: '1px solid var(--color-divider)', paddingTop: '0.25rem' }}>
             <Citation 
@@ -184,7 +185,10 @@ export const CombinedPortionScreen: React.FC<Props> = ({ scans, onClose, isEn, u
                 {p.scan.brandName} {p.scan.productName}
               </h5>
               <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.7 }}>
-                {isEn ? 'Equal Share Limit' : 'समान हिस्सा सीमा'}
+                {isEn 
+                  ? (p.bottleneckNutrient ? `Restricted by ${getNutrientLabelEn(p.bottleneckNutrient)} limit` : 'Safe amount')
+                  : (p.bottleneckNutrient ? `${getNutrientLabelHi(p.bottleneckNutrient)} सीमा द्वारा प्रतिबंधित` : 'सुरक्षित मात्रा')
+                }
               </p>
             </div>
             <div style={{ textAlign: 'right' }}>
