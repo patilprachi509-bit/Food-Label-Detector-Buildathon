@@ -109,33 +109,7 @@ export const ProcessingScreen: React.FC = () => {
           setExtractionResult(data);
         }
 
-        // Fire a non-blocking request for video search
-        const brandName = data.front_of_pack?.brand_name;
-        const productName = data.front_of_pack?.product_name;
-
-        if (brandName || productName) {
-          fetch('/api/video-search', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ brandName, productName })
-          })
-          .then(res => res.json())
-          .then(videoData => {
-            if (isMounted && videoData.videoId) {
-              setPendingExtractionResult((prev: any) => {
-                if (!prev) return prev;
-                return {
-                  ...prev,
-                  front_of_pack: {
-                    ...prev.front_of_pack,
-                    video_id: videoData.videoId
-                  }
-                };
-              });
-            }
-          })
-          .catch(e => console.error("Video search background error:", e));
-        }
+        // Video search is now handled in VerdictScreen
       } catch (err: any) {
         if (isMounted) {
           console.error("Extraction Error:", err);

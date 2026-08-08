@@ -15,7 +15,7 @@ import { RichText } from './RichText';
 import html2canvas from 'html2canvas';
 
 export const VerdictScreen: React.FC = () => {
-  const { extractionResult, frontImage, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType, setIsAwarenessOpen, hasSeenCombineTip, setHasSeenCombineTip } = useAppContext();
+  const { extractionResult, setExtractionResult, frontImage, userFocus, userLanguage, saveScan, viewingSavedScanId, userGender, setUserGender, setHasChosenResultType, setIsAwarenessOpen, hasSeenCombineTip, setHasSeenCombineTip } = useAppContext();
   const isEn = userLanguage === 'en';
   const [hasSaved, setHasSaved] = useState(!!viewingSavedScanId);
   const [isPickingCompare, setIsPickingCompare] = useState(false);
@@ -26,6 +26,34 @@ export const VerdictScreen: React.FC = () => {
 
   const shareCardRef = useRef<HTMLDivElement>(null);
   const [isSharing, setIsSharing] = useState(false);
+
+  // Background fetch for YouTube video
+  React.useEffect(() => {
+    if (extractionResult && !extractionResult.front_of_pack?.video_id) {
+      const brandName = extractionResult.front_of_pack?.brand_name;
+      const productName = extractionResult.front_of_pack?.product_name;
+      if (brandName || productName) {
+        fetch('/api/video-search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ brandName, productName })
+        })
+        .then(res => res.json())
+        .then(videoData => {
+          if (videoData.videoId) {
+            setExtractionResult({
+              ...extractionResult,
+              front_of_pack: {
+                ...extractionResult.front_of_pack,
+                video_id: videoData.videoId
+              }
+            });
+          }
+        })
+        .catch(e => console.error("Video search error:", e));
+      }
+    }
+  }, [extractionResult, setExtractionResult]);
 
   const flags = useMemo(() => {
     if (!extractionResult) return [];
