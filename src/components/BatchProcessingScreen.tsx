@@ -24,7 +24,10 @@ export const BatchProcessingScreen: React.FC = () => {
     let isMounted = true;
 
     const processBatch = async () => {
-      // Loop sequentially
+      // Implement concurrency pool (max 3 at a time)
+      const CONCURRENCY_LIMIT = 3;
+      const activePromises = new Set<Promise<void>>();
+
       for (let i = 0; i < batchItems.length; i++) {
         const item = batchItems[i];
         if (item.status === 'done' || item.status === 'error') continue; // Recover interrupted 'processing' items
@@ -34,115 +37,141 @@ export const BatchProcessingScreen: React.FC = () => {
           setBatchItems(prev => prev.map(p => p.id === item.id ? { ...p, status: 'processing' } : p));
         }
 
-        try {
-          // A batch item must either have curvedImages or (frontImage + ingredientsImage)
-          if (!((item as any).curvedImages?.length > 0) && (!item.frontImage || !item.ingredientsImage)) throw new Error("Missing image");
-          
-          let hashStr = "";
-          let payload: any = {};
-
-          if ((item as any).curvedImages?.length > 0) {
-            const curvedImagesBase64 = (item as any).curvedImages.map((img: string) => img.split(',')[1]);
-            payload = { curvedImagesBase64 };
-            hashStr = await generateHash(curvedImagesBase64.join(''));
-          } else {
-            const frontBase64 = item.frontImage!.split(',')[1];
-            const ingredientsBase64 = item.ingredientsImage!.split(',')[1];
-            const thirdBase64 = item.thirdImage ? item.thirdImage.split(',')[1] : null;
-            payload = { frontBase64, ingredientsBase64, thirdBase64 };
-            hashStr = await generateHash(frontBase64 + ingredientsBase64 + (thirdBase64 || ''));
-          }
-          
-          let data = null;
+        const processItem = async () => {
           try {
-            const cacheStr = localStorage.getItem(CACHE_KEY);
-            if (cacheStr) {
-              const cache = JSON.parse(cacheStr);
-              const found = cache.find((c: any) => c.hash === hashStr);
-              if (found) data = found.data;
-            }
-          } catch (e) {
-            console.error("Cache read error", e);
-          }
+            // A batch item must either have curvedImages or (frontImage + ingredientsImage)
+            if (!((item as any).curvedImages?.length > 0) && (!item.frontImage || !item.ingredientsImage)) throw new Error("Missing image");
+            
+            let hashStr = "";
+            let payload: any = {};
 
-          if (!data) {
-            const fetchPromise = fetch('/api/extract', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-
-            const timeoutPromise = new Promise<Response>((_, reject) => {
-              setTimeout(() => reject(new Error("Processing timeout")), 25000);
-            });
-
-            const response = await Promise.race([fetchPromise, timeoutPromise]);
-
-            if (!response.ok) {
-              const errText = await response.text();
-              throw new Error(`API error ${response.status}: ${errText}`);
+            if ((item as any).curvedImages?.length > 0) {
+              const curvedImagesBase64 = (item as any).curvedImages.map((img: string) => img.split(',')[1]);
+              payload = { curvedImagesBase64 };
+              hashStr = await generateHash(curvedImagesBase64.join(''));
+            } else {
+              const frontBase64 = item.frontImage!.split(',')[1];
+              const ingredientsBase64 = item.ingredientsImage!.split(',')[1];
+              const thirdBase64 = item.thirdImage ? item.thirdImage.split(',')[1] : null;
+              payload = { frontBase64, ingredientsBase64, thirdBase64 };
+              hashStr = await generateHash(frontBase64 + ingredientsBase64 + (thirdBase64 || ''));
             }
             
-            data = await response.json();
-            
+            let data = null;
             try {
               const cacheStr = localStorage.getItem(CACHE_KEY);
-              let cache = cacheStr ? JSON.parse(cacheStr) : [];
-              cache.push({ hash: hashStr, data, timestamp: Date.now() });
-              if (cache.length > MAX_CACHE_SIZE) {
-                cache.sort((a: any, b: any) => a.timestamp - b.timestamp);
-                cache = cache.slice(cache.length - MAX_CACHE_SIZE);
+              if (cacheStr) {
+                const cache = JSON.parse(cacheStr);
+                const found = cache.find((c: any) => c.hash === hashStr);
+                if (found) data = found.data;
               }
-              localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
             } catch (e) {
-              console.error("Cache write error", e);
+              console.error("Cache read error", e);
+            }
+
+            if (!data) {
+              const fetchPromise = fetch('/api/extract', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+
+              const timeoutPromise = new Promise<Response>((_, reject) => {
+                setTimeout(() => reject(new Error("Processing timeout")), 25000);
+              });
+
+              const response = await Promise.race([fetchPromise, timeoutPromise]);
+
+              if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(`API error ${response.status}: ${errText}`);
+              }
+              
+              data = await response.json();
+              
+              try {
+                const cacheStr = localStorage.getItem(CACHE_KEY);
+                let cache = cacheStr ? JSON.parse(cacheStr) : [];
+                cache.push({ hash: hashStr, data, timestamp: Date.now() });
+                if (cache.length > MAX_CACHE_SIZE) {
+                  cache.sort((a: any, b: any) => a.timestamp - b.timestamp);
+                  cache = cache.slice(cache.length - MAX_CACHE_SIZE);
+                }
+                localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+              } catch (e) {
+                console.error("Cache write error", e);
+              }
+            }
+
+            // Guardrail logic (same as single scan)
+            if (data?.ingredients?.raw_list) {
+              const originalLength = data.ingredients.raw_list.length;
+              data.ingredients.raw_list = data.ingredients.raw_list.filter((ing: any) => ing.bounding_box !== null && ing.bounding_box !== undefined);
+              if (originalLength > 0 && data.ingredients.raw_list.length < originalLength) {
+                 data.extraction_confidence = 'low';
+                 if (!data.front_of_pack.unverified_claim_notes) data.front_of_pack.unverified_claim_notes = [];
+                 data.front_of_pack.unverified_claim_notes.push({
+                   claim: { normalized_english: "Ingredient List", localized_display: "सामग्री सूची", plain_name: "Ingredient List" },
+                   concern: { normalized_english: "Some ingredients were filtered out because they could not be reliably localized on the physical pack.", localized_display: "कुछ सामग्रियों को फ़िल्टर किया गया क्योंकि वे भौतिक पैक पर मज़बूती से स्थित नहीं हो सके।", plain_name: "Localization Error" }
+                 });
+              }
+            }
+
+            if (data.extraction_confidence === 'low') {
+              throw new Error("Low confidence extraction");
+            }
+
+            // Video search logic (fire and forget, we don't wait for it to finish the batch item)
+            const brandName = data.front_of_pack?.brand_name;
+            const productName = data.front_of_pack?.product_name;
+            if (brandName || productName) {
+              fetch('/api/video-search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ brandName, productName })
+              }).then(res => res.json()).then(videoData => {
+                if (videoData.videoId) {
+                  setBatchItems(prev => prev.map(p => {
+                    if (p.id === item.id && p.result) {
+                      return {
+                        ...p,
+                        result: {
+                          ...p.result,
+                          front_of_pack: { ...p.result.front_of_pack, video_id: videoData.videoId }
+                        }
+                      };
+                    }
+                    return p;
+                  }));
+                }
+              }).catch(e => console.error("Video search error", e));
+            }
+
+            // Mark as done
+            if (isMounted) {
+              setBatchItems(prev => prev.map(p => p.id === item.id ? { ...p, status: 'done', result: data } : p));
+            }
+
+          } catch (err) {
+            console.error(`Error processing batch item ${item.id}:`, err);
+            // Mark as error and gracefully continue loop
+            if (isMounted) {
+              setBatchItems(prev => prev.map(p => p.id === item.id ? { ...p, status: 'error' } : p));
             }
           }
+        };
 
+        const promise = processItem();
+        activePromises.add(promise);
+        promise.finally(() => activePromises.delete(promise));
 
-          if (data.extraction_confidence === 'low') {
-            throw new Error("Low confidence extraction");
-          }
-
-          // Video search logic (fire and forget, we don't wait for it to finish the batch item)
-          const brandName = data.front_of_pack?.brand_name;
-          const productName = data.front_of_pack?.product_name;
-          if (brandName || productName) {
-            fetch('/api/video-search', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ brandName, productName })
-            }).then(res => res.json()).then(videoData => {
-              if (videoData.videoId) {
-                setBatchItems(prev => prev.map(p => {
-                  if (p.id === item.id && p.result) {
-                    return {
-                      ...p,
-                      result: {
-                        ...p.result,
-                        front_of_pack: { ...p.result.front_of_pack, video_id: videoData.videoId }
-                      }
-                    };
-                  }
-                  return p;
-                }));
-              }
-            }).catch(e => console.error("Video search error", e));
-          }
-
-          // Mark as done
-          if (isMounted) {
-            setBatchItems(prev => prev.map(p => p.id === item.id ? { ...p, status: 'done', result: data } : p));
-          }
-
-        } catch (err) {
-          console.error(`Error processing batch item ${item.id}:`, err);
-          // Mark as error and gracefully continue loop
-          if (isMounted) {
-            setBatchItems(prev => prev.map(p => p.id === item.id ? { ...p, status: 'error' } : p));
-          }
+        if (activePromises.size >= CONCURRENCY_LIMIT) {
+          await Promise.race(activePromises);
         }
       }
+
+      // Wait for any remaining promises to finish
+      await Promise.all(activePromises);
 
       // Loop finished
       if (isMounted) {
