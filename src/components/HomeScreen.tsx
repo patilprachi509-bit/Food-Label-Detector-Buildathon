@@ -3,6 +3,9 @@ import { useAppContext } from '../context/AppContext';
 
 import { IconShield, IconDroplet, IconFlask, IconSugarCube, IconSaltShaker } from './Icons';
 
+// Feature flag to disable batch mode for demo stability
+const ENABLE_BATCH_MODE = false;
+
 export const HomeScreen: React.FC = () => {
   const { userLanguage, setUserLanguage, setIsHistoryOpen, setIsAwarenessOpen, setIsHowItWorksOpen, setIsScanning, setIsBatchMode } = useAppContext();
   const isEn = userLanguage === 'en';
@@ -294,39 +297,42 @@ export const HomeScreen: React.FC = () => {
           </svg>
         </button>
         
-        <button 
-          className="anim-drift"
-          onClick={() => setIsBatchMode(true)}
-          style={{ 
-            width: '100%', 
-            backgroundImage: 'linear-gradient(45deg, #385A42, #d95328, #597a5f, #385A42)', 
-            color: 'white', 
-            border: 'none', 
-            borderRadius: '16px', 
-            padding: '1.25rem', 
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            cursor: 'pointer',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            marginBottom: '0.5rem',
-            boxShadow: '0 6px 15px rgba(56, 90, 66, 0.4)'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-              <line x1="9" y1="3" x2="9" y2="21"/>
+        {/* BATCH MODE FEATURE FLAG */}
+        {ENABLE_BATCH_MODE && (
+          <button 
+            className="anim-drift"
+            onClick={() => setIsBatchMode(true)}
+            style={{ 
+              width: '100%', 
+              backgroundImage: 'linear-gradient(45deg, #385A42, #d95328, #597a5f, #385A42)', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '16px', 
+              padding: '1.25rem', 
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              cursor: 'pointer',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              marginBottom: '0.5rem',
+              boxShadow: '0 6px 15px rgba(56, 90, 66, 0.4)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="9" y1="3" x2="9" y2="21"/>
+              </svg>
+              <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255,255,255,0.3)', flexShrink: 0 }}></div>
+              <span className="headline-en" style={{ fontSize: '1.1rem', letterSpacing: '0.5px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                {isEn ? 'SCAN MULTIPLE' : 'कई उत्पाद स्कैन करें'}
+              </span>
+            </div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
-            <div style={{ width: '1px', height: '24px', backgroundColor: 'rgba(255,255,255,0.3)', flexShrink: 0 }}></div>
-            <span className="headline-en" style={{ fontSize: '1.1rem', letterSpacing: '0.5px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-              {isEn ? 'SCAN MULTIPLE' : 'कई उत्पाद स्कैन करें'}
-            </span>
-          </div>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </button>
+          </button>
+        )}
 
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '1rem', opacity: 0.6 }}>
