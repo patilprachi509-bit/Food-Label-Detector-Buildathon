@@ -243,218 +243,237 @@ export async function POST(req: Request) {
       required: ["normalized_english", "localized_display", "plain_name"]
     };
 
-    const payload = {
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            { text: promptText }
-          ]
-        }
-      ],
-      generationConfig: {
-        temperature: 0,
-        responseMimeType: "application/json",
-        responseSchema: {
+    const pass1Schema = {
+      type: "OBJECT",
+      properties: {
+        nutrition: {
           type: "OBJECT",
           properties: {
-            manufacturer_advisories: {
-              type: "ARRAY",
+            serving_size: { type: "STRING" },
+            energy_kcal: { type: "NUMBER" },
+            total_fat_g: { type: "NUMBER" },
+            saturated_fat_g: { type: "NUMBER" },
+            trans_fat_g: { type: "NUMBER", nullable: true },
+            total_sugar_g: { type: "NUMBER" },
+            added_sugar_g: { type: "NUMBER", nullable: true },
+            sodium_mg: { type: "NUMBER" },
+            protein_g: { type: "NUMBER" },
+            fiber_g: { type: "NUMBER", nullable: true },
+            manufacturer_serving_size_g: { type: "NUMBER", nullable: true },
+            manufacturer_servings_per_pack: { type: "NUMBER", nullable: true },
+            manufacturer_per_serve_rda: {
+              type: "OBJECT",
               nullable: true,
+              properties: {
+                energy: { type: "NUMBER", nullable: true },
+                sugar: { type: "NUMBER", nullable: true },
+                added_sugar: { type: "NUMBER", nullable: true },
+                fat: { type: "NUMBER", nullable: true },
+                sodium: { type: "NUMBER", nullable: true }
+              },
+              required: ["energy", "sugar", "added_sugar", "fat", "sodium"]
+            }
+          },
+          required: ["serving_size", "energy_kcal", "total_fat_g", "saturated_fat_g", "trans_fat_g", "total_sugar_g", "added_sugar_g", "sodium_mg", "protein_g", "fiber_g", "manufacturer_serving_size_g", "manufacturer_servings_per_pack", "manufacturer_per_serve_rda"]
+        },
+        ingredients: {
+          type: "OBJECT",
+          properties: {
+            raw_list: { 
+              type: "ARRAY", 
               items: {
                 type: "OBJECT",
                 properties: {
                   normalized_english: { type: "STRING" },
-                  localized_display: { type: "STRING" }
-                },
-                required: ["normalized_english", "localized_display"]
-              }
-            },
-            front_of_pack: {
-              type: "OBJECT",
-              properties: {
-                has_celebrity_endorsement: { type: "BOOLEAN" },
-                claims: { type: "ARRAY", items: translatableStringSchema },
-                unverified_claim_notes: {
-                  type: "ARRAY",
-                  items: {
+                  localized_display: { type: "STRING", nullable: true },
+                  plain_name: { type: "STRING" },
+                  description: {
                     type: "OBJECT",
-                    properties: {
-                      claim: translatableStringSchema,
-                      concern: {
-                        type: "OBJECT",
-                        nullable: true,
-                        properties: translatableStringSchema.properties,
-                        required: ["normalized_english", "localized_display", "plain_name"]
-                      }
-                    },
-                    required: ["claim", "concern"]
-                  }
-                },
-                brand_name: { type: "STRING" },
-                product_name: { type: "STRING" },
-                net_weight_g: { type: "NUMBER", nullable: true },
-                consumption_format: { 
-                  type: "STRING", 
-                  enum: ["solid_snack", "spoonable", "beverage", "other"]
-                },
-                declared_dietary_type: {
-                  type: "STRING",
-                  enum: ["vegetarian", "non-vegetarian"],
-                  nullable: true
-                }
-              },
-              required: ["has_celebrity_endorsement", "claims", "unverified_claim_notes", "brand_name", "product_name", "net_weight_g", "consumption_format", "declared_dietary_type"]
-            },
-            ingredients: {
-              type: "OBJECT",
-              properties: {
-                raw_list: { 
-                  type: "ARRAY", 
-                  items: {
-                    type: "OBJECT",
+                    nullable: true,
                     properties: {
                       normalized_english: { type: "STRING" },
-                      localized_display: { type: "STRING", nullable: true },
-                      plain_name: { type: "STRING" },
-                      description: {
-                        type: "OBJECT",
-                        nullable: true,
-                        properties: {
-                          normalized_english: { type: "STRING" },
-                          localized_display: { type: "STRING", nullable: true }
-                        },
-                        required: ["normalized_english", "localized_display"]
-                      },
-                      percentage: { type: "NUMBER", nullable: true },
-                      reasons_added: {
-                        type: "ARRAY",
-                        nullable: true,
-                        items: {
-                          type: "OBJECT",
-                          properties: {
-                            normalized_english: { type: "STRING" },
-                            localized_display: { type: "STRING", nullable: true }
-                          },
-                          required: ["normalized_english", "localized_display"]
-                        }
-                      },
-                      icon: { 
-                        type: "STRING", 
-                        enum: ['tomato', 'sugar', 'onion', 'salt', 'garlic', 'chemical', 'shield', 'spices', 'leaf', 'grain', 'default'],
-                        nullable: true
-                      }
+                      localized_display: { type: "STRING", nullable: true }
                     },
-                    required: ["normalized_english", "localized_display", "plain_name", "description", "percentage", "reasons_added", "icon"]
+                    required: ["normalized_english", "localized_display"]
+                  },
+                  percentage: { type: "NUMBER", nullable: true },
+                  reasons_added: {
+                    type: "ARRAY",
+                    nullable: true,
+                    items: {
+                      type: "OBJECT",
+                      properties: {
+                        normalized_english: { type: "STRING" },
+                        localized_display: { type: "STRING", nullable: true }
+                      },
+                      required: ["normalized_english", "localized_display"]
+                    }
+                  },
+                  icon: { 
+                    type: "STRING", 
+                    enum: ['tomato', 'sugar', 'onion', 'salt', 'garlic', 'chemical', 'shield', 'spices', 'leaf', 'grain', 'default'],
+                    nullable: true
                   }
                 },
-                order_index: { type: "BOOLEAN" },
-                detected_language: { type: "STRING" }
-              },
-              required: ["raw_list", "order_index", "detected_language"]
+                required: ["normalized_english", "localized_display", "plain_name", "description", "percentage", "reasons_added", "icon"]
+              }
             },
-            nutrition: {
-              type: "OBJECT",
-              properties: {
-                serving_size: { type: "STRING" },
-                energy_kcal: { type: "NUMBER" },
-                total_fat_g: { type: "NUMBER" },
-                saturated_fat_g: { type: "NUMBER" },
-                trans_fat_g: { type: "NUMBER", nullable: true },
-                total_sugar_g: { type: "NUMBER" },
-                added_sugar_g: { type: "NUMBER", nullable: true },
-                sodium_mg: { type: "NUMBER" },
-                protein_g: { type: "NUMBER" },
-                fiber_g: { type: "NUMBER", nullable: true },
-                manufacturer_serving_size_g: { type: "NUMBER", nullable: true },
-                manufacturer_servings_per_pack: { type: "NUMBER", nullable: true },
-                manufacturer_per_serve_rda: {
-                  type: "OBJECT",
-                  nullable: true,
-                  properties: {
-                    energy: { type: "NUMBER", nullable: true },
-                    sugar: { type: "NUMBER", nullable: true },
-                    added_sugar: { type: "NUMBER", nullable: true },
-                    fat: { type: "NUMBER", nullable: true },
-                    sodium: { type: "NUMBER", nullable: true }
-                  },
-                  required: ["energy", "sugar", "added_sugar", "fat", "sodium"]
-                }
-              },
-              required: ["serving_size", "energy_kcal", "total_fat_g", "saturated_fat_g", "trans_fat_g", "total_sugar_g", "added_sugar_g", "sodium_mg", "protein_g", "fiber_g", "manufacturer_serving_size_g", "manufacturer_servings_per_pack", "manufacturer_per_serve_rda"]
-            },
-            extraction_confidence: {
-              type: "STRING",
-              enum: ["high", "medium", "low"]
-            },
-            raw_transcription: { type: "STRING" }
+            order_index: { type: "BOOLEAN" },
+            detected_language: { type: "STRING" }
           },
-          required: ["manufacturer_advisories", "front_of_pack", "ingredients", "nutrition", "extraction_confidence", "raw_transcription"]
+          required: ["raw_list", "order_index", "detected_language"]
         }
-      }
+      },
+      required: ["nutrition", "ingredients"]
     };
-    let pass2Response: Response | null = null;
-    let attempt = 0;
-    const delays = [2000, 5000]; // 2s for first retry, 5s for second
 
-    for (attempt = 0; attempt < 3; attempt++) {
-      if (attempt > 0) {
-        console.log(`Retrying Gemini API (Pass 2) due to ${pass2Response?.status}... waiting ${delays[attempt - 1]}ms (Attempt ${attempt + 1}/3)`);
-        await new Promise(resolve => setTimeout(resolve, delays[attempt - 1]));
+    const fopSchema = {
+      type: "OBJECT",
+      properties: {
+        manufacturer_advisories: {
+          type: "ARRAY",
+          nullable: true,
+          items: {
+            type: "OBJECT",
+            properties: {
+              normalized_english: { type: "STRING" },
+              localized_display: { type: "STRING" }
+            },
+            required: ["normalized_english", "localized_display"]
+          }
+        },
+        front_of_pack: {
+          type: "OBJECT",
+          properties: {
+            has_celebrity_endorsement: { type: "BOOLEAN" },
+            claims: { type: "ARRAY", items: translatableStringSchema },
+            unverified_claim_notes: {
+              type: "ARRAY",
+              items: {
+                type: "OBJECT",
+                properties: {
+                  claim: translatableStringSchema,
+                  concern: {
+                    type: "OBJECT",
+                    nullable: true,
+                    properties: translatableStringSchema.properties,
+                    required: ["normalized_english", "localized_display", "plain_name"]
+                  }
+                },
+                required: ["claim", "concern"]
+              }
+            },
+            brand_name: { type: "STRING" },
+            product_name: { type: "STRING" },
+            net_weight_g: { type: "NUMBER", nullable: true },
+            consumption_format: { 
+              type: "STRING", 
+              enum: ["solid_snack", "spoonable", "beverage", "other"]
+            },
+            declared_dietary_type: {
+              type: "STRING",
+              enum: ["vegetarian", "non-vegetarian"],
+              nullable: true
+            }
+          },
+          required: ["has_celebrity_endorsement", "claims", "unverified_claim_notes", "brand_name", "product_name", "net_weight_g", "consumption_format", "declared_dietary_type"]
+        },
+        extraction_confidence: {
+          type: "STRING",
+          enum: ["high", "medium", "low"]
+        }
+      },
+      required: ["manufacturer_advisories", "front_of_pack", "extraction_confidence"]
+    };
+
+    const makeGeminiCall = async (schema: any, callName: string, promptOverride: string = promptText) => {
+      const payload = {
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: promptOverride }]
+          }
+        ],
+        generationConfig: {
+          temperature: 0,
+          responseMimeType: "application/json",
+          responseSchema: schema
+        }
+      };
+
+      let pass2Response: Response | null = null;
+      let attempt = 0;
+      const delays = [2000, 5000];
+
+      for (attempt = 0; attempt < 3; attempt++) {
+        if (attempt > 0) {
+          console.log(`Retrying Gemini API (${callName}) due to ${pass2Response?.status}... waiting ${delays[attempt - 1]}ms (Attempt ${attempt + 1}/3)`);
+          await new Promise(resolve => setTimeout(resolve, delays[attempt - 1]));
+        }
+
+        pass2Response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (pass2Response.ok) break;
+        if (pass2Response.status !== 429 && pass2Response.status !== 504) break;
       }
 
-      pass2Response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (pass2Response.ok) {
-        break; // Success
+      if (!pass2Response || !pass2Response.ok) {
+        const errorText = pass2Response ? await pass2Response.text() : 'Unknown error';
+        throw new Error(`Gemini API Error (${callName}) [Status: ${pass2Response?.status}]: ${errorText}`);
       }
 
-      if (pass2Response.status !== 429 && pass2Response.status !== 504) {
-        break; // Don't retry other errors (e.g. 400, 403)
+      const pass2Data = (await pass2Response.json()) as any;
+      let rawResultStr = pass2Data.candidates[0].content.parts[0].text.trim();
+      
+      if (rawResultStr.startsWith('\`\`\`json')) {
+        rawResultStr = rawResultStr.substring(7);
+      } else if (rawResultStr.startsWith('\`\`\`')) {
+        rawResultStr = rawResultStr.substring(3);
       }
-    }
+      if (rawResultStr.endsWith('\`\`\`')) {
+        rawResultStr = rawResultStr.substring(0, rawResultStr.length - 3);
+      }
+      return JSON.parse(rawResultStr.trim());
+    };
 
-    if (!pass2Response || !pass2Response.ok) {
-      const errorText = pass2Response ? await pass2Response.text() : 'Unknown error';
-      console.error(`Gemini API Error (Pass 2) [Status: ${pass2Response?.status}]:`, errorText);
-      return new Response(`Gemini API Error (Pass 2): ${errorText}`, { status: pass2Response?.status || 500 });
-    }
-
-    const pass2Data = (await pass2Response.json()) as any;
-    let rawResultStr = pass2Data.candidates[0].content.parts[0].text;
-    
-    // Safely strip standard markdown code block formatting if Gemini includes it
-    rawResultStr = rawResultStr.trim();
-    if (rawResultStr.startsWith('```json')) {
-      rawResultStr = rawResultStr.substring(7);
-    } else if (rawResultStr.startsWith('```')) {
-      rawResultStr = rawResultStr.substring(3);
-    }
-    if (rawResultStr.endsWith('```')) {
-      rawResultStr = rawResultStr.substring(0, rawResultStr.length - 3);
-    }
-    rawResultStr = rawResultStr.trim();
-
-    // Inject raw_transcription manually so we can debug Pass 1 output
+    let parsed: any;
     try {
-      const parsed = JSON.parse(rawResultStr);
-      parsed.raw_transcription = rawTranscription;
+      // Call 1: Nutrition and Ingredients (Merged Schema for Context)
+      const pass1Res = await makeGeminiCall(pass1Schema, "Nutrition_Ingredients");
+      console.log("--- PASS 1 LOG ---", JSON.stringify(pass1Res));
+
+      // If Call 1 is successful, we pass its structured ingredients output directly into Call 2's prompt
+      const call2Prompt = promptText + "\n\nCRITICAL CONTEXT FOR AI INSIGHT: The following ingredients were extracted from the package. When reasoning about claims in 'unverified_claim_notes', you MUST cross-reference this structured ingredient list:\n" + JSON.stringify(pass1Res.ingredients?.raw_list, null, 2);
+
+      // Call 2: Front of Pack & Claims (Sequential)
+      const fopRes = await makeGeminiCall(fopSchema, "Claims_FOP", call2Prompt);
+      console.log("--- PASS 2 FOP LOG ---", JSON.stringify(fopRes));
+
+      parsed = {
+        ...pass1Res,
+        ...fopRes,
+        raw_transcription: rawTranscription
+      };
+      
       const t3 = performance.now();
       parsed.timing = {
         cloud_vision_ms: Math.round(t1 - t0),
         gemini_pass2_ms: Math.round(t3 - t1),
         total_ms: Math.round(t3 - t0)
       };
-      rawResultStr = JSON.stringify(parsed);
-      console.log(`Gemini Pass 2 took ${Math.round(t3 - t1)}ms. Total: ${Math.round(t3 - t0)}ms`);
-    } catch (e) {
-      console.error("Pass 2 JSON Parse Failed on string:", rawResultStr);
+      console.log(`Gemini 2-Way Sequential Pass 2 took ${Math.round(t3 - t1)}ms. Total: ${Math.round(t3 - t0)}ms`);
+      
+    } catch (err: any) {
+      console.error("2-Way Sequential Pass 2 Failed:", err);
+      // Fail gracefully and trigger a 500 so frontend shows Low Confidence or Error
+      return new Response(`Pass 2 Failed: ${err.message}`, { status: 500 });
     }
 
+    const rawResultStr = JSON.stringify(parsed);
     return new Response(rawResultStr, {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
