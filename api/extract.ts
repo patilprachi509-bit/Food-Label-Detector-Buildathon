@@ -39,7 +39,18 @@ export async function POST(req: Request) {
           logger: () => {} 
         });
         
+        const fs = require('fs');
+        
         for (const buffer of imageBuffers) {
+          console.log('--- IMAGE INPUT DEBUG --- byteLength:', buffer.length);
+          const debugPath = `/tmp/debug-image-${Date.now()}.jpg`;
+          try {
+            fs.writeFileSync(debugPath, buffer);
+            console.log('--- SAVED DEBUG IMAGE TO ---', debugPath);
+          } catch (e) {
+            console.error('Failed to write debug image:', e);
+          }
+
           const { data } = await worker.recognize(buffer);
 
           // TEMP DEBUG — remove after diagnosing empty OCR output
