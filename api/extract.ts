@@ -134,7 +134,11 @@ export async function POST(req: Request) {
     console.log(`Tesseract Pass 1 took ${Math.round(t1 - t0)}ms`);
 
     // TEMP DEBUG — remove after diagnosing low-confidence extraction issue
-    console.log('--- RAW OCR TEXT ---\n', rawTranscription);
+    console.log(
+      '--- RAW OCR TEXT --- type:', typeof rawTranscription,
+      'length:', rawTranscription?.length,
+      '\n[START]' + rawTranscription + '[END]'
+    );
 
     const promptText = `
         Extract the product information and nutrition panel data from the following raw text transcription of a food package.
