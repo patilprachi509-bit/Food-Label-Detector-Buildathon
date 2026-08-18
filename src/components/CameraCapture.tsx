@@ -69,6 +69,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
         
         console.log('SOURCE DIMENSIONS:', sourceWidth, 'x', sourceHeight);
         console.log('CANVAS OUTPUT DIMENSIONS:', canvas.width, 'x', canvas.height);
+        alert(`CAPTURE DEBUG:\nSource: ${sourceWidth}x${sourceHeight}\nCanvas: ${canvas.width}x${canvas.height}`);
         
         const quality = step === 1 ? 0.85 : 0.92;
         const dataUrl = canvas.toDataURL('image/jpeg', quality);
@@ -119,6 +120,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
             
             console.log('SOURCE DIMENSIONS:', sourceWidth, 'x', sourceHeight);
             console.log('CANVAS OUTPUT DIMENSIONS:', canvas.width, 'x', canvas.height);
+            alert(`UPLOAD DEBUG:\nSource: ${sourceWidth}x${sourceHeight}\nCanvas: ${canvas.width}x${canvas.height}`);
             
             const quality = step === 1 ? 0.85 : 0.92;
             const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
