@@ -49,7 +49,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
         return;
       }
       
-      const MAX_WIDTH = step === 1 ? 800 : 1800;
+      const MAX_WIDTH = step === 1 ? 1200 : 2200;
       let width = videoRef.current.videoWidth;
       let height = videoRef.current.videoHeight;
 
@@ -65,8 +65,11 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
       if (ctx) {
         ctx.drawImage(videoRef.current, 0, 0, width, height);
         
-        const quality = step === 1 ? 0.6 : 0.8;
+        const quality = step === 1 ? 0.85 : 0.92;
         const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        
+        // TEMP DEBUG — monitor payload size for Vercel 4.5MB limit
+        console.log('--- CAMERA CAPTURE PAYLOAD SIZE --- step:', step, 'length:', dataUrl.length);
         
         if (mode === 'curved') {
           setCurvedImages([...curvedImages, dataUrl]);
@@ -93,7 +96,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
         const img = new Image();
         img.onload = () => {
           // Same dual-resolution logic for gallery uploads
-          const MAX_WIDTH = step === 1 ? 800 : 1800;
+          const MAX_WIDTH = step === 1 ? 1200 : 2200;
           let width = img.width;
           let height = img.height;
           if (width > MAX_WIDTH) {
@@ -107,8 +110,11 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
           if (ctx) {
             ctx.drawImage(img, 0, 0, width, height);
             
-            const quality = step === 1 ? 0.6 : 0.8;
+            const quality = step === 1 ? 0.85 : 0.92;
             const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+
+            // TEMP DEBUG — monitor payload size for Vercel 4.5MB limit
+            console.log('--- CAMERA CAPTURE PAYLOAD SIZE --- step:', step, 'length:', compressedDataUrl.length);
             if (mode === 'curved') {
               setCurvedImages([...curvedImages, compressedDataUrl]);
             } else {
