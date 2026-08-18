@@ -1,4 +1,4 @@
-import { GoogleAuth } from 'google-auth-library';
+import Tesseract from 'tesseract.js';
 
 export const runtime = 'nodejs';
 export const maxDuration = 120;
@@ -17,105 +17,46 @@ export async function POST(req: Request) {
       return new Response('Server configuration error: missing API key', { status: 500 });
     }
     
-    if (!serviceAccountBase64) {
-      console.error("VISION_SERVICE_ACCOUNT_BASE64 is missing");
-      return new Response('Server configuration error: missing Vision API credentials', { status: 500 });
-    }
+    // Vision API credentials check removed.
 
     let rawTranscription = "";
 
     try {
-      const credentialsJSON = Buffer.from(serviceAccountBase64, 'base64').toString('utf-8');
-      const credentials = JSON.parse(credentialsJSON);
-
-      const auth = new GoogleAuth({
-        credentials,
-        scopes: ['https://www.googleapis.com/auth/cloud-platform']
-      });
-
-      const client = await auth.getClient();
-      const accessToken = await client.getAccessToken();
-
-      if (!accessToken.token) {
-        throw new Error("Failed to retrieve access token");
-      }
-
-      // Build Cloud Vision request payload
-      const requests = [];
+      const imageBuffers: Buffer[] = [];
+      
       if (curvedImagesBase64 && Array.isArray(curvedImagesBase64) && curvedImagesBase64.length > 0) {
-        curvedImagesBase64.forEach(img => {
-          requests.push({
-            image: { content: img },
-            features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
-          });
-        });
+        curvedImagesBase64.forEach((img: string) => imageBuffers.push(Buffer.from(img, 'base64')));
       } else {
-        if (frontBase64) {
-          requests.push({
-            image: { content: frontBase64 },
-            features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
-          });
-        }
-        if (ingredientsBase64) {
-          requests.push({
-            image: { content: ingredientsBase64 },
-            features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
-          });
-        }
-        if (thirdBase64) {
-          requests.push({
-            image: { content: thirdBase64 },
-            features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
-          });
-        }
+        if (frontBase64) imageBuffers.push(Buffer.from(frontBase64, 'base64'));
+        if (ingredientsBase64) imageBuffers.push(Buffer.from(ingredientsBase64, 'base64'));
+        if (thirdBase64) imageBuffers.push(Buffer.from(thirdBase64, 'base64'));
       }
 
-      const visionResponse = await fetch(`https://vision.googleapis.com/v1/images:annotate`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken.token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ requests })
-      });
-
-      if (!visionResponse.ok) {
-        const errorText = await visionResponse.text();
-        console.error(`Vision API Error [Status: ${visionResponse.status}]:`, errorText);
-        return new Response(`Vision API Error: ${errorText}`, { status: visionResponse.status });
-      }
-
-      const visionData = (await visionResponse.json()) as any;
-      
-      // Parse Cloud Vision blocks dynamically based on spatial geometry
       const allTextPages: string[] = [];
-      
-      for (const res of visionData.responses) {
-        if (!res.fullTextAnnotation) continue;
-        
-        const words: any[] = [];
-        res.fullTextAnnotation.pages.forEach((page: any) => {
-          page.blocks?.forEach((block: any) => {
-            block.paragraphs?.forEach((para: any) => {
-              para.words?.forEach((word: any) => {
-                const text = word.symbols.map((s: any) => s.text).join('');
-                const xs = word.boundingBox.vertices.map((v: any) => v.x || 0);
-                const ys = word.boundingBox.vertices.map((v: any) => v.y || 0);
-                const minX = Math.min(...xs);
-                const maxX = Math.max(...xs);
-                const minY = Math.min(...ys);
-                const maxY = Math.max(...ys);
-                words.push({
-                  text,
-                  minX, maxX, minY, maxY,
-                  centerY: (minY + maxY) / 2,
-                  height: maxY - minY,
-                  width: maxX - minX
-                });
-              });
-            });
-          });
+
+      if (imageBuffers.length > 0) {
+        const worker = await Tesseract.createWorker('eng', 1, {
+          logger: m => {} 
         });
+        
+        for (const buffer of imageBuffers) {
+          const { data } = await worker.recognize(buffer);
+          
+          if (!data || !data.words || data.words.length === 0) continue;
+          
+          const words: any[] = data.words.map((word: any) => {
+            const minX = word.bbox.x0;
+            const maxX = word.bbox.x1;
+            const minY = word.bbox.y0;
+            const maxY = word.bbox.y1;
+            return {
+              text: word.text,
+              minX, maxX, minY, maxY,
+              centerY: (minY + maxY) / 2,
+              height: maxY - minY,
+              width: maxX - minX
+            };
+          });
 
         if (words.length === 0) continue;
 
@@ -177,18 +118,19 @@ export async function POST(req: Request) {
           return lineStr;
         }).join('\n');
 
-        allTextPages.push(pageText);
+        }
+        await worker.terminate();
       }
       
       rawTranscription = allTextPages.join('\n\n--- IMAGE SEPARATOR ---\n\n');
       
     } catch (err: any) {
-      console.error("Cloud Vision execution failed:", err);
-      return new Response(`Cloud Vision execution failed: ${err.message}`, { status: 500 });
+      console.error("Tesseract OCR execution failed:", err);
+      return new Response(`Tesseract OCR execution failed: ${err.message}`, { status: 500 });
     }
     
     const t1 = performance.now();
-    console.log(`Cloud Vision Pass 1 took ${Math.round(t1 - t0)}ms`);
+    console.log(`Tesseract Pass 1 took ${Math.round(t1 - t0)}ms`);
 
     const promptText = `
         Extract the product information and nutrition panel data from the following raw text transcription of a food package.
@@ -461,7 +403,7 @@ export async function POST(req: Request) {
       
       const t3 = performance.now();
       parsed.timing = {
-        cloud_vision_ms: Math.round(t1 - t0),
+        ocr_pass1_ms: Math.round(t1 - t0),
         gemini_pass2_ms: Math.round(t3 - t1),
         total_ms: Math.round(t3 - t0)
       };
