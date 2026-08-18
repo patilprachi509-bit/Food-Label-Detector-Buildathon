@@ -23,6 +23,21 @@ export async function POST(req: Request) {
 
     try {
       const imageBuffers: Buffer[] = [];
+
+      const logBase64 = (name: string, str: string) => {
+        if (str && typeof str === 'string') {
+          console.log(`--- BASE64 INPUT DEBUG [${name}] --- first 60 chars:`, str.slice(0, 60));
+          console.log(`--- BASE64 INPUT DEBUG [${name}] --- total length:`, str.length);
+        }
+      };
+      
+      if (curvedImagesBase64 && Array.isArray(curvedImagesBase64)) {
+        curvedImagesBase64.forEach((img, i) => logBase64(`curved-${i}`, img));
+      } else {
+        logBase64('front', frontBase64);
+        logBase64('ingredients', ingredientsBase64);
+        logBase64('third', thirdBase64);
+      }
       
       if (curvedImagesBase64 && Array.isArray(curvedImagesBase64) && curvedImagesBase64.length > 0) {
         curvedImagesBase64.forEach((img: string) => imageBuffers.push(Buffer.from(img, 'base64')));
