@@ -57,7 +57,7 @@ export async function POST(req: Request) {
         for (const buffer of imageBuffers) {
           console.log('--- IMAGE INPUT DEBUG --- byteLength:', buffer.length);
 
-          const { data } = await worker.recognize(buffer);
+          const { data } = await worker.recognize(buffer, undefined, { blocks: true });
 
           // TEMP DEBUG — remove after diagnosing empty OCR output
           // TEMP DEBUG — confirm OCR text exists
@@ -154,6 +154,9 @@ export async function POST(req: Request) {
           }
           return lineStr;
         }).join('\n');
+
+        // PROOF LOG
+        console.log('--- RECONSTRUCTED TEXT --- length:', pageText.length, '\n', pageText);
 
         allTextPages.push(pageText);
         }
