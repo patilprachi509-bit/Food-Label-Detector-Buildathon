@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   try {
     const t0 = performance.now();
     const apiKey = process.env.GEMINI_API_KEY || '';
-    const serviceAccountBase64 = process.env.VISION_SERVICE_ACCOUNT_BASE64;
+
     console.log('DEBUG_API_KEY_START:', apiKey.substring(0, 4) + '...' + apiKey.substring(apiKey.length - 4));
 
     const { frontBase64, ingredientsBase64, thirdBase64, curvedImagesBase64 } = (await req.json()) as any;
@@ -36,15 +36,15 @@ export async function POST(req: Request) {
 
       if (imageBuffers.length > 0) {
         const worker = await Tesseract.createWorker('eng', 1, {
-          logger: m => {} 
+          logger: () => {} 
         });
         
         for (const buffer of imageBuffers) {
           const { data } = await worker.recognize(buffer);
           
-          if (!data || !data.words || data.words.length === 0) continue;
+          if (!data || !(data as any).words || (data as any).words.length === 0) continue;
           
-          const words: any[] = data.words.map((word: any) => {
+          const words: any[] = (data as any).words.map((word: any) => {
             const minX = word.bbox.x0;
             const maxX = word.bbox.x1;
             const minY = word.bbox.y0;
@@ -118,6 +118,7 @@ export async function POST(req: Request) {
           return lineStr;
         }).join('\n');
 
+        allTextPages.push(pageText);
         }
         await worker.terminate();
       }
