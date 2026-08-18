@@ -43,6 +43,9 @@ export async function POST(req: Request) {
           const { data } = await worker.recognize(buffer);
 
           // TEMP DEBUG — remove after diagnosing empty OCR output
+          console.log('--- TESSERACT RESULT.DATA KEYS ---', Object.keys(data || {}));
+
+          // TEMP DEBUG — remove after diagnosing empty OCR output
           console.log(
             '--- TESSERACT RAW WORDS --- count:', (data as any).words?.length,
             'sample:', JSON.stringify((data as any).words?.slice(0, 5))
