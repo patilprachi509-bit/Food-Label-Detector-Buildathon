@@ -52,6 +52,8 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
       const MAX_WIDTH = step === 1 ? 1200 : 2200;
       let width = videoRef.current.videoWidth;
       let height = videoRef.current.videoHeight;
+      const sourceWidth = width;
+      const sourceHeight = height;
 
       if (width > MAX_WIDTH) {
         height = Math.round((height * MAX_WIDTH) / width);
@@ -64,6 +66,9 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
       const ctx = canvas.getContext('2d');
       if (ctx) {
         ctx.drawImage(videoRef.current, 0, 0, width, height);
+        
+        console.log('SOURCE DIMENSIONS:', sourceWidth, 'x', sourceHeight);
+        console.log('CANVAS OUTPUT DIMENSIONS:', canvas.width, 'x', canvas.height);
         
         const quality = step === 1 ? 0.85 : 0.92;
         const dataUrl = canvas.toDataURL('image/jpeg', quality);
@@ -99,6 +104,8 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
           const MAX_WIDTH = step === 1 ? 1200 : 2200;
           let width = img.width;
           let height = img.height;
+          const sourceWidth = width;
+          const sourceHeight = height;
           if (width > MAX_WIDTH) {
             height = Math.round((height * MAX_WIDTH) / width);
             width = MAX_WIDTH;
@@ -109,6 +116,9 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ step, onCapture, o
           const ctx = canvas.getContext('2d');
           if (ctx) {
             ctx.drawImage(img, 0, 0, width, height);
+            
+            console.log('SOURCE DIMENSIONS:', sourceWidth, 'x', sourceHeight);
+            console.log('CANVAS OUTPUT DIMENSIONS:', canvas.width, 'x', canvas.height);
             
             const quality = step === 1 ? 0.85 : 0.92;
             const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
