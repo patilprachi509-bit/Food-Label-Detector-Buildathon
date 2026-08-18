@@ -43,17 +43,28 @@ export async function POST(req: Request) {
           const { data } = await worker.recognize(buffer);
 
           // TEMP DEBUG — remove after diagnosing empty OCR output
-          console.log('--- TESSERACT RESULT.DATA KEYS ---', Object.keys(data || {}));
+          // TEMP DEBUG — confirm OCR text exists
+          console.log('--- TESSERACT DATA.TEXT --- length:', (data as any).text?.length, '\n[START]' + (data as any).text + '[END]');
 
-          // TEMP DEBUG — remove after diagnosing empty OCR output
-          console.log(
-            '--- TESSERACT RAW WORDS --- count:', (data as any).words?.length,
-            'sample:', JSON.stringify((data as any).words?.slice(0, 5))
-          );
+          if (!data || !(data as any).blocks || (data as any).blocks.length === 0) continue;
           
-          if (!data || !(data as any).words || (data as any).words.length === 0) continue;
-          
-          const words: any[] = (data as any).words.map((word: any) => {
+          let rawWords: any[] = [];
+          (data as any).blocks.forEach((block: any) => {
+            block.paragraphs?.forEach((para: any) => {
+              para.lines?.forEach((line: any) => {
+                line.words?.forEach((word: any) => {
+                  rawWords.push(word);
+                });
+              });
+            });
+          });
+
+          if (rawWords.length === 0) continue;
+
+          // TEMP DEBUG — verify word bbox format
+          console.log('--- TESSERACT SAMPLE WORD ---', JSON.stringify(rawWords[0]));
+
+          const words: any[] = rawWords.map((word: any) => {
             const minX = word.bbox.x0;
             const maxX = word.bbox.x1;
             const minY = word.bbox.y0;
